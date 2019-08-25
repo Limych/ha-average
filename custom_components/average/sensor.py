@@ -57,20 +57,22 @@ async def async_setup_platform(hass, config, async_add_entities,
     name = config.get(CONF_NAME)
     duration = config.get(CONF_DURATION)
     entities = config.get(CONF_ENTITIES)
+    precision = config.get(CONF_PRECISION)
 
     async_add_entities(
-        [AverageSensor(hass, name, duration, entities)])
+        [AverageSensor(hass, name, duration, entities, precision)])
 
 
 class AverageSensor(Entity):
     """Implementation of an Average sensor."""
 
-    def __init__(self, hass, name, measure_duration, entities):
+    def __init__(self, hass, name, measure_duration, entities, precision):
         """Initialize the sensor."""
         self._hass = hass
         self._name = name
         self._duration = measure_duration
         self._entities = entities
+        self._precision = int(precision)
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
@@ -258,7 +260,7 @@ class AverageSensor(Entity):
             values.append(value)
 
         if values:
-            self._state = round(sum(values) / len(values), 1)
+            self._state = round(sum(values) / len(values), self._precision)
         else:
             self._state = None
         _LOGGER.debug('Total average state: %s', self._state)
