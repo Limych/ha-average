@@ -1,0 +1,4 @@
+geopy
+geohash2
+voluptuous
+homeassistant

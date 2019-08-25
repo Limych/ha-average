@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Limych/ha-average/blob/master/hass-integration-manifest.schema.json",
+  "title": "Home Assistant Integration Manifest",
+  "description": "Manifest of integration for Home Assistant smart home system",
+  "type": "object",
+  "properties": {
+    "domain": {
+      "type": "string",
+      "description": "The unique domain name of this integration. Cannot be changed"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the integration"
+    },
+    "documentation": {
+      "type": "string",
+      "description": "URL of the website containing documentation on how to use that integration"
+    },
+    "requirements": {
+      "type": "array",
+      "description": "List of required Python libraries or modules for this integration",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "dependencies": {
+      "type": "array",
+      "description": "List of the other Home Assistant integrations that need to Home Assistant to set up successfully prior to the integration being loaded",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    },
+    "codeowners": {
+      "type": "array",
+      "description": "List of GitHub usernames or team names of people that are responsible for this integration",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 0,
+      "uniqueItems": true
+    }
+  },
+  "required": [
+    "domain",
+    "name",
+    "documentation",
+    "requirements",
+    "dependencies",
+    "codeowners"
+  ]
+}

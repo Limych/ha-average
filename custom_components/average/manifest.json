@@ -1,0 +1,8 @@
+{
+  "domain": "average",
+  "name": "Average",
+  "documentation": "https://github.com/Limych/ha-average",
+  "requirements": [],
+  "dependencies": [],
+  "codeowners": ["@Limych"]
+}
