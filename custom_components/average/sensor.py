@@ -30,7 +30,7 @@ from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util.temperature import convert as convert_temperature
 
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -81,7 +81,7 @@ class AverageSensor(Entity):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return False
+        return True
 
     @property
     def name(self):

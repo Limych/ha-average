@@ -4,15 +4,19 @@
 
 [![GitHub Release](https://img.shields.io/github/tag-date/Limych/ha-average?label=release&style=popout)](https://github.com/Limych/ha-average/releases)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout)](https://github.com/Limych/ha-average/commits/master)
-[![License](https://img.shields.io/github/license/Limych/ha-average.svg?style=popout)](LICENSE.md)
+[![License](https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout)](LICENSE.md)
 ![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)
 
 [![hacs](https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout)][hacs]
 ![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
 
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/Limych/ha-average?style=popout)](https://github.com/Limych/ha-average/pulls)
+[![Bugs](https://img.shields.io/github/issues/Limych/ha-average/bug.svg?colorB=red&label=bugs&style=popout)](https://github.com/Limych/ha-average/issues?q=is%3Aopen+is%3Aissue+label%3ABug)
+
 [![Community Forum](https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout)][forum-support]
 
 This sensor allows you to calculate the average state for one or more sensors over a specified period. Or just the average current state for one or more sensors, if you do not need historical data.
+
 Initially it was written special for calculating of average temperature, but now it can calculate average of any numerical data.
 
 ![Example](example.png)
@@ -70,9 +74,11 @@ I also suggest you [visit the support topic][forum-support] on the community for
     or you can combine this variants for some reason.
 
 <p align="center">* * *</p>
-I put a lot of work into making this repo available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
-<p align="center"><a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url"><img alt="Buy Me a Coffe" src="https://raw.githubusercontent.com/Limych/HomeAssistantConfiguration/master/docs/images/donate-with-paypal.png"></a></p>
-<p align="center"><a href="https://www.patreon.com/join/limych?"><img alt="Support my work on Patreon" src="https://raw.githubusercontent.com/Limych/HomeAssistantConfiguration/master/docs/images/support-with-patreon.jpg"></a></p>
+I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
+<p align="center"><br>
+<a href="https://www.patreon.com/join/limych?" target="_blank"><img src="support_patreon.svg" alt="Patreon" width="250" height="49"></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="support_paypal.svg" alt="Patreon" width="250" height="49"></a>
+</p>
 
 ### Configuration Variables
   
@@ -123,7 +129,7 @@ I put a lot of work into making this repo available and updated to inspire and h
 
 ## Track updates
 
-You can automatically track new versions of this component and update it by  [custom-updater](https://github.com/custom-components/custom_updater) (deprecated) or [HACS][hacs].
+You can automatically track new versions of this component and update it by [custom-updater](https://github.com/custom-components/custom_updater) (deprecated) or [HACS][hacs].
 
 For custom-updater to initiate tracking add this lines to you `configuration.yaml` file:
 
@@ -136,5 +142,5 @@ custom_updater:
     - https://raw.githubusercontent.com/Limych/ha-average/master/tracker.json
 ```
 
-[forum-support]: https://community.home-assistant.io/t/average-temperature-sensor/111674
+[forum-support]: https://community.home-assistant.io/t/average-sensor/111674
 [hacs]: https://github.com/custom-components/hacs

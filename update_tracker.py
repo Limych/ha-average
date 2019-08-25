@@ -1,3 +1,7 @@
+#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 import json
 import logging
 import os
@@ -57,8 +61,19 @@ with open('tracker.json', 'r') as tracker_file:
     tracker = json.load(tracker_file)
 for package in tracker:
     _LOGGER.info('Updating version for %s', package)
-    local_path = str(tracker[package]['local_location']).lstrip('/\\')
+    local_path = tracker[package]['local_location'].lstrip('/\\')
     tracker[package]['version'] = \
         get_component_version(local_path, package)
+    base_path = os.path.split(local_path)[0]
+    base_url = os.path.split(tracker[package]['remote_location'])[0]
+    resources = []
+    for current_path, dirs, files in os.walk(base_path):
+        if current_path.find('__pycache__') != -1:
+            continue
+        for file in files:
+            file = os.path.join(current_path, file).replace('\\', '/')
+            if file != local_path:
+                resources.append(base_url + file[len(base_path):])
+    tracker[package]['resources'] = resources
 with open('tracker.json', 'w') as tracker_file:
     json.dump(tracker, tracker_file, indent=4)
