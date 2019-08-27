@@ -76,8 +76,8 @@ I also suggest you [visit the support topic][forum-support] on the community for
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
 <p align="center"><br>
-<a href="https://www.patreon.com/join/limych?" target="_blank"><img src="support_patreon.svg" alt="Patreon" width="250" height="49"></a>
-<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="support_paypal.svg" alt="Patreon" width="250" height="49"></a>
+<a href="https://www.patreon.com/join/limych?" target="_blank"><img src="http://khrolenok.ru/support_patreon.png" alt="Patreon" width="250" height="48"></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="http://khrolenok.ru/support_paypal.png" alt="PayPal" width="250" height="48"></a>
 </p>
 
 ### Configuration Variables
@@ -125,7 +125,7 @@ I put a lot of work into making this repo and component available and updated to
 **precision**:\
   _(number) (Optional)_\
   The number of decimals to use when rounding the sensor state.\
-  _Default value: 1_
+  _Default value: 2_
 
 ## Track updates
 
