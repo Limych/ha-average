@@ -39,11 +39,15 @@ CONF_PRECISION = 'precision'
 
 DEFAULT_NAME = 'Average'
 
+ATTR_COUNT = 'count'
+ATTR_MIN_VALUE = 'min_value'
+ATTR_MAX_VALUE = 'max_value'
+
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_ENTITIES): cv.entity_ids,
     vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
     vol.Optional(CONF_DURATION): cv.time_period,
-    vol.Optional(CONF_PRECISION, default=1): int,
+    vol.Optional(CONF_PRECISION, default=2): int,
 })
 
 
@@ -77,6 +81,9 @@ class AverageSensor(Entity):
         self._unit_of_measurement = None
         self._icon = None
         self._temperature_mode = None
+        self.count = 0
+        self.min = None
+        self.max = None
 
     @property
     def should_poll(self):
@@ -102,6 +109,15 @@ class AverageSensor(Entity):
     def icon(self):
         """Return the icon to use in the frontend."""
         return self._icon
+
+    @property
+    def device_state_attributes(self):
+        """Return the state attributes."""
+        return {
+            ATTR_COUNT: self.count,
+            ATTR_MIN_VALUE: self.min,
+            ATTR_MAX_VALUE: self.max,
+        }
 
     async def async_added_to_hass(self):
         """Register callbacks."""
@@ -159,8 +175,16 @@ class AverageSensor(Entity):
         return temperature
 
     def _get_entity_state(self, entity) -> float:
-        return self._get_temperature(entity) if self._temperature_mode \
+        state = self._get_temperature(entity) if self._temperature_mode \
             else float(entity.state)
+        self.count += 1
+        rstate = round(state, self._precision)
+        if self.min is None:
+            self.min = self.max = rstate
+        else:
+            self.min = min(self.min, rstate)
+            self.max = max(self.max, rstate)
+        return state
 
     async def async_update(self):
         """Update the sensor state."""
@@ -175,6 +199,8 @@ class AverageSensor(Entity):
             now_timestamp = math.floor(dt_util.as_timestamp(now))
 
         values = []
+        self.count = 0
+        self.min = self.max = None
 
         for entity_id in self._entities:
             _LOGGER.debug('Processing entity "%s"', entity_id)
