@@ -1,9 +1,16 @@
+![Example](example.png)
+
 ## Features:
 
 - Ability of make multiple average sensors with different configurations.
 - Ability to average current state of many sensors.
 - Ability to average history states of one or many sensors.
 - Special processing for temperature sensors. You can use weather provider, climate and water heater entities as a data source.
+
+## Links
+
+- [Documentation](https://github.com/Limych/ha-average)
+- [Configuration](https://github.com/Limych/ha-average#configuration-variables)
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
