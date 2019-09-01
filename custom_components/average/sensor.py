@@ -140,8 +140,7 @@ class AverageSensor(Entity):
             if self._duration is None:
                 async_track_state_change(self._hass, self._entities,
                                          sensor_state_listener)
-
-            self.async_schedule_update_ha_state(True)
+            sensor_state_listener(None, None, None)
 
         self._hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START,
                                          sensor_startup)
