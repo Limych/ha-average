@@ -92,7 +92,7 @@ class AverageSensor(Entity):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return True
+        return self._duration is not None
 
     @property
     def name(self):
@@ -129,14 +129,17 @@ class AverageSensor(Entity):
         @callback
         def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
+            last_state = self._state
             self._update()
-            self.async_schedule_update_ha_state(True)
+            if last_state != self._state:
+                self.async_schedule_update_ha_state(True)
 
         @callback
         def sensor_startup(event):
             """Update template on startup."""
-            async_track_state_change(self._hass, self._entities,
-                                     sensor_state_listener)
+            if self._duration is None:
+                async_track_state_change(self._hass, self._entities,
+                                         sensor_state_listener)
 
             self.async_schedule_update_ha_state(True)
 
@@ -212,6 +215,7 @@ class AverageSensor(Entity):
 
     def _update(self):
         """Update the sensor state."""
+        _LOGGER.debug('Updating sensor "%s"', self.name)
         start = now = start_timestamp = now_timestamp = None
         if self._duration is not None:
             now = dt_util.now()
