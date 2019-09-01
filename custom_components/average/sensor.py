@@ -211,7 +211,8 @@ class AverageSensor(Entity):
 
     @Throttle(UPDATE_MIN_TIME)
     async def async_update(self):
-        self._update()
+        if self._duration is not None:
+            self._update()
 
     def _update(self):
         """Update the sensor state."""
