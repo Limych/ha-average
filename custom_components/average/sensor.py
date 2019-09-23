@@ -24,7 +24,6 @@ from homeassistant.const import (
     TEMP_CELSIUS, TEMP_FAHRENHEIT, UNIT_NOT_RECOGNIZED_TEMPLATE, TEMPERATURE,
     STATE_UNKNOWN, STATE_UNAVAILABLE, ATTR_ICON)
 from homeassistant.core import callback
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.entity import Entity
@@ -32,7 +31,7 @@ from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 
-VERSION = '1.3.2'
+VERSION = '1.3.3'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -74,13 +73,14 @@ async def async_setup_platform(hass, config, async_add_entities,
 class AverageSensor(Entity):
     """Implementation of an Average sensor."""
 
-    def __init__(self, hass, name, measure_duration, entities, precision):
+    def __init__(self, hass, name: str, measure_duration, entities: list,
+                 precision: int):
         """Initialize the sensor."""
         self._hass = hass
         self._name = name
         self._duration = measure_duration
         self._entities = entities
-        self._precision = int(precision)
+        self._precision = precision
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
@@ -236,8 +236,8 @@ class AverageSensor(Entity):
             entity = self._hass.states.get(entity_id)
 
             if entity is None:
-                raise HomeAssistantError(
-                    'Unable to find an entity called {}'.format(entity_id))
+                _LOGGER.error('Unable to find an entity "%s"', entity_id)
+                continue
 
             if self._temperature_mode is None:
                 self._temperature_mode = self._is_temperature(entity)
