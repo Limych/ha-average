@@ -105,6 +105,10 @@ async def async_setup_platform(hass, config, async_add_entities,
     entities = config.get(CONF_ENTITIES)
     precision = config.get(CONF_PRECISION)
 
+    for template in [start, end]:
+        if template is not None:
+            template.hass = hass
+
     async_add_entities(
         [AverageSensor(hass, name, start, end, duration, entities, precision)])
 
@@ -128,7 +132,7 @@ class AverageSensor(Entity):
         self._icon = None
         self._temperature_mode = None
         self.count_sources = len(self._entity_ids)
-        self.available_sources = None
+        self.available_sources = 0
         self.count = 0
         self.min_value = self.max_value = None
 
@@ -174,17 +178,17 @@ class AverageSensor(Entity):
         def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
             last_state = self._state
-            self._update()
+            self._update_state()
             if last_state != self._state:
                 self.async_schedule_update_ha_state(True)
 
         @callback
         def sensor_startup(event):
             """Update template on startup."""
-            if self._duration is None:
+            if not self._has_period():
                 async_track_state_change(self._hass, self._entity_ids,
                                          sensor_state_listener)
-            sensor_state_listener(None, None, None)
+                sensor_state_listener(None, None, None)
 
         self._hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START,
                                          sensor_startup)
@@ -239,7 +243,7 @@ class AverageSensor(Entity):
 
         try:
             state = float(state)
-        except ValueError as exc:
+        except ValueError:
             _LOGGER.error('Could not convert value "%s" to float', state)
             return None
 
@@ -253,9 +257,9 @@ class AverageSensor(Entity):
         return state
 
     @Throttle(UPDATE_MIN_TIME)
-    async def async_update(self):
-        if self._duration is not None:
-            self._update()
+    def update(self):
+        if self._has_period():
+            self._update_state()
 
     @staticmethod
     def handle_template_exception(ex, field):
@@ -267,6 +271,12 @@ class AverageSensor(Entity):
             return
         _LOGGER.error("Error parsing template for field %s", field)
         _LOGGER.error(ex)
+
+    def _has_period(self):
+        return \
+            self._start_template is not None \
+            or self._end_template is not None \
+            or self._duration is not None
 
     def _update_period(self):
         """Parse the templates and calculate a datetime tuples."""
@@ -335,7 +345,7 @@ class AverageSensor(Entity):
         self.start = start.replace(microsecond=0).isoformat()
         self.end = end.replace(microsecond=0).isoformat()
 
-    def _update(self):
+    def _update_state(self):
         """Update the sensor state."""
         _LOGGER.debug('Updating sensor "%s"', self.name)
         start = end = start_ts = end_ts = None
