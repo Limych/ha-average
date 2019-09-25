@@ -47,8 +47,8 @@ DEFAULT_NAME = 'Average'
 
 ATTR_START = 'start'
 ATTR_END = 'end'
-ATTR_COUNT_SENSORS = 'count_sensors'
-ATTR_AVAILABLE_SENSORS = 'available_sensors'
+ATTR_COUNT_SOURCES = 'count_sources'
+ATTR_AVAILABLE_SOURCES = 'available_sources'
 ATTR_COUNT = 'count'
 ATTR_MIN_VALUE = 'min_value'
 ATTR_MAX_VALUE = 'max_value'
@@ -56,8 +56,8 @@ ATTR_MAX_VALUE = 'max_value'
 ATTR_TO_PROPERTY = [
     ATTR_START,
     ATTR_END,
-    ATTR_COUNT_SENSORS,
-    ATTR_AVAILABLE_SENSORS,
+    ATTR_COUNT_SOURCES,
+    ATTR_AVAILABLE_SOURCES,
     ATTR_COUNT,
     ATTR_MAX_VALUE,
     ATTR_MIN_VALUE,
