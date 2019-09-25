@@ -332,6 +332,8 @@ class AverageSensor(Entity):
             end = dt_util.now()
 
         self._period = start, end
+        self.start = start.replace(microsecond=0).isoformat()
+        self.end = end.replace(microsecond=0).isoformat()
 
     def _update(self):
         """Update the sensor state."""
@@ -371,9 +373,6 @@ class AverageSensor(Entity):
             ):
                 # Don't compute anything as the value cannot have changed
                 return
-
-            self.start = start.replace(microsecond=0).isoformat()
-            self.end = end.replace(microsecond=0).isoformat()
 
         self.available_sensors = 0
         values = []
