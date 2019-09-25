@@ -185,7 +185,9 @@ class AverageSensor(Entity):
         @callback
         def sensor_startup(event):
             """Update template on startup."""
-            if not self._has_period():
+            if self._has_period():
+                self.async_schedule_update_ha_state(True)
+            else:
                 async_track_state_change(self._hass, self._entity_ids,
                                          sensor_state_listener)
                 sensor_state_listener(None, None, None)
