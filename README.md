@@ -154,6 +154,13 @@ The duration variable is used when the time period is fixed.  Different syntaxes
 
 Here are some examples of periods you could work with, and what to write in your `configuration.yaml`:
 
+**Last 5 minutes**: ends right now, last 5 minutes.
+
+```yaml
+duration:
+  minutes: 5
+```
+
 **Today**: starts at 00:00 of the current day and ends right now.
 
 ```yaml
