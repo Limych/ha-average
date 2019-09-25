@@ -31,7 +31,7 @@ from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 
-VERSION = '1.3.3'
+VERSION = '1.3.4'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -302,7 +302,8 @@ class AverageSensor(Entity):
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
 
-                    value /= elapsed
+                    if elapsed:
+                        value /= elapsed
                     _LOGGER.debug('Historical average state: %s', value)
 
             values.append(value)
