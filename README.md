@@ -7,7 +7,7 @@
 [![License](https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout)](LICENSE.md)
 ![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)
 
-[![hacs](https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout)][hacs]
+[![hacs](https://img.shields.io/badge/HACS-Default-orange.svg?style=popout)][hacs]
 ![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
 
 [![GitHub pull requests](https://img.shields.io/github/issues-pr/Limych/ha-average?style=popout)](https://github.com/Limych/ha-average/pulls)
@@ -78,6 +78,9 @@ I put a lot of work into making this repo and component available and updated to
 <p align="center"><br>
 <a href="https://www.patreon.com/join/limych?" target="_blank"><img src="http://khrolenok.ru/support_patreon.png" alt="Patreon" width="250" height="48"></a>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="http://khrolenok.ru/support_paypal.png" alt="PayPal" width="250" height="48"></a>
+<br>or&nbsp;support via Bitcoin or Etherium:<br>
+<a href="bitcoin:16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts" target="_blank"><img src="http://khrolenok.ru/support_bitcoin.png" alt="Bitcoin" width="150"><br>
+16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts</a>
 </p>
 
 ### Configuration Variables

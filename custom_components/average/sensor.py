@@ -10,6 +10,7 @@ https://github.com/Limych/ha-average/
 """
 import logging
 import math
+from datetime import timedelta
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
@@ -23,14 +24,14 @@ from homeassistant.const import (
     TEMP_CELSIUS, TEMP_FAHRENHEIT, UNIT_NOT_RECOGNIZED_TEMPLATE, TEMPERATURE,
     STATE_UNKNOWN, STATE_UNAVAILABLE, ATTR_ICON)
 from homeassistant.core import callback
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import async_track_state_change
+from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 
-VERSION = '1.3.1'
+VERSION = '1.3.4'
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -42,6 +43,8 @@ DEFAULT_NAME = 'Average'
 ATTR_COUNT = 'count'
 ATTR_MIN_VALUE = 'min_value'
 ATTR_MAX_VALUE = 'max_value'
+
+UPDATE_MIN_TIME = timedelta(seconds=20)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
     vol.Required(CONF_ENTITIES): cv.entity_ids,
@@ -70,13 +73,14 @@ async def async_setup_platform(hass, config, async_add_entities,
 class AverageSensor(Entity):
     """Implementation of an Average sensor."""
 
-    def __init__(self, hass, name, measure_duration, entities, precision):
+    def __init__(self, hass, name: str, measure_duration, entities: list,
+                 precision: int):
         """Initialize the sensor."""
         self._hass = hass
         self._name = name
         self._duration = measure_duration
         self._entities = entities
-        self._precision = int(precision)
+        self._precision = precision
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
@@ -88,7 +92,7 @@ class AverageSensor(Entity):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return True
+        return self._duration is not None
 
     @property
     def name(self):
@@ -115,8 +119,8 @@ class AverageSensor(Entity):
         """Return the state attributes."""
         return {
             ATTR_COUNT: self.count,
-            ATTR_MIN_VALUE: self.min,
             ATTR_MAX_VALUE: self.max,
+            ATTR_MIN_VALUE: self.min,
         }
 
     async def async_added_to_hass(self):
@@ -125,18 +129,27 @@ class AverageSensor(Entity):
         @callback
         def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
-            self.async_schedule_update_ha_state(True)
+            last_state = self._state
+            self._update()
+            if last_state != self._state:
+                self.async_schedule_update_ha_state(True)
 
         @callback
         def sensor_startup(event):
             """Update template on startup."""
-            async_track_state_change(self._hass, self._entities,
-                                     sensor_state_listener)
-
-            self.async_schedule_update_ha_state(True)
+            if self._duration is None:
+                async_track_state_change(self._hass, self._entities,
+                                         sensor_state_listener)
+            sensor_state_listener(None, None, None)
 
         self._hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START,
                                          sensor_startup)
+
+    @staticmethod
+    def _has_state(state):
+        return \
+            state is not None \
+            and state not in [STATE_UNKNOWN, STATE_UNAVAILABLE]
 
     @staticmethod
     def _is_temperature(entity) -> bool:
@@ -159,7 +172,7 @@ class AverageSensor(Entity):
             temperature = entity.state
             entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
 
-        if temperature is not None:
+        if self._has_state(temperature):
             if entity_unit not in (TEMP_CELSIUS, TEMP_FAHRENHEIT):
                 raise ValueError(
                     UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit,
@@ -174,9 +187,18 @@ class AverageSensor(Entity):
 
         return temperature
 
-    def _get_entity_state(self, entity) -> float:
+    def _get_entity_state(self, entity):
         state = self._get_temperature(entity) if self._temperature_mode \
-            else float(entity.state)
+            else entity.state
+        if not self._has_state(state):
+            return None
+
+        try:
+            state = float(state)
+        except ValueError as exc:
+            _LOGGER.error('Could not convert value "%s" to float', state)
+            return None
+
         self.count += 1
         rstate = round(state, self._precision)
         if self.min is None:
@@ -186,8 +208,14 @@ class AverageSensor(Entity):
             self.max = max(self.max, rstate)
         return state
 
+    @Throttle(UPDATE_MIN_TIME)
     async def async_update(self):
+        if self._duration is not None:
+            self._update()
+
+    def _update(self):
         """Update the sensor state."""
+        _LOGGER.debug('Updating sensor "%s"', self.name)
         start = now = start_timestamp = now_timestamp = None
         if self._duration is not None:
             now = dt_util.now()
@@ -208,8 +236,8 @@ class AverageSensor(Entity):
             entity = self._hass.states.get(entity_id)
 
             if entity is None:
-                raise HomeAssistantError(
-                    'Unable to find an entity called {}'.format(entity_id))
+                _LOGGER.error('Unable to find an entity "%s"', entity_id)
+                continue
 
             if self._temperature_mode is None:
                 self._temperature_mode = self._is_temperature(entity)
@@ -249,20 +277,14 @@ class AverageSensor(Entity):
                     last_time = start_timestamp
                     if (
                             item is not None
-                            and item.state is not None
-                            and item.state not in [STATE_UNKNOWN,
-                                                   STATE_UNAVAILABLE]
+                            and self._has_state(item.state)
                     ):
                         last_state = self._get_entity_state(item)
 
                     # Get the other states
                     for item in history_list.get(entity_id):
                         _LOGGER.debug('Historical state: %s', item)
-                        if (
-                                item.state is not None
-                                and item.state not in [STATE_UNKNOWN,
-                                                       STATE_UNAVAILABLE]
-                        ):
+                        if self._has_state(item.state):
                             current_state = self._get_entity_state(item)
                             current_time = item.last_changed.timestamp()
 
@@ -280,7 +302,8 @@ class AverageSensor(Entity):
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
 
-                    value /= elapsed
+                    if elapsed:
+                        value /= elapsed
                     _LOGGER.debug('Historical average state: %s', value)
 
             values.append(value)
