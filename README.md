@@ -29,7 +29,8 @@ This sensor in the mean mode produces exactly the same average value from severa
 **Compare with statistics sensor:**\
 This sensor copes with the averaging of data over a certain period of time. However… 1) it cannot work with several sources at once (and can't receive temperature from weather, climate and water heater entities, like min-max sensor), 2) when calculating the average, it does not take into account how much time the temperature value was kept, 3) it has a limit on the number of values ​​it averages - if by chance there are more values, they will be dropped.
 
-*NB. You can find a real example of using this component in [my Home Assistant configuration](https://github.com/Limych/HomeAssistantConfiguration).*
+> **_Note_**:\
+> You can find a real example of using this component in [my Home Assistant configuration](https://github.com/Limych/HomeAssistantConfiguration).
 
 I also suggest you [visit the support topic][forum-support] on the community forum.
 
@@ -89,7 +90,8 @@ I put a lot of work into making this repo and component available and updated to
   _(list) (Required)_\
   A list of temperature sensor entity IDs.
   
-  *NB* You can use weather provider, climate and water heater entities as a data source. For that entities sensor use values of current temperature.
+> **_Note_**:\
+> You can use weather provider, climate and water heater entities as a data source. For that entities sensor use values of current temperature.
 
 **name**:\
   _(string) (Optional)_\
