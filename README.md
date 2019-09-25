@@ -95,12 +95,37 @@ I put a lot of work into making this repo and component available and updated to
   _(string) (Optional)_\
   Name to use in the frontend.\
   _Default value: "Average"_
+
+**start**:\
+  _(template) (Optional)_\
+  When to start the measure (timestamp or datetime).
+
+**end**:\
+  _(template) (Optional)_\
+  When to stop the measure (timestamp or datetime).
   
 **duration**:\
   _(time) (Optional)_\
-  Duration of the measure from the current time.
+  Duration of the measure.
   
-  Different syntaxes for the duration are supported, as shown below.
+**precision**:\
+  _(number) (Optional)_\
+  The number of decimals to use when rounding the sensor state.\
+  _Default value: 2_
+
+## Time periods
+
+The `average` integration will execute a measure within a precise time period. You should provide none, only `duration` (when period ends at now) or exactly 2 of the following:
+
+- When the period starts (`start` variable)
+- When the period ends (`end` variable)
+- How long is the period (`duration` variable)
+
+As `start` and `end` variables can be either datetimes or timestamps, you can configure almost any period you want.
+
+### Duration
+
+The duration variable is used when the time period is fixed.  Different syntaxes for the duration are supported, as shown below.
 
   ```yaml  
   # 15 seconds
@@ -125,10 +150,59 @@ I put a lot of work into making this repo and component available and updated to
     minutes: 30
   ```
 
-**precision**:\
-  _(number) (Optional)_\
-  The number of decimals to use when rounding the sensor state.\
-  _Default value: 2_
+### Examples
+
+Here are some examples of periods you could work with, and what to write in your `configuration.yaml`:
+
+**Today**: starts at 00:00 of the current day and ends right now.
+
+```yaml
+start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+end: '{{ now() }}'
+```
+
+**Yesterday**: ends today at 00:00, lasts 24 hours.
+
+```yaml
+end: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+duration:
+  hours: 24
+```
+
+**This morning (06:00–11:00)**: starts today at 6, lasts 5 hours.
+
+```yaml
+start: '{{ now().replace(hour=6).replace(minute=0).replace(second=0) }}'
+duration:
+  hours: 5
+```
+
+**Current week**: starts last Monday at 00:00, ends right now.
+
+Here, last Monday is _today_ as a timestamp, minus 86400 times the current weekday (86400 is the number of seconds in one day, the weekday is 0 on Monday, 6 on Sunday).
+
+```yaml
+start: '{{ as_timestamp( now().replace(hour=0).replace(minute=0).replace(second=0) ) - now().weekday() * 86400 }}'
+end: '{{ now() }}'
+```
+
+**Last 30 days**: ends today at 00:00, lasts 30 days. Easy one.
+
+```yaml
+end: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
+duration:
+  days: 30
+```
+
+**All your history** starts at timestamp = 0, and ends right now.
+
+```yaml
+start: '{{ 0 }}'
+end: '{{ now() }}'
+```
+
+> **_Note_**:\
+> The `/dev-template` page of your home-assistant UI can help you check if the values for `start`, `end` or `duration` are correct. If you want to check if your period is right, just click on your component, the `start` and `end` attributes will show the start and end of the period, nicely formatted.
 
 ## Track updates
 
