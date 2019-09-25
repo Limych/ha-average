@@ -127,8 +127,8 @@ class AverageSensor(Entity):
         self._unit_of_measurement = None
         self._icon = None
         self._temperature_mode = None
-        self.count_sensors = len(self._entity_ids)
-        self.available_sensors = None
+        self.count_sources = len(self._entity_ids)
+        self.available_sources = None
         self.count = 0
         self.min_value = self.max_value = None
 
@@ -374,7 +374,7 @@ class AverageSensor(Entity):
                 # Don't compute anything as the value cannot have changed
                 return
 
-        self.available_sensors = 0
+        self.available_sources = 0
         values = []
         self.count = 0
         self.min_value = self.max_value = None
@@ -456,7 +456,7 @@ class AverageSensor(Entity):
                     _LOGGER.debug('Historical average state: %s', value)
 
             values.append(value)
-            self.available_sensors += 1
+            self.available_sources += 1
 
         if values:
             self._state = round(sum(values) / len(values), self._precision)
