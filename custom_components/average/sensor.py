@@ -31,9 +31,11 @@ from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 
-VERSION = '1.3.4'
-
 _LOGGER = logging.getLogger(__name__)
+
+# Base component constants
+VERSION = '1.3.5'
+ISSUE_URL = "https://github.com/Limych/ha-average/issues"
 
 CONF_DURATION = 'duration'
 CONF_PRECISION = 'precision'
@@ -56,10 +58,11 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
 
 async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
-    """Set up the Gismeteo weather platform."""
-    _LOGGER.debug('Version %s', VERSION)
-    _LOGGER.info('if you have ANY issues with this, please report them here:'
-                 ' https://github.com/Limych/ha-average')
+    """Set up platform."""
+    # Print startup message
+    _LOGGER.info('Version %s', VERSION)
+    _LOGGER.info('If you have ANY issues with this,'
+                 ' please report them here: %s', ISSUE_URL)
 
     name = config.get(CONF_NAME)
     duration = config.get(CONF_DURATION)
