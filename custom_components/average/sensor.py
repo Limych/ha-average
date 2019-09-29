@@ -139,7 +139,7 @@ class AverageSensor(Entity):
     @property
     def should_poll(self):
         """Return the polling state."""
-        return self._duration is not None
+        return self._has_period
 
     @property
     def name(self):
@@ -185,7 +185,7 @@ class AverageSensor(Entity):
         @callback
         def sensor_startup(event):
             """Update template on startup."""
-            if self._has_period():
+            if self._has_period:
                 self.async_schedule_update_ha_state(True)
             else:
                 async_track_state_change(self._hass, self._entity_ids,
@@ -260,7 +260,7 @@ class AverageSensor(Entity):
 
     @Throttle(UPDATE_MIN_TIME)
     def update(self):
-        if self._has_period():
+        if self._has_period:
             self._update_state()
 
     @staticmethod
@@ -274,6 +274,7 @@ class AverageSensor(Entity):
         _LOGGER.error("Error parsing template for field %s", field)
         _LOGGER.error(ex)
 
+    @property
     def _has_period(self):
         return \
             self._start_template is not None \
@@ -283,9 +284,10 @@ class AverageSensor(Entity):
     def _update_period(self):
         """Parse the templates and calculate a datetime tuples."""
         start = None
-        end = dt_util.now()
+        end = now = dt_util.now()
 
         # Parse start
+        _LOGGER.debug('Process start template: %s', self._start_template)
         if self._start_template is not None:
             try:
                 start_rendered = self._start_template.render()
@@ -308,6 +310,7 @@ class AverageSensor(Entity):
                     return
 
         # Parse end
+        _LOGGER.debug('Process end template: %s', self._end_template)
         if self._end_template is not None:
             try:
                 end_rendered = self._end_template.render()
@@ -330,18 +333,21 @@ class AverageSensor(Entity):
                     return
 
         # Calculate start or end using the duration
+        _LOGGER.debug('Process duration: %s', self._duration)
         if self._duration is not None:
             if start is None:
                 start = end - self._duration
             else:
                 end = start + self._duration
 
-        if start > dt_util.now():
+        _LOGGER.debug('Start: %s, End: %s', start, end)
+
+        if start > now:
             # History hasn't been written yet for this period
             return
-        if dt_util.now() < end:
+        if now < end:
             # No point in making stats of the future
-            end = dt_util.now()
+            end = now
 
         self._period = start, end
         self.start = start.replace(microsecond=0).isoformat()
