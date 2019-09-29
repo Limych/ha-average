@@ -91,6 +91,7 @@ PLATFORM_SCHEMA = vol.All(
 )
 
 
+# pylint: disable=unused-argument
 async def async_setup_platform(hass, config, async_add_entities,
                                discovery_info=None):
     """Set up the Gismeteo weather platform."""
@@ -137,6 +138,14 @@ class AverageSensor(Entity):
         self.min_value = self.max_value = None
 
     @property
+    def _has_period(self) -> bool:
+        """Return True if sensor has any period setting."""
+        return \
+            self._start_template is not None \
+            or self._end_template is not None \
+            or self._duration is not None
+
+    @property
     def should_poll(self):
         """Return the polling state."""
         return self._has_period
@@ -174,6 +183,7 @@ class AverageSensor(Entity):
     async def async_added_to_hass(self):
         """Register callbacks."""
 
+        # pylint: disable=unused-argument
         @callback
         def sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
@@ -182,6 +192,7 @@ class AverageSensor(Entity):
             if last_state != self._state:
                 self.async_schedule_update_ha_state(True)
 
+        # pylint: disable=unused-argument
         @callback
         def sensor_startup(event):
             """Update template on startup."""
@@ -196,13 +207,15 @@ class AverageSensor(Entity):
                                          sensor_startup)
 
     @staticmethod
-    def _has_state(state):
+    def _has_state(state) -> bool:
+        """Return True if state has any value."""
         return \
             state is not None \
             and state not in [STATE_UNKNOWN, STATE_UNAVAILABLE]
 
     @staticmethod
     def _is_temperature(entity) -> bool:
+        """Return True if entity are temperature sensor."""
         entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
         return \
             entity_unit in (TEMP_CELSIUS, TEMP_FAHRENHEIT) \
@@ -238,6 +251,8 @@ class AverageSensor(Entity):
         return temperature
 
     def _get_entity_state(self, entity):
+        """Return current state of given entity
+        and count some sensor attributes."""
         state = self._get_temperature(entity) if self._temperature_mode \
             else entity.state
         if not self._has_state(state):
@@ -260,6 +275,7 @@ class AverageSensor(Entity):
 
     @Throttle(UPDATE_MIN_TIME)
     def update(self):
+        """Update the sensor state if it needed."""
         if self._has_period:
             self._update_state()
 
@@ -273,13 +289,6 @@ class AverageSensor(Entity):
             return
         _LOGGER.error("Error parsing template for field %s", field)
         _LOGGER.error(ex)
-
-    @property
-    def _has_period(self):
-        return \
-            self._start_template is not None \
-            or self._end_template is not None \
-            or self._duration is not None
 
     def _update_period(self):
         """Parse the templates and calculate a datetime tuples."""
