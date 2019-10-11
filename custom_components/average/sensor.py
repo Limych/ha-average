@@ -36,7 +36,7 @@ from homeassistant.util.temperature import convert as convert_temperature
 _LOGGER = logging.getLogger(__name__)
 
 # Base component constants
-VERSION = '1.4.0'
+VERSION = '1.4.1'
 ISSUE_URL = "https://github.com/Limych/ha-average/issues"
 
 CONF_START = 'start'
@@ -295,8 +295,8 @@ class AverageSensor(Entity):
 
     def _update_period(self):
         """Parse the templates and calculate a datetime tuples."""
-        start = None
-        end = now = dt_util.now()
+        start = end = None
+        now = dt_util.now()
 
         # Parse start
         _LOGGER.debug('Process start template: %s', self._start_template)
@@ -348,11 +348,15 @@ class AverageSensor(Entity):
         _LOGGER.debug('Process duration: %s', self._duration)
         if self._duration is not None:
             if start is None:
+                if end is None:
+                    end = now
                 start = end - self._duration
             else:
                 end = start + self._duration
 
         _LOGGER.debug('Start: %s, End: %s', start, end)
+        if start is None or end is None:
+            return
 
         if start > now:
             # History hasn't been written yet for this period
