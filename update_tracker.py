@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+"""Tracker updater for custom_updater."""
+
 #  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
-
+import copy
 import json
 import logging
 import os
@@ -14,6 +17,9 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 # logging.basicConfig(level=logging.DEBUG)
 
 _LOGGER = logging.getLogger(__name__)
+
+TRACKER_FPATH = 'custom_components.json' if os.path.isfile('custom_components.json') \
+    else 'tracker.json'
 
 
 def fallback_version(localpath):
@@ -32,7 +38,7 @@ def fallback_version(localpath):
 
 def get_component_version(localpath, name):
     """Return the local version if any."""
-    _LOGGER.debug('Started for ' + localpath)
+    _LOGGER.debug('Started for %s', localpath)
     if '.' in name:
         name = "{}.{}".format(name.split('.')[1], name.split('.')[0])
     return_value = ''
@@ -57,23 +63,33 @@ def get_component_version(localpath, name):
     return return_value
 
 
-with open('tracker.json', 'r') as tracker_file:
-    tracker = json.load(tracker_file)
-for package in tracker:
-    _LOGGER.info('Updating version for %s', package)
-    local_path = tracker[package]['local_location'].lstrip('/\\')
-    tracker[package]['version'] = \
-        get_component_version(local_path, package)
-    base_path = os.path.split(local_path)[0]
-    base_url = os.path.split(tracker[package]['remote_location'])[0]
-    resources = []
-    for current_path, dirs, files in os.walk(base_path):
-        if current_path.find('__pycache__') != -1:
-            continue
-        for file in files:
-            file = os.path.join(current_path, file).replace('\\', '/')
-            if file != local_path:
-                resources.append(base_url + file[len(base_path):])
-    tracker[package]['resources'] = resources
-with open('tracker.json', 'w') as tracker_file:
-    json.dump(tracker, tracker_file, indent=4)
+def update_tracker(tracker_fpath):
+    """Run tracker file update."""
+    with open(tracker_fpath, 'r') as tracker_file:
+        tracker = json.load(tracker_file)
+    old_tr = copy.deepcopy(tracker)
+    for package in tracker:
+        _LOGGER.info('Updating version for %s', package)
+        local_path = tracker[package]['local_location'].lstrip('/\\')
+        tracker[package]['version'] = \
+            get_component_version(local_path, package)
+        base_path = os.path.split(local_path)[0]
+        base_url = os.path.split(tracker[package]['remote_location'])[0]
+        resources = []
+        for current_path, _, files in os.walk(base_path):
+            if current_path.find('__pycache__') != -1:
+                continue
+            for file in files:
+                file = os.path.join(current_path, file).replace('\\', '/')
+                if file != local_path:
+                    resources.append(base_url + file[len(base_path):])
+        resources.sort()
+        tracker[package]['resources'] = resources
+
+    if tracker != old_tr:
+        with open(tracker_fpath, 'w') as tracker_file:
+            json.dump(tracker, tracker_file, indent=4)
+
+
+update_tracker(TRACKER_FPATH)
+# subprocess.run(["git", "add", TRACKER_FPATH])

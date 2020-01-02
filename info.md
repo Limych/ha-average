@@ -11,7 +11,7 @@
 
 - [Documentation](https://github.com/Limych/ha-average)
 - [Configuration](https://github.com/Limych/ha-average#configuration-variables)
-- [Report a Bug](https://github.com/Limych/ha-average/issues/new?template=issue.md)
+- [Report a Bug](https://github.com/Limych/ha-average/issues/new?template=bug_report.md)
 - [Suggest an idea](https://github.com/Limych/ha-average/issues/new?template=feature_request.md)
 
 <p align="center">* * *</p>
