@@ -1,6 +1,9 @@
 ---
-name: Issue
+name: Bug report
 about: Create a report to help us improve
+title: ''
+labels: 'bug'
+assignees: ''
 
 ---
 
@@ -14,29 +17,47 @@ Issues not containing the minimum requirements will be closed:
 
 -->
 
-## Version of the custom_component
+**Version of the custom_component**
 <!-- If you are not using the newest version, download and try that before opening an issue
 If you are unsure about the version check the __init__.py file.
 -->
 
-## Configuration
-
+**Configuration**
 ```yaml
 
 Add your configs here.
 
 ```
 
-## Describe the bug
+**Describe the bug**
+
 A clear and concise description of what the bug is.
 
+**To Reproduce**
 
-## Debug log
+If applicable, describe the steps to reproduce the behavior:
+1. Go to '...'
+2. Click on '....'
+3. Scroll down to '....'
+4. See error
 
+**Expected behavior**
+
+A clear and concise description of what you expected to happen.
+
+**Screenshots**
+
+If applicable, add screenshots to help explain your problem.
+
+
+**Debug log**
 <!-- To enable debug logs check this https://www.home-assistant.io/components/logger/ -->
-
 ```text
 
 Add your logs here.
 
 ```
+
+**Additional context**
+
+Add any other context about the problem here.
