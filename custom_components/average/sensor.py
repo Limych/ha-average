@@ -235,10 +235,10 @@ class AverageSensor(Entity):
                     UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
                 )
 
-            temperature = float(temperature)
+            temperature = float(temperature) if temperature != "None" else STATE_UNKNOWN
             ha_unit = self._hass.config.units.temperature_unit
 
-            if entity_unit != ha_unit:
+            if entity_unit != ha_unit and temperature != STATE_UNKNOWN:
                 temperature = convert_temperature(temperature, entity_unit, ha_unit)
 
         return temperature
