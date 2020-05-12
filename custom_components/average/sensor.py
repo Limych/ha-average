@@ -18,7 +18,6 @@ import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from homeassistant.components import history
 from homeassistant.components.climate import ClimateDevice
-from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.water_heater import WaterHeaterDevice
 from homeassistant.components.weather import WeatherEntity
 from homeassistant.const import (
@@ -108,7 +107,7 @@ async def async_setup_platform(hass, config, async_add_entities,
     start = config.get(CONF_START)
     end = config.get(CONF_END)
     duration = config.get(CONF_DURATION)
-    entities = expand_entity_ids(hass, config.get(CONF_ENTITIES))
+    entities = config.get(CONF_ENTITIES)
     precision = config.get(CONF_PRECISION)
 
     for template in [start, end]:
