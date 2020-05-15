@@ -71,7 +71,7 @@ I also suggest you [visit the support topic][forum-support] on the community for
         entities:
           - sensor.gismeteo_temperature
     ```
-    
+
     or you can combine this variants for some reason.
 
 <p align="center">* * *</p>
@@ -80,16 +80,16 @@ I put a lot of work into making this repo and component available and updated to
 <a href="https://www.patreon.com/join/limych?" target="_blank"><img src="http://khrolenok.ru/support_patreon.png" alt="Patreon" width="250" height="48"></a>
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="http://khrolenok.ru/support_paypal.png" alt="PayPal" width="250" height="48"></a>
 <br>or&nbsp;support via Bitcoin or Etherium:<br>
-<a href="bitcoin:16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts" target="_blank"><img src="http://khrolenok.ru/support_bitcoin.png" alt="Bitcoin" width="150"><br>
+<a href="https://sochain.com/a/mjz640g" target="_blank"><img src="http://khrolenok.ru/support_bitcoin.png" alt="Bitcoin" width="150"><br>
 16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts</a>
 </p>
 
 ### Configuration Variables
-  
+
 **entities**:\
   _(list) (Required)_\
   A list of temperature sensor entity IDs.
-  
+
 > **_Note_**:\
 > You can use weather provider, climate and water heater entities as a data source. For that entities sensor use values of current temperature.
 
@@ -105,11 +105,11 @@ I put a lot of work into making this repo and component available and updated to
 **end**:\
   _(template) (Optional)_\
   When to stop the measure (timestamp or datetime).
-  
+
 **duration**:\
   _(time) (Optional)_\
   Duration of the measure.
-  
+
 **precision**:\
   _(number) (Optional)_\
   The number of decimals to use when rounding the sensor state.\
@@ -129,22 +129,22 @@ As `start` and `end` variables can be either datetimes or timestamps, you can co
 
 The duration variable is used when the time period is fixed.  Different syntaxes for the duration are supported, as shown below.
 
-  ```yaml  
+  ```yaml
   # 15 seconds
   duration: 15
   ```
 
-  ```yaml  
+  ```yaml
   # 6 hours
   duration: 06:00
   ```
 
-  ```yaml  
+  ```yaml
   # 1 minute, 30 seconds
   duration: 00:01:30
   ```
 
-  ```yaml  
+  ```yaml
   # 2 hours and 30 minutes
   duration:
     # supports seconds, minutes, hours, days
@@ -227,6 +227,29 @@ custom_updater:
   component_urls:
     - https://raw.githubusercontent.com/Limych/ha-average/master/tracker.json
 ```
+
+## Contributions are welcome!
+
+This is an active open-source project. We are always open to people who want to
+use the code or contribute to it.
+
+We have set up a separate document containing our
+[contribution guidelines](CONTRIBUTING.md).
+
+Thank you for being involved! :heart_eyes:
+
+## Authors & contributors
+
+The original setup of this component is by [Andrey "Limych" Khrolenok][limych].
+
+For a full list of all authors and contributors,
+check [the contributor's page][contributors].
+
+## License
+
+creative commons Attribution-NonCommercial-ShareAlike 4.0 International License
+
+See separate [license file](LICENSE.md) for full text.
 
 [forum-support]: https://community.home-assistant.io/t/average-sensor/111674
 [hacs]: https://github.com/custom-components/hacs
