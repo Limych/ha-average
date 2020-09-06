@@ -158,7 +158,7 @@ class AverageSensor(Entity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.available_sources > 0
+        return self.available_sources > 0 and self._has_state(self._state)
 
     @property
     def state(self) -> Union[None, str, int, float]:
