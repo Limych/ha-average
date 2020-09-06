@@ -213,7 +213,11 @@ class AverageSensor(Entity):
     @staticmethod
     def _has_state(state) -> bool:
         """Return True if state has any value."""
-        return state is not None and state not in [STATE_UNKNOWN, STATE_UNAVAILABLE]
+        return state is not None and state not in [
+            STATE_UNKNOWN,
+            STATE_UNAVAILABLE,
+            "None",
+        ]
 
     @staticmethod
     def _is_temperature(entity) -> bool:
@@ -223,7 +227,7 @@ class AverageSensor(Entity):
             entity, (WeatherEntity, ClimateDevice, WaterHeaterDevice)
         )
 
-    def _get_temperature(self, entity) -> float:
+    def _get_temperature(self, entity) -> Optional[float]:
         """Get temperature value from entity."""
         if isinstance(entity, WeatherEntity):
             temperature = entity.temperature
@@ -235,17 +239,19 @@ class AverageSensor(Entity):
             temperature = entity.state
             entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
 
-        if self._has_state(temperature):
-            if entity_unit not in TEMPERATURE_UNITS:
-                raise ValueError(
-                    UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
-                )
+        if not self._has_state(temperature):
+            return None
 
-            temperature = float(temperature)
-            ha_unit = self._hass.config.units.temperature_unit
+        if entity_unit not in TEMPERATURE_UNITS:
+            raise ValueError(
+                UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
+            )
 
-            if entity_unit != ha_unit:
-                temperature = convert_temperature(temperature, entity_unit, ha_unit)
+        temperature = float(temperature)
+        ha_unit = self._hass.config.units.temperature_unit
+
+        if entity_unit != ha_unit:
+            temperature = convert_temperature(temperature, entity_unit, ha_unit)
 
         return temperature
 
