@@ -215,18 +215,7 @@ end: '{{ now() }}'
 
 ## Track updates
 
-You can automatically track new versions of this component and update it by [custom-updater](https://github.com/custom-components/custom_updater) (deprecated) or [HACS][hacs].
-
-For custom-updater to initiate tracking add this lines to you `configuration.yaml` file:
-
-```yaml
-# Example configuration.yaml entry
-custom_updater:
-  track:
-    - components
-  component_urls:
-    - https://raw.githubusercontent.com/Limych/ha-average/master/tracker.json
-```
+You can automatically track new versions of this component and update it by [HACS][hacs].
 
 ## Contributions are welcome!
 

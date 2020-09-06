@@ -47,10 +47,6 @@ repos:
         types: [python]
         require_serial: true
         files: ^custom_components/.+\.py$
-      - id: update-tracker
-        name: "Update Tracker"
-        entry: script/update_tracker.py
-        language: system
       - id: pylint
         name: pylint
         entry: python3 -m pylint.__main__
