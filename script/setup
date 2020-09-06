@@ -12,6 +12,8 @@ script/bootstrap
 pre-commit install
 pip3 install -r requirements-dev.txt
 
+touch custom_components/__init__.py
+
 CONFIG=/run/user/$(id -u)/gvfs/smb-share:server=hassio,share=config/
 if [ -d "$CONFIG" ] && [ ! -e dev-config ]; then
     ln -s "$CONFIG" dev-config
