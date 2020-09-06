@@ -7,7 +7,7 @@ https://github.com/Limych/ha-average/
 from datetime import timedelta
 
 # Base component constants
-VERSION = "1.4.3"
+VERSION = "1.4.4"
 ISSUE_URL = "https://github.com/Limych/ha-average/issues"
 
 CONF_START = "start"

@@ -34,8 +34,7 @@
 
 - [ ] Dependency upgrade
 - [ ] Bugfix (non-breaking change which fixes an issue)
-- [ ] New integration (thank you!)
-- [ ] New feature (which adds functionality to an existing integration)
+- [ ] New feature (which adds functionality to an this integration)
 - [ ] Breaking change (fix/feature causing existing functionality to break)
 - [ ] Code quality improvements to existing code or addition of tests
 
@@ -71,7 +70,7 @@
 
 - [ ] The code change is tested and works locally.
 - [ ] There is no commented out code in this PR.
-- [ ] The code has been formatted using Black (`black --fast homeassistant tests`)
+- [ ] The code has been formatted using Black (`black --fast custom_components`)
 
 If user exposed functionality or configuration variables are added/changed:
 

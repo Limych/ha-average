@@ -1,2 +1,9 @@
+-r requirements.txt
+black
+flake8
+mypy
 pre-commit
 pylint
+pylint-strict-informational
+pyupgrade
+yamllint

@@ -12,6 +12,7 @@ import datetime
 import logging
 import math
 import numbers
+from typing import Union, Optional, Dict, Any
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
@@ -145,32 +146,37 @@ class AverageSensor(Entity):
         )
 
     @property
-    def should_poll(self):
+    def should_poll(self) -> bool:
         """Return the polling state."""
         return self._has_period
 
     @property
-    def name(self):
+    def name(self) -> Optional[str]:
         """Return the name of the sensor."""
         return self._name
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
-        return self._state
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return self.available_sources > 0
 
     @property
-    def unit_of_measurement(self):
+    def state(self) -> Union[None, str, int, float]:
+        """Return the state of the sensor."""
+        return self._state if self.available else STATE_UNAVAILABLE
+
+    @property
+    def unit_of_measurement(self) -> Optional[str]:
         """Return the unit of measurement of this entity."""
         return self._unit_of_measurement
 
     @property
-    def icon(self):
+    def icon(self) -> Optional[str]:
         """Return the icon to use in the frontend."""
         return self._icon
 
     @property
-    def device_state_attributes(self):
+    def device_state_attributes(self) -> Optional[Dict[str, Any]]:
         """Return the state attributes."""
         state_attr = {
             attr: getattr(self, attr)
@@ -179,7 +185,7 @@ class AverageSensor(Entity):
         }
         return state_attr
 
-    async def async_added_to_hass(self):
+    async def async_added_to_hass(self) -> None:
         """Register callbacks."""
         # pylint: disable=unused-argument
         @callback
@@ -207,7 +213,11 @@ class AverageSensor(Entity):
     @staticmethod
     def _has_state(state) -> bool:
         """Return True if state has any value."""
-        return state is not None and state not in [STATE_UNKNOWN, STATE_UNAVAILABLE]
+        return state is not None and state not in [
+            STATE_UNKNOWN,
+            STATE_UNAVAILABLE,
+            "None",
+        ]
 
     @staticmethod
     def _is_temperature(entity) -> bool:
@@ -217,7 +227,7 @@ class AverageSensor(Entity):
             entity, (WeatherEntity, ClimateDevice, WaterHeaterDevice)
         )
 
-    def _get_temperature(self, entity) -> float:
+    def _get_temperature(self, entity) -> Optional[float]:
         """Get temperature value from entity."""
         if isinstance(entity, WeatherEntity):
             temperature = entity.temperature
@@ -229,17 +239,19 @@ class AverageSensor(Entity):
             temperature = entity.state
             entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
 
-        if self._has_state(temperature):
-            if entity_unit not in TEMPERATURE_UNITS:
-                raise ValueError(
-                    UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
-                )
+        if not self._has_state(temperature):
+            return None
 
-            temperature = float(temperature)
-            ha_unit = self._hass.config.units.temperature_unit
+        if entity_unit not in TEMPERATURE_UNITS:
+            raise ValueError(
+                UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
+            )
 
-            if entity_unit != ha_unit:
-                temperature = convert_temperature(temperature, entity_unit, ha_unit)
+        temperature = float(temperature)
+        ha_unit = self._hass.config.units.temperature_unit
+
+        if entity_unit != ha_unit:
+            temperature = convert_temperature(temperature, entity_unit, ha_unit)
 
         return temperature
 
