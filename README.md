@@ -115,6 +115,38 @@ I put a lot of work into making this repo and component available and updated to
   The number of decimals to use when rounding the sensor state.\
   _Default value: 2_
 
+**process_undef_as**:\
+  _(number) (Optional)_\
+  Process undefined values (unavailable, sensor undefined, etc.) as specified value.\
+  \
+  By default, undefined values are not included in the average calculation. Specifying this parameter allows you to calculate the average value taking into account the time intervals of the undefined sensor values.
+
+> **_Note_**:\
+> This parameter does not affect the calculation of the count, min and max attributes.
+
+### Average Sensor Attributes
+
+**start**:\
+  Timestamp of the beginning of the calculation period (if period was set).
+
+**end**:\
+  Timestamp of the end of the calculation period (if period was set).
+
+**count_sources**:\
+  Total count of set source sensors.
+
+**available_sources**:\
+  Count of available source sensors (for current calculation period).
+
+**count**:\
+  Total count of processed values of source sensors.
+
+**min**:\
+  Minimum value of processed values of source sensors.
+
+**max**:\
+  Maximum value of processed values of source sensors.
+
 ## Time periods
 
 The `average` integration will execute a measure within a precise time period. You should provide none, only `duration` (when period ends at now) or exactly 2 of the following:

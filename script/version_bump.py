@@ -36,28 +36,28 @@ def fallback_version(localpath):
     return return_value
 
 
-def get_component_version(localpath, package):
+def get_package_version(localpath, package):
     """Return the local version if any."""
-    if "." in package:
-        package = "{}.{}".format(package.split(".")[1], package.split(".")[0])
-    package = f"custom_components.{package}"
     _LOGGER.debug("Started for %s (%s)", localpath, package)
     return_value = ""
     if os.path.isfile(localpath):
         try:
             name = "__version__"
-            return_value = getattr(__import__(package, fromlist=[name]), name)
+            return_value = getattr(__import__(f"..{package}", fromlist=[name]), name)
         except Exception as err:  # pylint: disable=broad-except
             _LOGGER.debug(str(err))
         if return_value == "":
             try:
                 name = "VERSION"
-                return_value = getattr(__import__(package, fromlist=[name]), name)
+                return_value = getattr(
+                    __import__(f"..{package}", fromlist=[name]), name
+                )
             except Exception as err:  # pylint: disable=broad-except
                 _LOGGER.debug(str(err))
     if return_value == "":
         return_value = fallback_version(localpath)
     _LOGGER.debug(str(return_value))
+    assert return_value, "Version not found!"
     return return_value
 
 
@@ -152,17 +152,27 @@ def bump_version(version, bump_type):
     return Version(str(temp))
 
 
-def write_version(component_path, version):
+def write_version(package_path, version, dry_run=False):
     """Update custom component constant file with new version."""
-    component_path += "/const.py"
-    with open(component_path) as fil:
-        content = fil.read()
+    for suffix in ("__init__", "const"):
+        file_path = f"{package_path}/{suffix}.py"
+        _LOGGER.debug("Try to change %s", file_path)
 
-    content = re.sub("VERSION = .*\n", f"VERSION = '{version}'\n", content)
-    content = re.sub("__version__ = .*\n", f"__version__ = '{version}'\n", content)
+        with open(file_path) as fil:
+            cur_content = content = fil.read()
 
-    with open(component_path, "wt") as fil:
-        fil.write(content)
+        content = re.sub(r"\nVERSION = .*\n", f"\nVERSION = '{version}'\n", content)
+        content = re.sub(
+            r"\n__version__ = .*\n", f"\n__version__ = '{version}'\n", content
+        )
+
+        if cur_content != content:
+            _LOGGER.debug("%s changed", file_path)
+            if dry_run:
+                print("%s could was changed." % os.path.basename(file_path))
+            else:
+                with open(file_path, "wt") as fil:
+                    fil.write(content)
 
 
 def main():
@@ -178,34 +188,53 @@ def main():
     parser.add_argument(
         "--commit", action="store_true", help="Create a version bump commit."
     )
+    parser.add_argument(
+        "package_dir", nargs="?", default=None, help="The path to package."
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Preview version bumping without running it.",
+    )
     arguments = parser.parse_args()
+
+    if arguments.dry_run:
+        print("!!! Dry Run !!! No Files Was Changed")
 
     # pylint: disable=subprocess-run-check
     if arguments.commit and subprocess.run(["git", "diff", "--quiet"]).returncode == 1:
         print("Cannot use --commit because git is dirty.")
         return
 
-    component = None
-    for current_path, dirs, _ in os.walk(f"{ROOT}/custom_components"):
-        if current_path.find("__pycache__") != -1:
-            continue
-        for dname in dirs:
-            if dname != "__pycache__":
-                component = dname
+    if arguments.package_dir is not None:
+        package_dir = os.path.abspath(arguments.package_dir)
+        package = package_dir.split("/")[-1]
+    else:
+        package = None
+        for current_path, dirs, _ in os.walk(f"{ROOT}/custom_components"):
+            if current_path.find("__pycache__") != -1:
+                continue
+            for dname in dirs:
+                if dname != "__pycache__":
+                    package = dname
 
-    assert component, "Component not found!"
-    component_path = f"{ROOT}/custom_components/{component}"
+        assert package, "Component not found!"
+        package_dir = f"{ROOT}/custom_components/{package}"
+        package = f"custom_components.{package}"
 
-    current = Version(get_component_version(f"{component_path}/__init__.py", component))
+    current = Version(get_package_version(f"{package_dir}/__init__.py", package))
     bumped = bump_version(current, arguments.type)
     assert bumped > current, "BUG! New version is not newer than old version"
 
-    write_version(component_path, bumped)
+    if arguments.dry_run:
+        print(f"Current version: {current}\n" f"    New version: {bumped}")
 
-    if not arguments.commit:
+    write_version(package_dir, bumped, arguments.dry_run)
+
+    if not arguments.commit or arguments.dry_run:
         return
 
-    subprocess.run(["git", "commit", "-nam", f"Bumped version to {bumped}"])
+    subprocess.run(["git", "commit", "-nam", f"Bump version to {bumped}"])
 
 
 # pylint: disable=import-outside-toplevel
