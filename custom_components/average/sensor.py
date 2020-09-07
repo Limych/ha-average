@@ -18,6 +18,7 @@ import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from homeassistant.components import history
 from homeassistant.components.climate import ClimateDevice
+from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.water_heater import WaterHeaterDevice
 from homeassistant.components.weather import WeatherEntity
 from homeassistant.const import (
@@ -138,14 +139,15 @@ class AverageSensor(Entity):
         self._end_template = end
         self._duration = duration
         self._period = self.start = self.end = None
-        self._entity_ids = entity_ids
         self._precision = precision
         self._undef = undef
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
         self._temperature_mode = None
-        self.count_sources = len(self._entity_ids)
+
+        self.sources = expand_entity_ids(hass, entity_ids)
+        self.count_sources = len(self.sources)
         self.available_sources = 0
         self.count = 0
         self.min_value = self.max_value = None
@@ -218,7 +220,7 @@ class AverageSensor(Entity):
                 self.async_schedule_update_ha_state(True)
             else:
                 async_track_state_change(
-                    self._hass, self._entity_ids, sensor_state_listener
+                    self._hass, self.sources, sensor_state_listener
                 )
                 sensor_state_listener(None, None, None)
 
@@ -419,7 +421,7 @@ class AverageSensor(Entity):
         self.min_value = self.max_value = None
 
         # pylint: disable=too-many-nested-blocks
-        for entity_id in self._entity_ids:
+        for entity_id in self.sources:
             _LOGGER.debug('Processing entity "%s"', entity_id)
 
             entity = self._hass.states.get(entity_id)

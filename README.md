@@ -93,6 +93,9 @@ I put a lot of work into making this repo and component available and updated to
 > **_Note_**:\
 > You can use weather provider, climate and water heater entities as a data source. For that entities sensor use values of current temperature.
 
+> **_Note_**:\
+> You can use groups of entities as a data source. These groups will be automatically expanded to individual entities.
+
 **name**:\
   _(string) (Optional)_\
   Name to use in the frontend.\
@@ -132,8 +135,11 @@ I put a lot of work into making this repo and component available and updated to
 **end**:\
   Timestamp of the end of the calculation period (if period was set).
 
+**sources**:\
+  Total expanded list of source sensors.
+
 **count_sources**:\
-  Total count of set source sensors.
+  Total count of source sensors.
 
 **available_sources**:\
   Count of available source sensors (for current calculation period).
