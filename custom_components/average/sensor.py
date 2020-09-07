@@ -463,7 +463,7 @@ class AverageSensor(Entity):
                             current_state = self._get_entity_state(item)
                             current_time = item.last_changed.timestamp()
 
-                            if last_state:
+                            if last_state is not None:
                                 last_elapsed = current_time - last_time
                                 value += last_state * last_elapsed
                                 elapsed += last_elapsed
@@ -472,7 +472,7 @@ class AverageSensor(Entity):
                             last_time = current_time
 
                     # Count time elapsed between last history state and now
-                    if last_state:
+                    if last_state is not None:
                         last_elapsed = end_ts - last_time
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
