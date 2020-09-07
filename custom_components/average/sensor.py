@@ -41,6 +41,10 @@ from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
 
+from . import (
+    VERSION,
+    ISSUE_URL,
+)
 from .const import (
     CONF_PERIOD_KEYS,
     CONF_DURATION,
@@ -48,8 +52,6 @@ from .const import (
     CONF_START,
     CONF_END,
     CONF_PRECISION,
-    VERSION,
-    ISSUE_URL,
     ATTR_TO_PROPERTY,
     UPDATE_MIN_TIME,
     CONF_PROCESS_UNDEF_AS,
