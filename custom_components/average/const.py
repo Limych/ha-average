@@ -15,6 +15,7 @@ CONF_END = "end"
 CONF_DURATION = "duration"
 CONF_PRECISION = "precision"
 CONF_PERIOD_KEYS = [CONF_START, CONF_END, CONF_DURATION]
+CONF_PROCESS_UNDEF_AS = "process_undef_as"
 
 DEFAULT_NAME = "Average"
 

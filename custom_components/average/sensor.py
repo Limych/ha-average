@@ -52,6 +52,7 @@ from .const import (
     ISSUE_URL,
     ATTR_TO_PROPERTY,
     UPDATE_MIN_TIME,
+    CONF_PROCESS_UNDEF_AS,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -79,6 +80,7 @@ PLATFORM_SCHEMA = vol.All(
             vol.Optional(CONF_END): cv.template,
             vol.Optional(CONF_DURATION): cv.time_period,
             vol.Optional(CONF_PRECISION, default=2): int,
+            vol.Optional(CONF_PROCESS_UNDEF_AS): float,
         }
     ),
     check_period_keys,
@@ -100,13 +102,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     duration = config.get(CONF_DURATION)
     entities = config.get(CONF_ENTITIES)
     precision = config.get(CONF_PRECISION)
+    undef = config.get(CONF_PROCESS_UNDEF_AS)
 
     for template in [start, end]:
         if template is not None:
             template.hass = hass
 
     async_add_entities(
-        [AverageSensor(hass, name, start, end, duration, entities, precision)]
+        [AverageSensor(hass, name, start, end, duration, entities, precision, undef)]
     )
 
 
@@ -116,7 +119,15 @@ class AverageSensor(Entity):
 
     # pylint: disable=r0913
     def __init__(
-        self, hass, name: str, start, end, duration, entity_ids: list, precision: int,
+        self,
+        hass,
+        name: str,
+        start,
+        end,
+        duration,
+        entity_ids: list,
+        precision: int,
+        undef,
     ):
         """Initialize the sensor."""
         self._hass = hass
@@ -127,6 +138,7 @@ class AverageSensor(Entity):
         self._period = self.start = self.end = None
         self._entity_ids = entity_ids
         self._precision = precision
+        self._undef = undef
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
@@ -261,7 +273,7 @@ class AverageSensor(Entity):
             self._get_temperature(entity) if self._temperature_mode else entity.state
         )
         if not self._has_state(state):
-            return None
+            return self._undef
 
         try:
             state = float(state)
