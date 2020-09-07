@@ -184,6 +184,16 @@ The duration variable is used when the time period is fixed.  Different syntaxes
     minutes: 30
   ```
 
+<p align="center">* * *</p>
+I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
+<p align="center"><br>
+<a href="https://www.patreon.com/join/limych?" target="_blank"><img src="http://khrolenok.ru/support_patreon.png" alt="Patreon" width="250" height="48"></a>
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=UAGFL5L6M8RN2&item_name=[average]+Donation+for+a+big+barrel+of+coffee+:)&currency_code=EUR&source=url" target="_blank"><img src="http://khrolenok.ru/support_paypal.png" alt="PayPal" width="250" height="48"></a>
+<br>or&nbsp;support via Bitcoin or Etherium:<br>
+<a href="https://sochain.com/a/mjz640g" target="_blank"><img src="http://khrolenok.ru/support_bitcoin.png" alt="Bitcoin" width="150"><br>
+16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts</a>
+</p>
+
 ### Examples
 
 Here are some examples of periods you could work with, and what to write in your `configuration.yaml`:
@@ -274,3 +284,5 @@ See separate [license file](LICENSE.md) for full text.
 
 [forum-support]: https://community.home-assistant.io/t/average-sensor/111674
 [hacs]: https://github.com/custom-components/hacs
+[limych]: https://github.com/Limych
+[contributors]: https://github.com/Limych/ha-average/graphs/contributors
