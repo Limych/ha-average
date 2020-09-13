@@ -11,5 +11,5 @@ https://github.com/Limych/ha-average/
 """
 
 # Base component constants
-VERSION = '1.5.0'
+VERSION = '1.5.1'
 ISSUE_URL = "https://github.com/Limych/ha-average/issues"

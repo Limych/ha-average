@@ -17,6 +17,7 @@ DEFAULT_NAME = "Average"
 
 ATTR_START = "start"
 ATTR_END = "end"
+ATTR_SOURCES = "sources"
 ATTR_COUNT_SOURCES = "count_sources"
 ATTR_AVAILABLE_SOURCES = "available_sources"
 ATTR_COUNT = "count"
@@ -26,6 +27,7 @@ ATTR_MAX_VALUE = "max_value"
 ATTR_TO_PROPERTY = [
     ATTR_START,
     ATTR_END,
+    ATTR_SOURCES,
     ATTR_COUNT_SOURCES,
     ATTR_AVAILABLE_SOURCES,
     ATTR_COUNT,

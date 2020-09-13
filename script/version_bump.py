@@ -18,6 +18,8 @@ logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 _LOGGER = logging.getLogger(__name__)
 
+VERSION = "1.1.2"
+
 ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
 
 sys.path.append(ROOT)
@@ -25,22 +27,23 @@ sys.path.append(ROOT)
 
 def fallback_version(localpath):
     """Return version from regex match."""
-    return_value = ""
-    if os.path.isfile(localpath):
-        with open(localpath) as local:
-            ret = re.compile(r"^\b(VERSION|__version__)\s*=\s*['\"](.*)['\"]")
-            for line in local.readlines():
-                matcher = ret.match(line)
-                if matcher:
-                    return_value = str(matcher.group(2))
-    return return_value
+    for fname in ("__init__", "const"):
+        fpath = f"{localpath}/{fname}.py"
+        if os.path.isfile(fpath):
+            with open(fpath) as local:
+                ret = re.compile(r"^\b(VERSION|__version__)\s*=\s*['\"](.*)['\"]")
+                for line in local.readlines():
+                    matcher = ret.match(line)
+                    if matcher:
+                        return str(matcher.group(2))
+    return ""
 
 
 def get_package_version(localpath, package):
     """Return the local version if any."""
     _LOGGER.debug("Started for %s (%s)", localpath, package)
     return_value = ""
-    if os.path.isfile(localpath):
+    if os.path.isfile(f"{localpath}/__init__.py"):
         try:
             name = "__version__"
             return_value = getattr(__import__(f"..{package}", fromlist=[name]), name)
@@ -178,7 +181,7 @@ def write_version(package_path, version, dry_run=False):
 def main():
     """Execute script."""
     parser = argparse.ArgumentParser(
-        description="Bump version of Home Assistant custom component"
+        description=f"Bump version of Python package. Version {VERSION}"
     )
     parser.add_argument(
         "type",
@@ -222,7 +225,7 @@ def main():
         package_dir = f"{ROOT}/custom_components/{package}"
         package = f"custom_components.{package}"
 
-    current = Version(get_package_version(f"{package_dir}/__init__.py", package))
+    current = Version(get_package_version(package_dir, package))
     bumped = bump_version(current, arguments.type)
     assert bumped > current, "BUG! New version is not newer than old version"
 
