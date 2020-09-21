@@ -14,8 +14,6 @@ from packaging.version import Version
 # Avoids spurious error messages if no logger is configured by the user
 logging.getLogger(__name__).addHandler(logging.NullHandler())
 
-# logging.basicConfig(level=logging.DEBUG)
-
 _LOGGER = logging.getLogger(__name__)
 
 VERSION = "1.2.0"
@@ -215,6 +213,9 @@ def main():
         description=f"Bump version of Python package. Version {VERSION}"
     )
     parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Enable debugging output.",
+    )
+    parser.add_argument(
         "type",
         help="The type of the bump the version to.",
         choices=["beta", "dev", "patch", "minor", "nightly"],
@@ -236,6 +237,9 @@ def main():
         help=f"The path to package. Default: {package_path}",
     )
     arguments = parser.parse_args()
+
+    if arguments.verbose:
+        _LOGGER.setLevel(logging.DEBUG)
 
     if arguments.dry_run:
         print("!!! Dry Run !!! No Files Was Changed")
