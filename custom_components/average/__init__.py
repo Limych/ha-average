@@ -9,7 +9,3 @@ The Average Temperature Sensor.
 For more details about this sensor, please refer to the documentation at
 https://github.com/Limych/ha-average/
 """
-
-# Base component constants
-VERSION = '1.6.0'
-ISSUE_URL = "https://github.com/Limych/ha-average/issues"
