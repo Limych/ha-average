@@ -8,8 +8,7 @@ import subprocess
 from datetime import datetime
 from typing import List
 
-from git import Tag
-from github import Github, Repository
+from github import Github, Repository, Tag
 from packaging.version import Version
 
 # http://docs.python.org/2/howto/logging.html#library-config
@@ -20,7 +19,7 @@ logging.basicConfig(level=logging.CRITICAL)
 
 _LOGGER = logging.getLogger(__name__)
 
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 
 ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
 
@@ -47,14 +46,16 @@ def get_commits(repo: Repository, since: datetime, until: datetime):
     return reversed(list(commits)[:-1])
 
 
-def get_release_tags(repo: Repository) -> List[Tag]:
+def get_release_tags(repo: Repository) -> List[Tag.Tag]:
     """Get list of all release tags from repository."""
-    tags = list(repo.get_tags())
     reg = re.compile(
-        r"(v|^)?[0-9]+\.[0-9]+\.[0-9]+"
+        r"^v?[0-9]+\.[0-9]+\.[0-9]+"
         r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+)?$"
     )
-    return list(filter(lambda tag: re.match(reg, tag.name), tags))
+    tags = list(filter(lambda tag: re.match(reg, tag.name), list(repo.get_tags())))
+    tags.sort(key=lambda x: x.name.lstrip("v"), reverse=True)
+    _LOGGER.debug("Found tags: %s", tags)
+    return tags
 
 
 def get_period(repo: Repository, release: str = None) -> List[datetime]:
