@@ -1,4 +1,4 @@
-#  Copyright (c) 2019, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2020, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -42,11 +42,9 @@ from homeassistant.util import Throttle
 from homeassistant.util.temperature import convert as convert_temperature
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
 
-from . import (
+from .const import (
     VERSION,
     ISSUE_URL,
-)
-from .const import (
     CONF_PERIOD_KEYS,
     CONF_DURATION,
     DEFAULT_NAME,

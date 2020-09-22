@@ -6,6 +6,10 @@ https://github.com/Limych/ha-average/
 """
 from datetime import timedelta
 
+# Base component constants
+VERSION = "dev"
+ISSUE_URL = "https://github.com/Limych/ha-average/issues"
+
 CONF_START = "start"
 CONF_END = "end"
 CONF_DURATION = "duration"
