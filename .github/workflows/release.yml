@@ -43,7 +43,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.basedir }}/${{ env.package }}.zip
           asset_name: ${{ env.package }}.zip
-          tag: ${{ env.release_version }}
+          tag: v${{ env.release_version }}
           overwrite: true
 
   releasenotes:

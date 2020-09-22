@@ -191,6 +191,8 @@ def main():
             _LOGGER.debug(version)
             new_version = bump_version(version)
             _LOGGER.debug(new_version)
+            #pylint: disable=fixme
+            #todo Fix notes generation
             msg = BODY.format(
                 repo=arguments.repo,
                 version=version,
