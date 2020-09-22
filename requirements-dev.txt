@@ -3,6 +3,7 @@ black
 flake8
 mypy
 pre-commit
+PyGithub==1.53
 pylint
 pylint-strict-informational
 pyupgrade
