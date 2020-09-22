@@ -192,15 +192,10 @@ def main():
             _LOGGER.debug(version)
             new_version = bump_version(version)
             _LOGGER.debug(new_version)
-            msg = BODY.format(
-                repo=arguments.repo,
-                version=version,
-                changes=changes,
-            )
             print(
                 "Generated release notes for v{version}:\n{message}".format(
                     version=new_version,
-                    message=msg,
+                    message=changes,
                 )
             )
         else:
