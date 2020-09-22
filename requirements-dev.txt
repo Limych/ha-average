@@ -2,6 +2,7 @@
 black
 flake8
 mypy
+packaging~=20.4
 pre-commit
 PyGithub==1.53
 pylint

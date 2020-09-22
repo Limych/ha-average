@@ -63,4 +63,4 @@ jobs:
           python3 -m pip install setuptools wheel
           python3 -m pip install -r ./requirements-dev.txt
       - name: "Update release notes"
-        run: python3 ./script/generate_releasenotes.py --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --update-release `git describe --abbrev=0`
+        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --update-release `git describe --abbrev=0`
