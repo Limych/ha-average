@@ -43,7 +43,7 @@ jobs:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: ${{ env.basedir }}/${{ env.package }}.zip
           asset_name: ${{ env.package }}.zip
-          tag: v${{ env.release_version }}
+          tag: ${{ env.release_version }}
           overwrite: true
 
   releasenotes:
@@ -63,4 +63,4 @@ jobs:
           python3 -m pip install setuptools wheel
           python3 -m pip install -r ./requirements-dev.txt
       - name: "Update release notes"
-        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --update-release `git describe --abbrev=0`
+        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release `git describe --abbrev=0`
