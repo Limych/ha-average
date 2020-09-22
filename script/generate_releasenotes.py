@@ -144,7 +144,7 @@ def main():
     _LOGGER.debug("Tag: %s", version)
     release = repo.get_release(version)
     release.update_release(
-        name=VERSION,
+        name=version,
         prerelease=release.prerelease,
         draft=release.draft,
         message=BODY.format(
