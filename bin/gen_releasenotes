@@ -1,0 +1,225 @@
+#!/usr/bin/env python3
+"""Helper script to generate release notes."""
+import argparse
+import logging
+import os
+import re
+import subprocess
+from datetime import datetime
+from typing import List
+
+from github import Github, Repository, Tag
+from packaging.version import Version
+
+# http://docs.python.org/2/howto/logging.html#library-config
+# Avoids spurious error messages if no logger is configured by the user
+logging.getLogger(__name__).addHandler(logging.NullHandler())
+
+logging.basicConfig(level=logging.CRITICAL)
+
+_LOGGER = logging.getLogger(__name__)
+
+VERSION = "1.1.1"
+
+ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
+
+BODY = """
+[![Downloads for this release](https://img.shields.io/github/downloads/{repo}/{version}/total.svg)](https://github.com/{repo}/releases/{version})
+
+{changes}
+
+## Links
+
+- [If you like what I (@limych) do please consider sponsoring me on Patreon](https://www.patreon.com/join/limych?)
+"""
+
+CHANGE = "- [{line}]({link}) @{author}\n"
+NOCHANGE = "_No changes in this release._"
+
+
+def get_commits(repo: Repository, since: datetime, until: datetime):
+    """Get commits in repo."""
+    develop_sha = repo.get_branch("develop").commit.sha
+    commits = repo.get_commits(sha=develop_sha, since=since, until=until)
+    if len(list(commits)) == 1:
+        return []
+    return reversed(list(commits)[:-1])
+
+
+def get_release_tags(repo: Repository) -> List[Tag.Tag]:
+    """Get list of all release tags from repository."""
+    reg = re.compile(
+        r"^v?[0-9]+\.[0-9]+\.[0-9]+"
+        r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+)?$"
+    )
+    tags = list(filter(lambda tag: re.match(reg, tag.name), list(repo.get_tags())))
+    tags.sort(key=lambda x: x.name.lstrip("v"), reverse=True)
+    _LOGGER.debug("Found tags: %s", tags)
+    return tags
+
+
+def get_period(repo: Repository, release: str = None) -> List[datetime]:
+    """Return time period for release notes."""
+    data = [datetime.now()]
+    dateformat = "%a, %d %b %Y %H:%M:%S GMT"
+    found = release is None
+    for tag in get_release_tags(repo):
+        commit = repo.get_commit(tag.commit.sha)
+        timestamp = datetime.strptime(commit.last_modified, dateformat)
+        _LOGGER.debug("Process tag %s => timestamp %s", tag.name, timestamp)
+        data.append(timestamp)
+        if found:
+            break
+        if release is not None and release == tag.name:
+            found = True
+    return list(reversed(data[-2:]))
+
+
+def gen_changes(repo: Repository, tag: str = None) -> str:
+    """Generate list of commits."""
+    changes = ""
+    period = get_period(repo, tag)
+    _LOGGER.debug("Period: %s", period)
+
+    commits = get_commits(repo, period[0], period[1])
+    for commit in commits:
+        msg = repo.get_git_commit(commit.sha).message
+        if "\n" in msg:
+            msg = msg.split("\n")[0]
+        if (
+            "Bump version " in msg
+            or "Merge branch " in msg
+            or "Merge tag " in msg
+            or "Merge pull request " in msg
+        ):
+            continue
+        changes += CHANGE.format(
+            line=msg, link=commit.html_url, author=commit.author.login
+        )
+
+    return changes if changes != "" else NOCHANGE
+
+
+def _bump_release(release, bump_type):
+    """Bump a release tuple consisting of 3 numbers."""
+    major, minor, patch = release
+
+    if bump_type == "patch":
+        patch += 1
+    elif bump_type == "minor":
+        minor += 1
+        patch = 0
+
+    return major, minor, patch
+
+
+def bump_version(version: Version) -> Version:
+    """Return a new version given a current version and action."""
+    to_change = {}
+
+    # Convert 0.67.3 to 0.67.4
+    # Convert 0.67.3.b5 to 0.67.3
+    # Convert 0.67.3.dev0 to 0.67.3
+    to_change["dev"] = None
+    to_change["pre"] = None
+
+    if not version.is_prerelease:
+        to_change["release"] = _bump_release(version.release, "patch")
+
+    temp = Version("0")
+    temp._version = version._version._replace(  # pylint: disable=protected-access
+        **to_change
+    )
+    return Version(str(temp))
+
+
+def main():
+    """Execute script."""
+    parser = argparse.ArgumentParser(
+        description=f"Release notes generator. Version {VERSION}"
+    )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        action="store_true",
+        help="Enable debugging output.",
+    )
+    parser.add_argument(
+        "-n",
+        "--dry-run",
+        "--dryrun",
+        action="store_true",
+        help="Preview release notes generation without running it.",
+    )
+    parser.add_argument(
+        "--token",
+        help="Github token to access to repository.",
+        # required=True,
+    )
+    parser.add_argument(
+        "--repo",
+        help="Github repository (default: %(default)s).",
+        default=subprocess.run(
+            ["git", "config", "--get", "remote.origin.url"],
+            stdout=subprocess.PIPE,
+            check=True,
+        )
+        .stdout.decode("UTF-8")
+        .replace("https://github.com/", "")
+        .replace(".git", "")
+        .strip(),
+    )
+    parser.add_argument(
+        "--release",
+        help="Github release tag to update release notes.",
+    )
+    arguments = parser.parse_args()
+
+    if arguments.verbose:
+        _LOGGER.setLevel(logging.DEBUG)
+
+    if arguments.dry_run:
+        _LOGGER.debug("Dry run mode ENABLED")
+        print("!!! Dry Run !!!")
+
+    github = Github(arguments.token)
+    _LOGGER.debug("Repo: %s", arguments.repo)
+    repo = github.get_repo(arguments.repo)
+    if arguments.release is None:
+        changes = gen_changes(repo)
+        _LOGGER.debug(changes)
+        if changes != NOCHANGE:
+            version = Version(get_release_tags(repo)[0].name.lstrip("v"))
+            _LOGGER.debug(version)
+            new_version = bump_version(version)
+            _LOGGER.debug(new_version)
+            print(
+                "Generated release notes for v{version}:\n{message}".format(
+                    version=new_version,
+                    message=changes,
+                )
+            )
+        else:
+            print("Not enough changes for a release.")
+    else:
+        version = arguments.release.replace("refs/tags/", "")
+        _LOGGER.debug("Release tag: %s", version)
+        msg = BODY.format(
+            repo=arguments.repo,
+            version=version,
+            changes=gen_changes(repo, version),
+        )
+        if arguments.dry_run:
+            print("Generated release notes:\n" + msg)
+        else:
+            release = repo.get_release(version)
+            release.update_release(
+                name=version,
+                prerelease=release.prerelease,
+                draft=release.draft,
+                message=msg,
+            )
+
+
+if __name__ == "__main__":
+    main()
