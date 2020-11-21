@@ -1,5 +1,2 @@
-geopy
-geohash2
-voluptuous
-homeassistant
-sqlalchemy
+voluptuous==0.12
+homeassistant~=0.118

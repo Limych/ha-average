@@ -38,41 +38,55 @@ I also suggest you [visit the support topic][forum-support] on the community for
 
 * Since version 1.3.0 the default sensor name is “Average” instead of “Average Temperature”
 
+## Known Limitations and Issues
+
+* Due to the fact that HA does not store in history the temperature units of measurement for weather, climate and water heater entities, the average sensor always assumes that their values ​​are specified in the same units that are now configured in HA globally.
+
 ## Installation
+
+### Install from HACS (recommended)
+
+1. Just search for Average sensor integration in [HACS][hacs] and install it.
+1. Add `average` sensor to your `configuration.yaml` file. See configuration examples below.
+1. Restart Home Assistant
+
+### Manual installation
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 1. If you do not have a `custom_components` directory (folder) there, you need to create it.
 1. In the `custom_components` directory (folder) create a new folder called `average`.
 1. Download _all_ the files from the `custom_components/average/` directory (folder) in this repository.
 1. Place the files you downloaded in the new directory (folder) you created.
+1. Add `average` sensor to your `configuration.yaml` file. See configuration examples below.
 1. Restart Home Assistant
-1. Add `average` sensor to your `configuration.yaml` file:
 
-    To measure the average current temperature from multiple sources:
-    ```yaml
-    # Example configuration.yaml entry
-    sensor:
-      - platform: average
-        name: 'Average Temperature'
-        entities:
-          - weather.gismeteo
-          - sensor.owm_temperature
-          - sensor.dark_sky_temperature
-    ```
+### Configuration Examples
 
-    To measure average temperature for some period:
-    ```yaml
-    # Example configuration.yaml entry
-    sensor:
-      - platform: average
-        name: 'Average Temperature'
-        duration:
-          days: 1
-        entities:
-          - sensor.gismeteo_temperature
-    ```
+To measure the average of current values from multiple sources:
+```yaml
+# Example configuration.yaml entry
+sensor:
+  - platform: average
+    name: 'Average Temperature'
+    entities:
+      - weather.gismeteo
+      - sensor.owm_temperature
+      - sensor.dark_sky_temperature
+```
 
-    or you can combine this variants for some reason.
+To measure the average of all values of a single source over a period:
+```yaml
+# Example configuration.yaml entry
+sensor:
+  - platform: average
+    name: 'Average Temperature'
+    duration:
+      days: 1
+    entities:
+      - sensor.gismeteo_temperature
+```
+
+or you can combine this variants for some reason.
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
