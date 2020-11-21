@@ -17,22 +17,21 @@ from typing import Union, Optional, Dict, Any
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from homeassistant.components import history
-from homeassistant.components.climate import ClimateDevice
+from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
-from homeassistant.components.water_heater import WaterHeaterDevice
-from homeassistant.components.weather import WeatherEntity
+from homeassistant.components.history import LazyState
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
+from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
     CONF_NAME,
     CONF_ENTITIES,
     EVENT_HOMEASSISTANT_START,
     ATTR_UNIT_OF_MEASUREMENT,
-    UNIT_NOT_RECOGNIZED_TEMPLATE,
-    TEMPERATURE,
     STATE_UNKNOWN,
     STATE_UNAVAILABLE,
     ATTR_ICON,
 )
-from homeassistant.core import callback
+from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
@@ -233,47 +232,29 @@ class AverageSensor(Entity):
             "None",
         ]
 
-    @staticmethod
-    def _is_temperature(entity) -> bool:
-        """Return True if entity are temperature sensor."""
-        entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
-        return entity_unit in TEMPERATURE_UNITS or isinstance(
-            entity, (WeatherEntity, ClimateDevice, WaterHeaterDevice)
-        )
-
-    def _get_temperature(self, entity) -> Optional[float]:
+    def _get_temperature(self, state: LazyState) -> Optional[float]:
         """Get temperature value from entity."""
-        if isinstance(entity, WeatherEntity):
-            temperature = entity.temperature
-            entity_unit = entity.temperature_unit
-        elif isinstance(entity, (ClimateDevice, WaterHeaterDevice)):
-            temperature = entity.current_temperature
-            entity_unit = entity.temperature_unit
+        ha_unit = self._hass.config.units.temperature_unit
+        domain = split_entity_id(state.entity_id)[0]
+        if domain == WEATHER_DOMAIN:
+            temperature = state.attributes.get("temperature")
+            entity_unit = ha_unit
+        elif domain in (CLIMATE_DOMAIN, WATER_HEATER_DOMAIN):
+            temperature = state.attributes.get("current_temperature")
+            entity_unit = ha_unit
         else:
-            temperature = entity.state
-            entity_unit = entity.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+            temperature = state.state
+            entity_unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
 
         if not self._has_state(temperature):
             return None
 
-        if entity_unit not in TEMPERATURE_UNITS:
-            raise ValueError(
-                UNIT_NOT_RECOGNIZED_TEMPLATE.format(entity_unit, TEMPERATURE)
-            )
-
-        temperature = float(temperature)
-        ha_unit = self._hass.config.units.temperature_unit
-
-        if entity_unit != ha_unit:
-            temperature = convert_temperature(temperature, entity_unit, ha_unit)
-
+        temperature = convert_temperature(float(temperature), entity_unit, ha_unit)
         return temperature
 
-    def _get_entity_state(self, entity):
-        """Return current state of given entity and count some sensor attributes."""
-        state = (
-            self._get_temperature(entity) if self._temperature_mode else entity.state
-        )
+    def _get_state_value(self, state: LazyState) -> Optional[float]:
+        """Return value of given entity state and count some sensor attributes."""
+        state = self._get_temperature(state) if self._temperature_mode else state.state
         if not self._has_state(state):
             return self._undef
 
@@ -422,29 +403,36 @@ class AverageSensor(Entity):
         for entity_id in self.sources:
             _LOGGER.debug('Processing entity "%s"', entity_id)
 
-            entity = self._hass.states.get(entity_id)
+            state = self._hass.states.get(entity_id)  # type: LazyState
 
-            if entity is None:
+            if state is None:
                 _LOGGER.error('Unable to find an entity "%s"', entity_id)
                 continue
 
             if self._temperature_mode is None:
-                self._temperature_mode = self._is_temperature(entity)
+                domain = split_entity_id(state.entity_id)[0]
+                self._temperature_mode = (
+                    domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
+                    or state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+                    in TEMPERATURE_UNITS
+                )
                 if self._temperature_mode:
+                    _LOGGER.debug("%s is a temperature entity.", entity_id)
                     self._unit_of_measurement = self._hass.config.units.temperature_unit
                     self._icon = "mdi:thermometer"
                 else:
-                    self._unit_of_measurement = entity.attributes.get(
+                    _LOGGER.debug("%s is NOT a temperature entity.", entity_id)
+                    self._unit_of_measurement = state.attributes.get(
                         ATTR_UNIT_OF_MEASUREMENT
                     )
-                    self._icon = entity.attributes.get(ATTR_ICON)
+                    self._icon = state.attributes.get(ATTR_ICON)
 
             value = 0
             elapsed = 0
 
             if self._period is None:
                 # Get current state
-                value = self._get_entity_state(entity)
+                value = self._get_state_value(state)
                 _LOGGER.debug("Current state: %s", value)
 
             else:
@@ -454,7 +442,7 @@ class AverageSensor(Entity):
                 )
 
                 if entity_id not in history_list.keys():
-                    value = self._get_entity_state(entity)
+                    value = self._get_state_value(state)
                     _LOGGER.warning(
                         'Historical data not found for entity "%s". '
                         "Current state used: %s",
@@ -468,13 +456,13 @@ class AverageSensor(Entity):
                     last_state = None
                     last_time = start_ts
                     if item is not None and self._has_state(item.state):
-                        last_state = self._get_entity_state(item)
+                        last_state = self._get_state_value(item)
 
                     # Get the other states
                     for item in history_list.get(entity_id):
                         _LOGGER.debug("Historical state: %s", item)
                         if self._has_state(item.state):
-                            current_state = self._get_entity_state(item)
+                            current_state = self._get_state_value(item)
                             current_time = item.last_changed.timestamp()
 
                             if last_state is not None:
