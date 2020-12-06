@@ -2,7 +2,12 @@
     "codeowners": [
         "@Limych"
     ],
-    "dependencies": [],
+    "dependencies": [
+        "history"
+    ],
+    "after_dependencies": [
+        "weather"
+    ],
     "documentation": "https://github.com/Limych/ha-average",
     "domain": "average",
     "name": "Average",

@@ -27,9 +27,9 @@ repos:
         stages: [manual]
       - id: check-json
       - id: trailing-whitespace
-      - id: no-commit-to-branch
-        args:
-          - --branch=master
+#      - id: no-commit-to-branch
+#        args:
+#          - --branch=master
   - repo: local
     hooks:
       # Run mypy through our wrapper script in order to get the possible
