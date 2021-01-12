@@ -84,8 +84,8 @@ PLATFORM_SCHEMA = vol.All(
             vol.Optional(CONF_START): cv.template,
             vol.Optional(CONF_END): cv.template,
             vol.Optional(CONF_DURATION): cv.time_period,
-            vol.Optional(CONF_ROUND_DIGITS, default=2): int,
-            vol.Optional(CONF_PRECISION, default=2): int,
+            vol.Optional(CONF_ROUND_DIGITS): int,
+            vol.Optional(CONF_PRECISION): int,
             vol.Optional(CONF_PROCESS_UNDEF_AS): float,
         }
     ),
@@ -108,7 +108,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     end = config.get(CONF_END)
     duration = config.get(CONF_DURATION)
     entities = config.get(CONF_ENTITIES)
-    precision = config.get(CONF_PRECISION, config.get(CONF_ROUND_DIGITS))
+    precision = config.get(CONF_PRECISION, config.get(CONF_ROUND_DIGITS, 2))
     undef = config.get(CONF_PROCESS_UNDEF_AS)
 
     for template in [start, end]:
