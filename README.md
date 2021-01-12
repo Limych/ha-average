@@ -5,7 +5,7 @@
 [![GitHub Release](https://img.shields.io/github/tag-date/Limych/ha-average?label=release&style=popout)](https://github.com/Limych/ha-average/releases)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout)](https://github.com/Limych/ha-average/commits/master)
 [![License](https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout)](LICENSE.md)
-![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)
+[![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)(https://requires.io/github/Limych/ha-average/requirements/)
 
 [![hacs](https://img.shields.io/badge/HACS-Default-orange.svg?style=popout)][hacs]
 ![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
@@ -36,7 +36,10 @@ I also suggest you [visit the support topic][forum-support] on the community for
 
 ## Breaking changes
 
-* Since version 1.3.0 the default sensor name is “Average” instead of “Average Temperature”
+* Since version ???:
+   * the default sensor name is “Mean Sensor” instead of “Average”;
+   * the `precision` configuration variable is renamed to `round_digits` for compatibility with `min_max` sensor;
+* ~~Since version 1.3.0 the default sensor name is “Average” instead of “Average Temperature”~~
 
 ## Known Limitations and Issues
 
@@ -109,10 +112,15 @@ I put a lot of work into making this repo and component available and updated to
 > **_Note_**:\
 > You can use groups of entities as a data source. These groups will be automatically expanded to individual entities.
 
+**type**:\
+  _(string) (Optional)_\
+  The type of sensor: `min`, `max`, `last`, `mean`, `median` or `mode`.\
+  _Default value: "mean" (for historical reasons)_
+
 **name**:\
   _(string) (Optional)_\
   Name to use in the frontend.\
-  _Default value: "Average"_
+  _Default value: type + " Sensor" (ex. "Mean Sensor")_
 
 **start**:\
   _(template) (Optional)_\
@@ -126,10 +134,13 @@ I put a lot of work into making this repo and component available and updated to
   _(time) (Optional)_\
   Duration of the measure.
 
-**precision**:\
+**round_digits**:\
   _(number) (Optional)_\
   The number of decimals to use when rounding the sensor state.\
   _Default value: 2_
+
+**precision**:\
+  **Deprecated** use `round_digits` instead.
 
 **process_undef_as**:\
   _(number) (Optional)_\
@@ -138,7 +149,7 @@ I put a lot of work into making this repo and component available and updated to
   By default, undefined values are not included in the average calculation. Specifying this parameter allows you to calculate the average value taking into account the time intervals of the undefined sensor values.
 
 > **_Note_**:\
-> This parameter does not affect the calculation of the count, min and max attributes.
+> This parameter does not affect the calculation of the `count`, `min`, `max` and `last` attributes.
 
 ### Average Sensor Attributes
 
@@ -148,23 +159,44 @@ I put a lot of work into making this repo and component available and updated to
 **end**:\
   Timestamp of the end of the calculation period (if period was set).
 
-**sources**:\
+**sensors**:\
   Total expanded list of source sensors.
 
-**count_sources**:\
+**count_sensors**:\
   Total count of source sensors.
 
-**available_sources**:\
+**available_sensors**:\
   Count of available source sensors (for current calculation period).
 
 **count**:\
   Total count of processed values of source sensors.
 
-**min**:\
+**min_value**:\
   Minimum value of processed values of source sensors.
 
-**max**:\
+**min_entity_id**:\
+  Entity ID of source sensor with minimum value of processed values.
+
+**max_value**:\
   Maximum value of processed values of source sensors.
+
+**max_entity_id**:\
+  Entity ID of source sensor with maximum value of processed values.
+
+**mean**:\
+  Arithmetic mean of processed values of source sensors.
+
+**median**:\
+  Median (middle value separating the greater and lesser halves of a data set) of processed values of source sensors.
+
+**mode**:\
+  Mode (most frequent value in a data set) of processed values of source sensors.
+
+**last**:\
+  Last produced value of processed values of source sensors.
+
+**last_entity_id**:\
+  Entity ID of source sensor with last produced value of processed values.
 
 ## Time periods
 
@@ -277,6 +309,17 @@ end: '{{ now() }}'
 
 You can automatically track new versions of this component and update it by [HACS][hacs].
 
+## Troubleshooting
+
+To enable debug logs use this configuration:
+```yaml
+# Example configuration.yaml entry
+logger:
+  default: error
+  logs:
+    custom_components.average: debug
+```
+... then restart HA.
 ## Contributions are welcome!
 
 This is an active open-source project. We are always open to people who want to

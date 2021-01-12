@@ -20,6 +20,7 @@ from homeassistant.components import history
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.history import LazyState
+from homeassistant.components.min_max.sensor import ATTR_MEAN, CONF_ROUND_DIGITS
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -30,6 +31,7 @@ from homeassistant.const import (
     STATE_UNKNOWN,
     STATE_UNAVAILABLE,
     ATTR_ICON,
+    CONF_TYPE,
 )
 from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import TemplateError
@@ -46,13 +48,13 @@ from .const import (
     ISSUE_URL,
     CONF_PERIOD_KEYS,
     CONF_DURATION,
-    DEFAULT_NAME,
     CONF_START,
     CONF_END,
     CONF_PRECISION,
     ATTR_TO_PROPERTY,
     UPDATE_MIN_TIME,
     CONF_PROCESS_UNDEF_AS,
+    SENSOR_TYPES,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -72,13 +74,18 @@ def check_period_keys(conf):
 
 
 PLATFORM_SCHEMA = vol.All(
+    cv.deprecated(CONF_PRECISION, replacement_key=CONF_ROUND_DIGITS),
     PLATFORM_SCHEMA.extend(
         {
+            vol.Optional(CONF_TYPE, default=SENSOR_TYPES[ATTR_MEAN]): vol.All(
+                cv.string, vol.In(SENSOR_TYPES.values())
+            ),
             vol.Required(CONF_ENTITIES): cv.entity_ids,
-            vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
+            vol.Optional(CONF_NAME): cv.string,
             vol.Optional(CONF_START): cv.template,
             vol.Optional(CONF_END): cv.template,
             vol.Optional(CONF_DURATION): cv.time_period,
+            vol.Optional(CONF_ROUND_DIGITS, default=2): int,
             vol.Optional(CONF_PRECISION, default=2): int,
             vol.Optional(CONF_PROCESS_UNDEF_AS): float,
         }
@@ -96,12 +103,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
         "If you have ANY issues with this, please report them here: %s", ISSUE_URL
     )
 
+    sensor_type = config.get(CONF_TYPE)
     name = config.get(CONF_NAME)
     start = config.get(CONF_START)
     end = config.get(CONF_END)
     duration = config.get(CONF_DURATION)
     entities = config.get(CONF_ENTITIES)
-    precision = config.get(CONF_PRECISION)
+    round_digits = config.get(CONF_ROUND_DIGITS, config.get(CONF_PRECISION))
     undef = config.get(CONF_PROCESS_UNDEF_AS)
 
     for template in [start, end]:
@@ -109,8 +117,62 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             template.hass = hass
 
     async_add_entities(
-        [AverageSensor(hass, name, start, end, duration, entities, precision, undef)]
+        [
+            AverageSensor(
+                hass,
+                sensor_type,
+                name,
+                start,
+                end,
+                duration,
+                entities,
+                round_digits,
+                undef,
+            )
+        ]
     )
+
+
+def calc_median(values: dict) -> float:
+    """Calculate median value."""
+    keys = sorted(values.keys())
+    val_a = val_b = idx_a = 0
+    idx_b = len(keys) - 1
+
+    while idx_a + 1 < idx_b:
+        while idx_a < idx_b and val_a <= val_b:
+            val_a += values[keys[idx_a]]
+            idx_a += 1
+
+        while idx_a < idx_b and val_a >= val_b:
+            val_b += values[keys[idx_b]]
+            idx_b -= 1
+
+    if val_a > val_b:
+        val_b += values[keys[idx_b]]
+        if val_a == val_b:
+            return (keys[idx_a] + keys[idx_b - 1]) / 2
+        idx_a += 1
+    elif val_b > val_a:
+        val_a += values[keys[idx_a]]
+        if val_a == val_b:
+            return (keys[idx_a + 1] + keys[idx_b]) / 2
+        idx_b += 1
+    elif val_a == val_b:
+        return (keys[idx_a] + keys[idx_b]) / 2
+
+    return keys[idx_a] if val_a > val_b else keys[idx_b]
+
+
+def calc_mode(values: dict) -> float:
+    """Calculate mean value."""
+    wmax = res = -1
+    for value, weigth in values.items():
+        if wmax < weigth:
+            wmax = weigth
+            res = value
+
+    return res
 
 
 # pylint: disable=r0902
@@ -121,33 +183,42 @@ class AverageSensor(Entity):
     def __init__(
         self,
         hass,
+        sensor_type: str,
         name: str,
         start,
         end,
         duration,
         entity_ids: list,
-        precision: int,
-        undef,
+        round_digits: int = 2,
+        undef: Optional[float] = None,
     ):
         """Initialize the sensor."""
         self._hass = hass
-        self._name = name
+        self._sensor_type = sensor_type
         self._start_template = start
         self._end_template = end
         self._duration = duration
         self._period = self.start = self.end = None
-        self._precision = precision
+        self._round_digits = round_digits
         self._undef = undef
         self._state = None
         self._unit_of_measurement = None
         self._icon = None
         self._temperature_mode = None
 
-        self.sources = expand_entity_ids(hass, entity_ids)
-        self.count_sources = len(self.sources)
-        self.available_sources = 0
+        if name:
+            self._name = name
+        else:
+            name = next(v for k, v in SENSOR_TYPES.items() if self._sensor_type == v)
+            self._name = f"{name} sensor".capitalize()
+
+        self.sensors = expand_entity_ids(hass, entity_ids)
+        self.count_sensors = len(self.sensors)
+        self.available_sensors = 0
         self.count = 0
-        self.min_value = self.max_value = None
+        self.min_value = self.max_value = self.mean = self.median = self.mode = None
+        self.last = self.last_ts = None
+        self.min_entity_id = self.max_entity_id = self.last_entity_id = None
 
     @property
     def _has_period(self) -> bool:
@@ -171,7 +242,7 @@ class AverageSensor(Entity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.available_sources > 0 and self._has_state(self._state)
+        return self.available_sensors > 0 and self._has_state(self._state)
 
     @property
     def state(self) -> Union[None, str, int, float]:
@@ -190,13 +261,12 @@ class AverageSensor(Entity):
 
     @property
     def device_state_attributes(self) -> Optional[Dict[str, Any]]:
-        """Return the state attributes."""
-        state_attr = {
+        """Return the state attributes of the sensor."""
+        return {
             attr: getattr(self, attr)
             for attr in ATTR_TO_PROPERTY
             if getattr(self, attr) is not None
         }
-        return state_attr
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
@@ -217,7 +287,7 @@ class AverageSensor(Entity):
                 self.async_schedule_update_ha_state(True)
             else:
                 async_track_state_change(
-                    self._hass, self.sources, sensor_state_listener
+                    self._hass, self.sensors, sensor_state_listener
                 )
                 sensor_state_listener(None, None, None)
 
@@ -254,24 +324,36 @@ class AverageSensor(Entity):
 
     def _get_state_value(self, state: LazyState) -> Optional[float]:
         """Return value of given entity state and count some sensor attributes."""
-        state = self._get_temperature(state) if self._temperature_mode else state.state
-        if not self._has_state(state):
+        value = self._get_temperature(state) if self._temperature_mode else state.state
+        if not self._has_state(value):
             return self._undef
 
         try:
-            state = float(state)
+            value = float(value)
         except ValueError:
-            _LOGGER.error('Could not convert value "%s" to float', state)
+            _LOGGER.error('Could not convert value "%s" to float', value)
             return None
 
         self.count += 1
-        rstate = round(state, self._precision)
+        rvalue = round(value, self._round_digits)
+
         if self.min_value is None:
-            self.min_value = self.max_value = rstate
+            self.min_value = self.max_value = rvalue
+            self.min_entity_id = self.max_entity_id = state.entity_id
         else:
-            self.min_value = min(self.min_value, rstate)
-            self.max_value = max(self.max_value, rstate)
-        return state
+            if rvalue < self.min_value:
+                self.min_value = rvalue
+                self.min_entity_id = state.entity_id
+            if rvalue > self.max_value:
+                self.max_value = rvalue
+                self.max_entity_id = state.entity_id
+
+        if self.last_ts is None or self.last_ts < state.last_changed:
+            self.last_ts = state.last_changed
+            self.last = rvalue
+            self.last_entity_id = state.entity_id
+
+        return value
 
     @Throttle(UPDATE_MIN_TIME)
     def update(self):
@@ -310,7 +392,7 @@ class AverageSensor(Entity):
                     )
                 except ValueError:
                     _LOGGER.error(
-                        "Parsing error: start must be a datetime" "or a timestamp"
+                        "Parsing error: start must be a datetime or a timestamp"
                     )
                     return
 
@@ -330,7 +412,7 @@ class AverageSensor(Entity):
                     )
                 except ValueError:
                     _LOGGER.error(
-                        "Parsing error: end must be a datetime " "or a timestamp"
+                        "Parsing error: end must be a datetime or a timestamp"
                     )
                     return
 
@@ -394,13 +476,19 @@ class AverageSensor(Entity):
                 # Don't compute anything as the value cannot have changed
                 return
 
-        self.available_sources = 0
-        values = []
+        self.available_sensors = 0
+        norm_vals = []
+        values = {}
         self.count = 0
-        self.min_value = self.max_value = None
+        self.min_value = self.max_value = self.mean = self.median = self.mode = None
+        self.last = self.last_entity_id = self.last_ts = None
+
+        def add_value(value: float, weight: int = 1):
+            val = values.get(value, 0.0)
+            values[value] = val + weight
 
         # pylint: disable=too-many-nested-blocks
-        for entity_id in self.sources:
+        for entity_id in self.sensors:
             _LOGGER.debug('Processing entity "%s"', entity_id)
 
             state = self._hass.states.get(entity_id)  # type: LazyState
@@ -427,13 +515,14 @@ class AverageSensor(Entity):
                     )
                     self._icon = state.attributes.get(ATTR_ICON)
 
-            value = 0
+            sum_val = 0
             elapsed = 0
 
             if self._period is None:
                 # Get current state
-                value = self._get_state_value(state)
-                _LOGGER.debug("Current state: %s", value)
+                sum_val = self._get_state_value(state)
+                _LOGGER.debug("Current state: %s", sum_val)
+                add_value(sum_val)
 
             else:
                 # Get history between start and now
@@ -442,13 +531,14 @@ class AverageSensor(Entity):
                 )
 
                 if entity_id not in history_list.keys():
-                    value = self._get_state_value(state)
+                    sum_val = self._get_state_value(state)
                     _LOGGER.warning(
                         'Historical data not found for entity "%s". '
                         "Current state used: %s",
                         entity_id,
-                        value,
+                        sum_val,
                     )
+                    add_value(sum_val)
                 else:
                     # Get the first state
                     item = history.get_state(self.hass, start, entity_id)
@@ -457,6 +547,7 @@ class AverageSensor(Entity):
                     last_time = start_ts
                     if item is not None and self._has_state(item.state):
                         last_state = self._get_state_value(item)
+                        add_value(last_state)
 
                     # Get the other states
                     for item in history_list.get(entity_id):
@@ -467,7 +558,8 @@ class AverageSensor(Entity):
 
                             if last_state is not None:
                                 last_elapsed = current_time - last_time
-                                value += last_state * last_elapsed
+                                sum_val += last_state * last_elapsed
+                                add_value(last_state, last_elapsed)
                                 elapsed += last_elapsed
 
                             last_state = current_state
@@ -476,19 +568,29 @@ class AverageSensor(Entity):
                     # Count time elapsed between last history state and now
                     if last_state is not None:
                         last_elapsed = end_ts - last_time
-                        value += last_state * last_elapsed
+                        sum_val += last_state * last_elapsed
+                        add_value(last_state, last_elapsed)
                         elapsed += last_elapsed
 
                     if elapsed:
-                        value /= elapsed
-                    _LOGGER.debug("Historical average state: %s", value)
+                        sum_val /= elapsed
+                    _LOGGER.debug("Historical average state: %s", sum_val)
 
-            if isinstance(value, numbers.Number):
-                values.append(value)
-                self.available_sources += 1
+            if isinstance(sum_val, numbers.Number):
+                norm_vals.append(sum_val)
+                self.available_sensors += 1
 
-        if values:
-            self._state = round(sum(values) / len(values), self._precision)
-        else:
-            self._state = None
-        _LOGGER.debug("Total average state: %s", self._state)
+        self.mean = (
+            round(sum(norm_vals) / len(norm_vals), self._round_digits)
+            if norm_vals
+            else None
+        )
+        self.median = (
+            round(calc_median(values), self._round_digits) if norm_vals else None
+        )
+        self.mode = round(calc_mode(values), self._round_digits) if norm_vals else None
+
+        self._state = getattr(
+            self, next(k for k, v in SENSOR_TYPES.items() if self._sensor_type == v)
+        )
+        _LOGGER.debug("New state (%s): %s", self._sensor_type, self._state)
