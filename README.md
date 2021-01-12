@@ -36,9 +36,7 @@ I also suggest you [visit the support topic][forum-support] on the community for
 
 ## Breaking changes
 
-* Since version ???:
-   * the default sensor name is “Mean Sensor” instead of “Average”;
-   * the `precision` configuration variable is renamed to `round_digits` for compatibility with `min_max` sensor;
+* Since version ??? the default sensor name is “Mean Sensor” instead of “Average”;
 * ~~Since version 1.3.0 the default sensor name is “Average” instead of “Average Temperature”~~
 
 ## Known Limitations and Issues
@@ -104,7 +102,7 @@ I put a lot of work into making this repo and component available and updated to
 
 **entities**:\
   _(list) (Required)_\
-  A list of temperature sensor entity IDs.
+  One or more entities to monitor. The unit of measurement and icon of the first entry will be the one that’s used. All entities must use the same unit of measurement.
 
 > **_Note_**:\
 > You can use weather provider, climate and water heater entities as a data source. For that entities sensor use values of current temperature.
@@ -134,13 +132,13 @@ I put a lot of work into making this repo and component available and updated to
   _(time) (Optional)_\
   Duration of the measure.
 
-**round_digits**:\
+**precision**:\
   _(number) (Optional)_\
   The number of decimals to use when rounding the sensor state.\
   _Default value: 2_
 
-**precision**:\
-  **Deprecated** use `round_digits` instead.
+**round_digits**:\
+  Synonym for `precision` for compatibility with `min_max` sensor configs.
 
 **process_undef_as**:\
   _(number) (Optional)_\

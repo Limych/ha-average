@@ -74,7 +74,6 @@ def check_period_keys(conf):
 
 
 PLATFORM_SCHEMA = vol.All(
-    cv.deprecated(CONF_PRECISION, replacement_key=CONF_ROUND_DIGITS),
     PLATFORM_SCHEMA.extend(
         {
             vol.Optional(CONF_TYPE, default=SENSOR_TYPES[ATTR_MEAN]): vol.All(
@@ -109,7 +108,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     end = config.get(CONF_END)
     duration = config.get(CONF_DURATION)
     entities = config.get(CONF_ENTITIES)
-    round_digits = config.get(CONF_ROUND_DIGITS, config.get(CONF_PRECISION))
+    precision = config.get(CONF_PRECISION, config.get(CONF_ROUND_DIGITS))
     undef = config.get(CONF_PROCESS_UNDEF_AS)
 
     for template in [start, end]:
@@ -126,7 +125,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 end,
                 duration,
                 entities,
-                round_digits,
+                precision,
                 undef,
             )
         ]
@@ -189,7 +188,7 @@ class AverageSensor(Entity):
         end,
         duration,
         entity_ids: list,
-        round_digits: int = 2,
+        precision: int = 2,
         undef: Optional[float] = None,
     ):
         """Initialize the sensor."""
@@ -199,7 +198,7 @@ class AverageSensor(Entity):
         self._end_template = end
         self._duration = duration
         self._period = self.start = self.end = None
-        self._round_digits = round_digits
+        self._precision = precision
         self._undef = undef
         self._state = None
         self._unit_of_measurement = None
@@ -335,7 +334,7 @@ class AverageSensor(Entity):
             return None
 
         self.count += 1
-        rvalue = round(value, self._round_digits)
+        rvalue = round(value, self._precision)
 
         if self.min_value is None:
             self.min_value = self.max_value = rvalue
@@ -581,14 +580,12 @@ class AverageSensor(Entity):
                 self.available_sensors += 1
 
         self.mean = (
-            round(sum(norm_vals) / len(norm_vals), self._round_digits)
+            round(sum(norm_vals) / len(norm_vals), self._precision)
             if norm_vals
             else None
         )
-        self.median = (
-            round(calc_median(values), self._round_digits) if norm_vals else None
-        )
-        self.mode = round(calc_mode(values), self._round_digits) if norm_vals else None
+        self.median = round(calc_median(values), self._precision) if norm_vals else None
+        self.mode = round(calc_mode(values), self._precision) if norm_vals else None
 
         self._state = getattr(
             self, next(k for k, v in SENSOR_TYPES.items() if self._sensor_type == v)
