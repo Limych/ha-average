@@ -3,7 +3,8 @@
         "@Limych"
     ],
     "dependencies": [
-        "history"
+        "history",
+        "min_max"
     ],
     "after_dependencies": [
         "weather"
