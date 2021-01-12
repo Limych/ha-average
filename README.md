@@ -5,7 +5,7 @@
 [![GitHub Release](https://img.shields.io/github/tag-date/Limych/ha-average?label=release&style=popout)](https://github.com/Limych/ha-average/releases)
 [![GitHub Activity](https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout)](https://github.com/Limych/ha-average/commits/master)
 [![License](https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout)](LICENSE.md)
-[![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)(https://requires.io/github/Limych/ha-average/requirements/)
+[![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)](https://requires.io/github/Limych/ha-average/requirements/)
 
 [![hacs](https://img.shields.io/badge/HACS-Default-orange.svg?style=popout)][hacs]
 ![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
