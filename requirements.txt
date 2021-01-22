@@ -1,2 +1,2 @@
 voluptuous~=0.12
-homeassistant~=0.118
+homeassistant~=2021.1

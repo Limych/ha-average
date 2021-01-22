@@ -277,6 +277,18 @@ end: '{{ now() }}'
 
 You can automatically track new versions of this component and update it by [HACS][hacs].
 
+## Troubleshooting
+
+To enable debug logs use this configuration:
+```yaml
+# Example configuration.yaml entry
+logger:
+  default: error
+  logs:
+    custom_components.average: debug
+```
+... then restart HA.
+
 ## Contributions are welcome!
 
 This is an active open-source project. We are always open to people who want to

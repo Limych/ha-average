@@ -302,7 +302,8 @@ class AverageSensor(Entity):
             except (TemplateError, TypeError) as ex:
                 self.handle_template_exception(ex, "start")
                 return
-            start = dt_util.parse_datetime(start_rendered)
+            if isinstance(start_rendered, str):
+                start = dt_util.parse_datetime(start_rendered)
             if start is None:
                 try:
                     start = dt_util.as_local(
@@ -322,7 +323,8 @@ class AverageSensor(Entity):
             except (TemplateError, TypeError) as ex:
                 self.handle_template_exception(ex, "end")
                 return
-            end = dt_util.parse_datetime(end_rendered)
+            if isinstance(end_rendered, str):
+                end = dt_util.parse_datetime(end_rendered)
             if end is None:
                 try:
                     end = dt_util.as_local(
