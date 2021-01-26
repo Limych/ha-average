@@ -463,17 +463,16 @@ class AverageSensor(Entity):
                     # Get the other states
                     for item in history_list.get(entity_id):
                         _LOGGER.debug("Historical state: %s", item)
-                        if self._has_state(item.state):
-                            current_state = self._get_state_value(item)
-                            current_time = item.last_changed.timestamp()
+                        current_state = self._get_state_value(item)
+                        current_time = item.last_changed.timestamp()
 
-                            if last_state is not None:
-                                last_elapsed = current_time - last_time
-                                value += last_state * last_elapsed
-                                elapsed += last_elapsed
+                        if last_state is not None:
+                            last_elapsed = current_time - last_time
+                            value += last_state * last_elapsed
+                            elapsed += last_elapsed
 
-                            last_state = current_state
-                            last_time = current_time
+                        last_state = current_state
+                        last_time = current_time
 
                     # Count time elapsed between last history state and now
                     if last_state is not None:
