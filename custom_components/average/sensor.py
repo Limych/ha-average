@@ -230,6 +230,7 @@ class AverageSensor(Entity):
             STATE_UNKNOWN,
             STATE_UNAVAILABLE,
             "None",
+            "",
         ]
 
     def _get_temperature(self, state: LazyState) -> Optional[float]:
@@ -249,7 +250,12 @@ class AverageSensor(Entity):
         if not self._has_state(temperature):
             return None
 
-        temperature = convert_temperature(float(temperature), entity_unit, ha_unit)
+        try:
+            temperature = convert_temperature(float(temperature), entity_unit, ha_unit)
+        except ValueError:
+            _LOGGER.error('Could not convert value "%s" to float', state)
+            return None
+
         return temperature
 
     def _get_state_value(self, state: LazyState) -> Optional[float]:
