@@ -16,11 +16,11 @@ jobs:
 
       - working-directory: ./custom_components
         run: |
-          echo "package=`ls -F | grep \/$ | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
-          echo "release_version=`git describe --abbrev=0 | sed s/v//`" >> $GITHUB_ENV
+          echo "package=$(ls -F | grep \/$ | sed -n "s/\///g;1p")" >> $GITHUB_ENV
+          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
       - working-directory: ./custom_components
         run: |
-          echo "basedir=`pwd`/${{ env.package }}" >> $GITHUB_ENV
+          echo "basedir=$(pwd)/${{ env.package }}" >> $GITHUB_ENV
 
       - name: "Setup Git"
         run: |

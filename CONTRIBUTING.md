@@ -45,6 +45,16 @@ People *love* thorough bug reports. I'm not even kidding.
 
 Use [black](https://github.com/ambv/black) to make sure the code follows the style.
 
+## Test your code modification
+
+This custom component is based on [blueprint template](https://github.com/Limych/ha-blueprint).
+
+It comes with development environment in a container, easy to launch
+if you use Visual Studio Code. With this container you will have a stand alone
+Home Assistant instance running and already configured with the included
+[`.devcontainer/configuration.yaml`](./.devcontainer/configuration.yaml)
+file.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under its MIT License.

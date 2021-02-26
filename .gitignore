@@ -48,6 +48,7 @@ target/
 .python-version
 
 # Environments
+pythonenv*
 .env
 .venv
 env/
@@ -65,7 +66,6 @@ venv.bak/
 
 
 
-.vscode
 dev-config
 /custom_components/__init__.py
 /test*.py

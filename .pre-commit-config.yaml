@@ -1,4 +1,11 @@
 repos:
+  - repo: local
+    hooks:
+      - id: manifest
+        name: Update manifest.json
+        entry: bin/update_manifest
+        language: script
+        files: ^custom_components/.+/const\.py$
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.7.4
     hooks:
@@ -39,6 +46,7 @@ repos:
       - id: check-executables-have-shebangs
         stages: [manual]
       - id: check-json
+        files: ^(custom_components|tests)/.+\.json$
       - id: trailing-whitespace
       - id: no-commit-to-branch
         args:

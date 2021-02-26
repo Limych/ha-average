@@ -1,26 +1,50 @@
-![Gismeteo Logo](https://github.com/Limych/ha-gismeteo/raw/master/gismeteo_logo.jpg)
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]][license]
+
+[![hacs][hacs-shield]][hacs]
+[![Project Maintenance][maintenance-shield]][user_profile]
+
+[![Community Forum][forum-shield]][forum]
+
+_Component to integrate with [integration_blueprint][component]._
+
+**This component will set up the following platforms.**
+
+Platform | Description
+-- | --
+`binary_sensor` | Show something `True` or `False`.
+`sensor` | Show info from API.
+`switch` | Switch something `True` or `False`.
+
+![example][exampleimg]
 
 ## Features:
 
-- Weather provider with hourly forecast for up to 48 hours or daily forecast for 7 days;
-- Sensors of current weather:
-  - temperature,
-  - wind bearing and speed,
-  - relative humidity,
-  - air pressure,
-  - cloud coverage,
-  - rain and snow volume,
-  - storm prediction and
-  - geomagnetic field value;
-- Weather forecast sensor for 3 hours;
+- Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
+- Phasellus blandit massa non tellus:
+    - Pellentesque blandit. Etiam sapien.
+    - Quisque sed massa ac tortor accumsan bibendum.
+    - Donec et orci quis mi sollicitudin consectetuer.
+- Donec malesuada. Pellentesque bibendum pellentesque elit.
+- Morbi et diam ac wisi auctor fringilla.
 
-## Links
+{% if not installed %}
+## Installation
 
-- [Documentation](https://github.com/Limych/ha-gismeteo)
-- [Weather Provider Configuration](https://github.com/Limych/ha-gismeteo#weather-provider-configuration)
-- [Weather Sensors Configuration](https://github.com/Limych/ha-gismeteo#weather-sensors-configuration)
-- [Report a Bug](https://github.com/Limych/ha-gismeteo/issues/new?template=issue.md)
-- [Suggest an idea](https://github.com/Limych/ha-gismeteo/issues/new?template=feature_request.md)
+1. Click install.
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+
+{% endif %}
+## Configuration is done in the UI
+
+<!---->
+
+## Useful Links
+
+- [Documentation][component]
+- [Report a Bug][report_bug]
+- [Suggest an idea][suggest_idea]
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
@@ -30,3 +54,24 @@ I put a lot of work into making this repo and component available and updated to
 <a href="https://sochain.com/a/mjz640g" target="_blank"><img src="http://khrolenok.ru/support_bitcoin.png" alt="Bitcoin" width="150"><br>
 16yfCfz9dZ8y8yuSwBFVfiAa3CNYdMh7Ts</a>
 </p>
+
+***
+
+[component]: https://github.com/Limych/ha-blueprint
+[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/integration_blueprint.svg?style=popout
+[commits]: https://github.com/Limych/ha-blueprint/commits/master
+[hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
+[hacs]: https://hacs.xyz
+[exampleimg]: example.png
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
+[forum]: https://community.home-assistant.io/
+[license]: https://github.com/Limych/ha-blueprint/blob/main/LICENSE.md
+[license-shield]: https://img.shields.io/github/license/custom-components/integration_blueprint.svg?style=popout
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
+[releases-shield]: https://img.shields.io/github/release/custom-components/integration_blueprint.svg?style=popout
+[releases]: https://github.com/Limych/ha-blueprint/releases
+[releases-latest]: https://github.com/Limych/ha-blueprint/releases/latest
+[user_profile]: https://github.com/Limych
+[report_bug]: https://github.com/Limych/ha-blueprint/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/Limych/ha-blueprint/issues/new?template=feature_request.md
+[contributors]: https://github.com/Limych/ha-blueprint/graphs/contributors

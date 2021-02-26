@@ -3,41 +3,11 @@
 # Stop on errors
 set -e
 
-readonly __COLORS_ESCAPE="\033[";
-readonly __COLORS_RESET="${__COLORS_ESCAPE}0m"
-readonly __COLORS_RED="${__COLORS_ESCAPE}31m"
-readonly __COLORS_GREEN="${__COLORS_ESCAPE}32m"
-readonly __COLORS_MAGENTA="${__COLORS_ESCAPE}35m"
-
-log.fatal() {
-    local message=$*
-    echo -e "${__COLORS_RED}${message}${__COLORS_RESET}" >&2
-}
-
-log.error() {
-    local message=$*
-    echo -e "${__COLORS_MAGENTA}${message}${__COLORS_RESET}" >&2
-}
-
-log.info() {
-    local message=$*
-    echo -e "${__COLORS_GREEN}${message}${__COLORS_RESET}" >&2
-}
-
-die() {
-    local message=${1:-}
-    local code=${2:-1}
-    if [[ -n "${message}" ]]; then
-        log.fatal "${message}"
-    fi
-    exit "${code}"
-}
-
-
-
 ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
-
 cd "${ROOT}"
+
+# Load common functions
+source ./bin/_common
 
 if output=$(git branch --show-current) \
 && [[ "$output" != "master" && "$output" != "main" ]]; then
@@ -51,23 +21,24 @@ if output=$(git status --porcelain) && [[ -n "$output" ]]; then
     exit 2
 fi
 
-manifest_path=`find custom_components/ -name manifest.json`
+const_path=$(find custom_components/ -name const.py)
+version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 
 if [[ -z $1 ]]; then
     log.fatal "Please, describe new version number as first argument."
-    log.info "Current version number is $(jq -r ".version" ${manifest_path})"
+    log.info "Current version number is ${version}"
     exit 3
 fi
 
-new=`echo "${1}" | sed -E "s/\+.*//"`
+new=$(echo "${1}" | sed -E "s/\+.*//")
 
-log.info "Patch to new version..."
-sed -i -E "s/(\"version\": \")[^\"]+/\\1${new}/" ${manifest_path}
+log.info "Patch files to version '${new}'..."
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
+./bin/update_manifest
 git commit -a --no-verify -m "Version bump"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
-log.info "Patch to new development version..."
-sed -i -E "s/(\"version\": \")[^\"]+/\\1${new}+dev/" ${manifest_path}
-
-log.info "Done."
+log.info "Patch files to version '${new}+dev'..."
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}+dev/" ${const_path}
+./bin/update_manifest

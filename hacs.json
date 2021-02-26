@@ -1,7 +1,6 @@
 {
-  "name": "Gismeteo Weather Provider",
-  "domains": [
-    "weather",
-    "sensor"
-  ]
+    "name": "Integration blueprint",
+    "hacs": "1.6.0",
+    "iot_class": "Cloud Polling",
+    "homeassistant": "0.118.0"
 }

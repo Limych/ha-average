@@ -12,7 +12,7 @@ jobs:
         uses: actions/checkout@master
 
       - run: |
-          echo "package=`ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
+          echo "package=$(ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p")" >> $GITHUB_ENV
 
       - name: "Set up Python"
         uses: actions/setup-python@v2
