@@ -34,7 +34,7 @@ jobs:
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
 
       - name: "Zip component dir"
-        if: env.release_version != ""
+        if: env.release_version != ''
         working-directory: ./custom_components/${{ env.package }}
         run: |
           zip ${{ env.package }}.zip -r ./
