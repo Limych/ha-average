@@ -75,6 +75,8 @@ to ensure Home Assistant update the code of the python library. (example `"requi
 README content if this was a published component:
 ***
 
+*Please :star: this repo if you find it useful*
+
 # integration_blueprint
 
 [![GitHub Release][releases-shield]][releases]
