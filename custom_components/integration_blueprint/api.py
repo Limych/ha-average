@@ -1,8 +1,8 @@
 """Sample API Client."""
-import logging
 import asyncio
+import logging
 import socket
-from typing import Optional
+
 import aiohttp
 import async_timeout
 
@@ -15,6 +15,8 @@ HEADERS = {"Content-type": "application/json; charset=UTF-8"}
 
 
 class IntegrationBlueprintApiClient:
+    """Blueprint API client class."""
+
     def __init__(
         self, username: str, password: str, session: aiohttp.ClientSession
     ) -> None:
@@ -33,13 +35,15 @@ class IntegrationBlueprintApiClient:
         url = "https://jsonplaceholder.typicode.com/posts/1"
         await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
 
-    async def api_wrapper(
-        self, method: str, url: str, data: dict = {}, headers: dict = {}
-    ) -> dict:
+    async def api_wrapper(self, method: str, url: str, data=None, headers=None) -> dict:
         """Get information from the API."""
+        if data is None:
+            data = {}
+        if headers is None:
+            headers = {}
         try:
             async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
-                if method == "get":
+                if method == "get":  # pylint: disable=no-else-return
                     response = await self._session.get(url, headers=headers)
                     return await response.json()
 

@@ -66,7 +66,7 @@ I put a lot of work into making this repo and component available and updated to
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/
 [license]: https://github.com/Limych/ha-blueprint/blob/main/LICENSE.md
-[license-shield]: https://img.shields.io/github/license/custom-components/integration_blueprint.svg?style=popout
+[license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
 [releases-shield]: https://img.shields.io/github/release/custom-components/integration_blueprint.svg?style=popout
 [releases]: https://github.com/Limych/ha-blueprint/releases
