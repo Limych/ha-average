@@ -1,0 +1,66 @@
+---
+name: "Release"
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release_zip_file:
+    name: "Prepare release asset"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v1
+
+      - working-directory: ./custom_components
+        run: |
+          echo "package=`ls -F | grep \/$ | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
+          echo "release_version=`git describe --abbrev=0 | sed s/v//`" >> $GITHUB_ENV
+      - working-directory: ./custom_components
+        run: |
+          echo "basedir=`pwd`/${{ env.package }}" >> $GITHUB_ENV
+
+      - name: "Setup Git"
+        run: |
+          git config --global user.name "release"
+          git config --global user.email "release@GitHub"
+
+      - name: "Set version number"
+        working-directory: ./custom_components/${{ env.package }}
+        run: |
+          sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' __init__.py
+          sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
+
+      - name: "Zip component dir"
+        working-directory: ./custom_components/${{ env.package }}
+        run: |
+          zip ${{ env.package }}.zip -r ./
+      - name: "Upload zip to release"
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ${{ env.basedir }}/${{ env.package }}.zip
+          asset_name: ${{ env.package }}.zip
+          tag: ${{ env.release_version }}
+          overwrite: true
+
+  releasenotes:
+    name: "Prepare releasenotes"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v1
+
+      - name: "Set up Python 3.9"
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: "Install requirements"
+        run: |
+          python3 -m pip install setuptools wheel
+          python3 -m pip install -r ./requirements-dev.txt
+      - name: "Update release notes"
+        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release `git describe --abbrev=0`

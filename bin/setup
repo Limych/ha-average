@@ -1,0 +1,20 @@
+#!/bin/sh
+# Setups the repository.
+
+# Stop on errors
+set -e
+
+ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
+
+cd "${ROOT}"
+bin/bootstrap
+
+pre-commit install
+pip3 install -r requirements-dev.txt
+
+touch custom_components/__init__.py
+
+CONFIG=/run/user/$(id -u)/gvfs/smb-share:server=hassio,share=config/
+if [ -d "$CONFIG" ] && [ ! -e dev-config ]; then
+    ln -s "$CONFIG" dev-config
+fi

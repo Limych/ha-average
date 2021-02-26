@@ -1,0 +1,7 @@
+{
+  "name": "Gismeteo Weather Provider",
+  "domains": [
+    "weather",
+    "sensor"
+  ]
+}
