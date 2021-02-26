@@ -23,18 +23,20 @@ jobs:
           echo "basedir=$(pwd)/${{ env.package }}" >> $GITHUB_ENV
 
       - name: "Setup Git"
+        if: env.release_version != '' && success()
         run: |
           git config --global user.name "release"
           git config --global user.email "release@GitHub"
 
       - name: "Set version number"
+        if: env.release_version != '' && success()
         working-directory: ./custom_components/${{ env.package }}
         run: |
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' __init__.py
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
 
       - name: "Zip component dir"
-        if: env.release_version != ''
+        if: env.release_version != '' && success()
         working-directory: ./custom_components/${{ env.package }}
         run: |
           zip ${{ env.package }}.zip -r ./
@@ -61,15 +63,17 @@ jobs:
           echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
 
       - name: "Set up Python 3.9"
+        if: env.release_version != '' && success()
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
 
       - name: "Install requirements"
+        if: env.release_version != '' && success()
         run: |
           python3 -m pip install setuptools wheel
           python3 -m pip install -r ./requirements-dev.txt
 
       - name: "Update release notes"
-        if: env.release_version != ''
+        if: env.release_version != '' && success()
         run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ env.release_version }}
