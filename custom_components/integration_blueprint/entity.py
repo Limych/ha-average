@@ -1,11 +1,14 @@
-"""BlueprintEntity class"""
+"""BlueprintEntity class."""
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN, NAME, VERSION, ATTRIBUTION
+from .const import ATTRIBUTION, DOMAIN, NAME, VERSION
 
 
 class IntegrationBlueprintEntity(CoordinatorEntity):
+    """Blueprint entity."""
+
     def __init__(self, coordinator, config_entry):
+        """Class initialization."""
         super().__init__(coordinator)
         self.config_entry = config_entry
 
@@ -16,6 +19,7 @@ class IntegrationBlueprintEntity(CoordinatorEntity):
 
     @property
     def device_info(self):
+        """Return the device info."""
         return {
             "identifiers": {(DOMAIN, self.unique_id)},
             "name": NAME,
