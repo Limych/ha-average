@@ -34,13 +34,13 @@ jobs:
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
 
       - name: "Zip component dir"
-        if: [ -n ${{ env.release_version }} ]
+        if: env.release_version != ""
         working-directory: ./custom_components/${{ env.package }}
         run: |
           zip ${{ env.package }}.zip -r ./
 
       - name: "Upload zip to release"
-        if: [ -n ${{ env.release_version }} ] && ${{ success() }}
+        if: env.release_version != "" && success()
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -71,5 +71,5 @@ jobs:
           python3 -m pip install -r ./requirements-dev.txt
 
       - name: "Update release notes"
-        if: [ -n ${{ env.release_version }} ]
+        if: env.release_version != ""
         run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ env.release_version }}
