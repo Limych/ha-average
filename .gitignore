@@ -66,6 +66,6 @@ venv.bak/
 
 
 
-dev-config
+/dev-config
 /custom_components/__init__.py
 /test*.py
