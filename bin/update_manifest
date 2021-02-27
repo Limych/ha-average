@@ -10,7 +10,11 @@ cd "${ROOT}"
 # Load common functions
 source ./bin/_common
 
-component=$(ls -q "${ROOT}/custom_components/" | grep -v __)
+if [[ $(ls -q "${ROOT}/custom_components/" | grep -v __ | wc -l) > 1 ]]; then
+    log.error "WARNING: Detected more than one custom component. This script will update only first one of them."
+fi
+
+component=$(ls -q "${ROOT}/custom_components/" | grep -v __ | head -n 1)
 const_path="custom_components/${component}/const.py"
 
 name=$(grep "^NAME =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
