@@ -178,7 +178,7 @@ See separate [license file](LICENSE.md) for full text.
 ***
 
 [component]: https://github.com/Limych/ha-blueprint
-[commits-shield]: https://img.shields.io/github/commit-activity/y/custom-components/integration_blueprint.svg?style=popout
+[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-blueprint.svg?style=popout
 [commits]: https://github.com/Limych/ha-blueprint/commits/master
 [hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
 [hacs]: https://hacs.xyz
@@ -188,7 +188,7 @@ See separate [license file](LICENSE.md) for full text.
 [license]: https://github.com/Limych/ha-blueprint/blob/main/LICENSE.md
 [license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
 [maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
-[releases-shield]: https://img.shields.io/github/release/custom-components/integration_blueprint.svg?style=popout
+[releases-shield]: https://img.shields.io/github/release/Limych/ha-blueprint.svg?style=popout
 [releases]: https://github.com/Limych/ha-blueprint/releases
 [releases-latest]: https://github.com/Limych/ha-blueprint/releases/latest
 [user_profile]: https://github.com/Limych
