@@ -24,6 +24,12 @@ cmd="${1:-menu}"
 if ! ${dk} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
     log.info "Create container..."
     ${dk} create -it --name "${container}" -p "${port}" -v "${volume}" "${image}"
+
+    log.info "Start container..."
+    ${dk} start "${container}"
+
+    log.info "Initialize container..."
+    ${dk} exec -it -w "${workdir}" "${container}" container install
 fi
 
 if [[ "${cmd}" == "menu" ]]; then
