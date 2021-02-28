@@ -62,6 +62,7 @@ class IntegrationBlueprintApiClient:
                 url,
                 exception,
             )
+            raise exception
 
         except (KeyError, TypeError) as exception:
             _LOGGER.error(
@@ -69,11 +70,15 @@ class IntegrationBlueprintApiClient:
                 url,
                 exception,
             )
+            raise exception
+
         except (aiohttp.ClientError, socket.gaierror) as exception:
             _LOGGER.error(
                 "Error fetching information from %s - %s",
                 url,
                 exception,
             )
+            raise exception
+
         except Exception as exception:  # pylint: disable=broad-except
             _LOGGER.error("Something really wrong happened! - %s", exception)
