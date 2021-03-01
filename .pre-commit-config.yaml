@@ -48,9 +48,10 @@ repos:
       - id: check-json
         files: ^(custom_components|tests)/.+\.json$
       - id: trailing-whitespace
-      - id: no-commit-to-branch
-        args:
-          - --branch=master
+# Uncomment below lines if you want to follow classical GitHub flow style development
+#      - id: no-commit-to-branch
+#        args:
+#          - --branch=master
   - repo: local
     hooks:
       # Run mypy through our wrapper script in order to get the possible
