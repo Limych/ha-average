@@ -1,9 +1,6 @@
 <!--
   You are amazing! Thanks for contributing to our project!
   Please, DO NOT DELETE ANY TEXT from this template! (unless instructed).
-
-  Please note, ANY pull requests to MASTER BRANCH will be CLOSED.
-  Use develop branch instead.
 -->
 ## Breaking change
 <!--

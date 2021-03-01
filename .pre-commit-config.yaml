@@ -1,17 +1,24 @@
 repos:
+  - repo: local
+    hooks:
+      - id: manifest
+        name: Update manifest.json
+        entry: bin/update_manifest
+        language: script
+        files: ^custom_components/.+/const\.py$
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.4.1
+    rev: v2.7.4
     hooks:
       - id: pyupgrade
         args: [--py37-plus]
   - repo: https://github.com/psf/black
-    rev: 19.10b0
+    rev: 20.8b1
     hooks:
       - id: black
         args:
           - --safe
           - --quiet
-        files: ^custom_components/.+\.py$
+        files: ^(custom_components|bin|tests)/.+\.py$
   - repo: https://gitlab.com/pycqa/flake8
     rev: 3.8.1
     hooks:
@@ -19,14 +26,29 @@ repos:
         additional_dependencies:
           - flake8-docstrings==1.5.0
           - pydocstyle==5.0.2
-        files: ^custom_components/.+\.py$
+        files: ^(custom_components|bin|tests)/.+\.py$
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.0
+    hooks:
+      - id: bandit
+        args:
+          - --quiet
+          - --format=custom
+          - --configfile=tests/bandit.yaml
+        files: ^(custom_components|bin|tests)/.+\.py$
+  - repo: https://github.com/pre-commit/mirrors-isort
+    rev: v5.6.4
+    hooks:
+      - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.5.0
     hooks:
       - id: check-executables-have-shebangs
         stages: [manual]
       - id: check-json
+        files: ^(custom_components|tests)/.+\.json$
       - id: trailing-whitespace
+# Uncomment below lines if you want to follow classical GitHub flow style development
 #      - id: no-commit-to-branch
 #        args:
 #          - --branch=master

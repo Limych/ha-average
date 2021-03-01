@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+# Stop on errors
+set -e
+
+ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
+cd "${ROOT}"
+
+# Load common functions
+source ./bin/_common
+
+dk=$(which docker) || die "ERROR: Docker not found."
+
+workspace=${PWD##*/}
+workdir="/workspaces/${workspace}"
+
+container="dev-${workspace}"
+port="127.0.0.1:9123:8123"
+image="ludeeus/container:integration-debian"
+volume="${ROOT}:${workdir}"
+
+cmd="${1:-menu}"
+
+if ! ${dk} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
+    log.info "Create container..."
+    ${dk} create -it --name "${container}" -p "${port}" -v "${volume}" "${image}"
+
+    log.info "Start container..."
+    ${dk} start "${container}"
+
+    log.info "Initialize container..."
+    ${dk} exec -it -w "${workdir}" "${container}" container install
+fi
+
+if [[ "${cmd}" == "menu" ]]; then
+    PS3='Please enter your choice: '
+    options=(\
+        "Run Home Assistant on port 9123"
+        "Run Home Assistant configuration against /config"
+        "Upgrade Home Assistant to latest dev"
+        "Install a specific version of Home Assistant"
+    )
+    echo
+    select opt in "${options[@]}"
+    do
+        case $REPLY in
+            1 )
+                cmd="start"
+                ;;
+            2 )
+                cmd="check"
+                ;;
+            3 )
+                cmd="upgrade"
+                ;;
+            4 )
+                cmd="set-version"
+                ;;
+        esac
+        break
+    done
+fi
+case "${cmd}" in
+    "stop" )
+        log.info "Stop container..."
+        ${dk} stop "${container}"
+        ;;
+    "down" )
+        log.info "Destroy container..."
+        ${dk} stop -t 10 "${container}" >/dev/null
+        ${dk} rm "${container}"
+        ;;
+    "bash" )
+        if ! ${dk} ps | grep -wq ${container}; then
+            log.info "Start container..."
+            ${dk} start "${container}"
+        fi
+        log.info "Interactive mode..."
+        ${dk} exec -it "${container}" bash
+        ;;
+    * )
+        if ! ${dk} ps | grep -wq ${container}; then
+            log.info "Start container..."
+            ${dk} start "${container}"
+        fi
+        log.info "Send command '${cmd}' to container..."
+        if [[ "${cmd}" == "start" ]]; then
+            log.info "After Home Assistant initialization you can access to system on http://localhost:9123/"
+        fi
+        ${dk} exec -it -w "${workdir}" "${container}" container "${cmd}"
+        ;;
+esac

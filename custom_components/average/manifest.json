@@ -9,7 +9,7 @@
         "weather"
     ],
     "documentation": "https://github.com/Limych/ha-average",
-    "domain": "average",
-    "name": "Average",
+    "domain": "",
+    "name": "",
     "requirements": []
 }

@@ -20,7 +20,7 @@ Issues not containing the minimum requirements will be closed:
 **Versions**
 <!--
 If you are not using the newest version, download and try that before opening an issue.
-If you are unsure about the version check the __init__.py or const.py files.
+If you are unsure about the version check the manifest.json file of this component.
 -->
 
 * Version of the Home Assistant:
@@ -34,34 +34,12 @@ Add your configs here.
 ```
 
 **Describe the bug**
-
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-
-If applicable, describe the steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
-
-**Expected behavior**
-
-A clear and concise description of what you expected to happen.
-
-**Screenshots**
-
-If applicable, add screenshots to help explain your problem.
-
-
 **Debug log**
-<!-- To enable debug logs check this https://www.home-assistant.io/components/logger/ -->
+<!-- To enable debug logs check "Troubleshooting" section of README of this component or this https://www.home-assistant.io/components/logger/ -->
 ```text
 
 Add your logs here.
 
 ```
-
-**Additional context**
-
-Add any other context about the problem here.

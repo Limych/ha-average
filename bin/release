@@ -1,17 +1,44 @@
-#!/bin/sh
-# Resolve all dependencies that the application requires to run.
+#!/usr/bin/env bash
 
 # Stop on errors
 set -e
 
 ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
-
 cd "${ROOT}"
 
-if [ -z $1 ]; then
-        echo "Please, describe version number as first argument."
-        exit 1
+# Load common functions
+source ./bin/_common
+
+if output=$(git branch --show-current) \
+&& [[ "$output" != "master" && "$output" != "main" ]]; then
+    log.fatal "Please, change HEAD to 'master' or 'main' branch."
+    log.info "At now HEAD at '${output}' branch."
+    exit 1
+fi
+if output=$(git status --porcelain) && [[ -n "$output" ]]; then
+    log.fatal "Please, make working tree clean first."
+    log.info ${output}
+    exit 2
 fi
 
-git tag -a "$1" -m "v$1"
-echo "Commit tagged as v$1"
+const_path=$(find custom_components/ -name const.py)
+version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+
+if [[ -z $1 ]]; then
+    log.fatal "Please, describe new version number as first argument."
+    log.info "Current version number is ${version}"
+    exit 3
+fi
+
+new=$(echo "${1}" | sed -E "s/\+.*//")
+
+log.info "Patch files to version '${new}'..."
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
+./bin/update_manifest
+git commit -a --no-verify -m "Bump version"
+git tag -a "$new" -m "v$new"
+log.info "Commit tagged as v$new"
+
+log.info "Patch files to version '${new}+dev'..."
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}+dev/" ${const_path}
+./bin/update_manifest

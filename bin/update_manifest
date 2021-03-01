@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Update manifest.json of custom component.
+
+# Stop on errors
+set -e
+
+ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
+cd "${ROOT}"
+
+# Load common functions
+source ./bin/_common
+
+if [[ $(ls -q "${ROOT}/custom_components/" | grep -v __ | wc -l) > 1 ]]; then
+    log.error "WARNING: Detected more than one custom component. This script will update only first one of them."
+fi
+
+component=$(ls -q "${ROOT}/custom_components/" | grep -v __ | head -n 1)
+const_path="custom_components/${component}/const.py"
+
+name=$(grep "^NAME =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+domain=$(grep "^DOMAIN =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+issue_url=$(grep "^ISSUE_URL =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+
+log.info "Update manifest.json data..."
+manifest_path="custom_components/${component}/manifest.json"
+sed -i -E "s!(\"name\": \")[^\"]*!\\1${name}!" ${manifest_path}
+sed -i -E "s!(\"domain\": \")[^\"]*!\\1${domain}!" ${manifest_path}
+sed -i -E "s!(\"version\": \")[^\"]*!\\1${version}!" ${manifest_path}
+sed -i -E "s!(\"issue_tracker\": \")[^\"]*!\\1${issue_url}!" ${manifest_path}
+
+log.info "Update hacs.json data..."
+hacs_path="${ROOT}/hacs.json"
+sed -i -E "s!(\"name\": \")[^\"]*!\\1${name}!" ${hacs_path}

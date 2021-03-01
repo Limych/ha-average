@@ -16,28 +16,33 @@ jobs:
 
       - working-directory: ./custom_components
         run: |
-          echo "package=`ls -F | grep \/$ | sed -n "s/\///g;1p"`" >> $GITHUB_ENV
-          echo "release_version=`git describe --abbrev=0 | sed s/v//`" >> $GITHUB_ENV
+          echo "package=$(ls -F | grep \/$ | sed -n "s/\///g;1p")" >> $GITHUB_ENV
+          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
       - working-directory: ./custom_components
         run: |
-          echo "basedir=`pwd`/${{ env.package }}" >> $GITHUB_ENV
+          echo "basedir=$(pwd)/${{ env.package }}" >> $GITHUB_ENV
 
       - name: "Setup Git"
+        if: env.release_version != '' && success()
         run: |
           git config --global user.name "release"
           git config --global user.email "release@GitHub"
 
       - name: "Set version number"
+        if: env.release_version != '' && success()
         working-directory: ./custom_components/${{ env.package }}
         run: |
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' __init__.py
           sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
 
       - name: "Zip component dir"
+        if: env.release_version != '' && success()
         working-directory: ./custom_components/${{ env.package }}
         run: |
           zip ${{ env.package }}.zip -r ./
+
       - name: "Upload zip to release"
+        if: env.release_version != '' && success()
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -53,14 +58,33 @@ jobs:
       - name: "Check out repository"
         uses: actions/checkout@v1
 
-      - name: "Set up Python 3.7"
+      - working-directory: ./custom_components
+        run: |
+          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
+
+      - name: "Set up Python"
+        if: env.release_version != '' && success()
         uses: actions/setup-python@v2
         with:
-          python-version: 3.7
+          python-version: 3.9
+
+      - name: "Cache pip"
+        uses: actions/cache@v2.1.4
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
 
       - name: "Install requirements"
+        if: env.release_version != '' && success()
         run: |
           python3 -m pip install setuptools wheel
           python3 -m pip install -r ./requirements-dev.txt
+
       - name: "Update release notes"
-        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release `git describe --abbrev=0`
+        if: env.release_version != '' && success()
+        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ env.release_version }}

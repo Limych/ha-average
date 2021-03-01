@@ -1,0 +1,111 @@
+---
+name: "Python testing"
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    name: "Lint package"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - run: |
+          echo "package=$(ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p")" >> $GITHUB_ENV
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: "Cache pip"
+        uses: actions/cache@v2.1.4
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-test.txt ]; then
+            pip install -r requirements-test.txt
+          elif [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          pip install pytest-xdist coveralls
+
+          if [ -d custom_components ]; then
+            echo '"""Stub."""' >custom_components/__init__.py
+          fi
+
+      - name: "Lint with flake8 & pylint"
+        run: |
+          flake8 ${{ env.package }} tests
+          pylint ${{ env.package }} tests
+
+      - name: "Calculate coverage"
+        run: |
+          pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
+          ./bin/check_dirty
+
+      - name: "Send coverage to Coveralls"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github
+
+  tests:
+    name: "Test package"
+    runs-on: ${{ matrix.os }}
+    strategy:
+      max-parallel: 4
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        python-version: [3.8, 3.9]
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Cache pip"
+        uses: actions/cache@v2.1.4
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements-test.txt ]; then
+            pip install -r requirements-test.txt
+          elif [ -f requirements-dev.txt ]; then
+            pip install -r requirements-dev.txt
+          elif [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+          pip install pytest-xdist
+
+          if [ -d custom_components ]; then
+            echo '"""Stub."""' >custom_components/__init__.py
+          fi
+
+      - name: "Run tests with pytest"
+        run: |
+          pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
+          ./bin/check_dirty

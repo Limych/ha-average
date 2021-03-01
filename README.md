@@ -2,24 +2,20 @@
 
 # Average Sensor for Home Assistant
 
-[![GitHub Release](https://img.shields.io/github/tag-date/Limych/ha-average?label=release&style=popout)](https://github.com/Limych/ha-average/releases)
-[![GitHub Activity](https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout)](https://github.com/Limych/ha-average/commits/master)
-[![License](https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout)](LICENSE.md)
-![Requires.io](https://img.shields.io/requires/github/Limych/ha-average)
+[![GitHub Release][releases-shield]][releases]
+[![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]](LICENSE.md)
 
-[![hacs](https://img.shields.io/badge/HACS-Default-orange.svg?style=popout)][hacs]
-![Project Maintenance](https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout)
+[![hacs][hacs-shield]][hacs]
+[![Project Maintenance][maintenance-shield]][user_profile]
 
-[![GitHub pull requests](https://img.shields.io/github/issues-pr/Limych/ha-average?style=popout)](https://github.com/Limych/ha-average/pulls)
-[![Bugs](https://img.shields.io/github/issues/Limych/ha-average/bug.svg?colorB=red&label=bugs&style=popout)](https://github.com/Limych/ha-average/issues?q=is%3Aopen+is%3Aissue+label%3ABug)
+[![Community Forum][forum-shield]][forum]
 
-[![Community Forum](https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout)][forum-support]
-
-This sensor allows you to calculate the average state for one or more sensors over a specified period. Or just the average current state for one or more sensors, if you do not need historical data.
+_This sensor allows you to calculate the average state for one or more sensors over a specified period. Or just the average current state for one or more sensors, if you do not need historical data._
 
 Initially it was written special for calculating of average temperature, but now it can calculate average of any numerical data.
 
-![Example](example.png)
+![Example][exampleimg]
 
 What makes this sensor different from others built into HA:
 
@@ -46,7 +42,11 @@ I also suggest you [visit the support topic][forum-support] on the community for
 
 ### Install from HACS (recommended)
 
-1. Just search for Average sensor integration in [HACS][hacs] and install it.
+1. Have [HACS][hacs] installed, this will allow you to easily manage and track updates.
+1. Search for "Average".
+1. Click Install below the found integration.
+
+... then if you want to use `configuration.yaml` to configure sensor...
 1. Add `average` sensor to your `configuration.yaml` file. See configuration examples below.
 1. Restart Home Assistant
 
@@ -55,8 +55,10 @@ I also suggest you [visit the support topic][forum-support] on the community for
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
 1. If you do not have a `custom_components` directory (folder) there, you need to create it.
 1. In the `custom_components` directory (folder) create a new folder called `average`.
-1. Download _all_ the files from the `custom_components/average/` directory (folder) in this repository.
-1. Place the files you downloaded in the new directory (folder) you created.
+1. Download file `average.zip` from the [latest release section][releases-latest] in this repository.
+1. Extract _all_ files from this archive you downloaded in the directory (folder) you created.
+
+... then if you want to use `configuration.yaml` to configure sensor...
 1. Add `average` sensor to your `configuration.yaml` file. See configuration examples below.
 1. Restart Home Assistant
 
@@ -283,7 +285,7 @@ To enable debug logs use this configuration:
 ```yaml
 # Example configuration.yaml entry
 logger:
-  default: error
+  default: info
   logs:
     custom_components.average: debug
 ```
@@ -301,7 +303,7 @@ Thank you for being involved! :heart_eyes:
 
 ## Authors & contributors
 
-The original setup of this component is by [Andrey "Limych" Khrolenok][limych].
+The original setup of this component is by [Andrey "Limych" Khrolenok](https://github.com/Limych).
 
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
@@ -312,7 +314,23 @@ creative commons Attribution-NonCommercial-ShareAlike 4.0 International License
 
 See separate [license file](LICENSE.md) for full text.
 
-[forum-support]: https://community.home-assistant.io/t/average-sensor/111674
-[hacs]: https://github.com/custom-components/hacs
-[limych]: https://github.com/Limych
+***
+
+[component]: https://github.com/Limych/ha-average
+[commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout
+[commits]: https://github.com/Limych/ha-average/commits/master
+[hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
+[hacs]: https://hacs.xyz
+[exampleimg]: https://github.com/Limych/ha-average/raw/master/example.png
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
+[forum]: https://community.home-assistant.io/t/average-sensor/111674
+[license]: https://github.com/Limych/ha-average/blob/main/LICENSE.md
+[license-shield]: https://img.shields.io/badge/license-Creative_Commons_BY--NC--SA_License-lightgray.svg?style=popout
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Andrey%20Khrolenok%20%40Limych-blue.svg?style=popout
+[releases-shield]: https://img.shields.io/github/release/Limych/ha-average.svg?style=popout
+[releases]: https://github.com/Limych/ha-average/releases
+[releases-latest]: https://github.com/Limych/ha-average/releases/latest
+[user_profile]: https://github.com/Limych
+[report_bug]: https://github.com/Limych/ha-average/issues/new?template=bug_report.md
+[suggest_idea]: https://github.com/Limych/ha-average/issues/new?template=feature_request.md
 [contributors]: https://github.com/Limych/ha-average/graphs/contributors

@@ -1,0 +1,13 @@
+{
+    "domain": "integration_blueprint",
+    "name": "Integration blueprint",
+    "version": "0.0.0+dev",
+    "documentation": "https://github.com/Limych/ha-blueprint",
+    "issue_tracker": "https://github.com/Limych/ha-blueprint/issues",
+    "dependencies": [],
+    "config_flow": true,
+    "codeowners": [
+        "@Limych"
+    ],
+    "requirements": []
+}

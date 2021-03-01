@@ -1,0 +1,31 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Blueprint",
+                "description": "Если вам нужна помощь с настройкой, посмотрите здесь: https://github.com/Limych/ha-blueprint",
+                "data": {
+                    "username": "Имя пользователя",
+                    "password": "Пароль"
+                }
+            }
+        },
+        "error": {
+            "auth": "Имя пользователя или пароль — неверны."
+        },
+        "abort": {
+            "single_instance_allowed": "Допускается только один экземпляр."
+        }
+    },
+    "options": {
+        "step": {
+            "user": {
+                "data": {
+                    "binary_sensor": "Двоичный датчик активен",
+                    "sensor": "Датчик активен",
+                    "switch": "Выключатель активен"
+                }
+            }
+        }
+    }
+}

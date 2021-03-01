@@ -1,20 +1,28 @@
-#!/bin/sh
-# Setups the repository.
+#!/usr/bin/env bash
+# Setups the development environment.
 
 # Stop on errors
 set -e
 
 ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
-
 cd "${ROOT}"
-bin/bootstrap
+
+# Load common functions
+source ./bin/_common
+
+if [ ! -d "venv" ]; then
+    log.info "Initializing the virtual environment..."
+    /usr/bin/python3 -m venv venv
+    source ./venv/bin/activate
+fi
+
+log.info "Updating PIP..."
+/usr/bin/python3 -m pip install --upgrade pip
+
+log.info "Installing development dependencies..."
+pip3 install colorlog pre-commit $(grep mypy requirements-dev.txt)
 
 pre-commit install
 pip3 install -r requirements-dev.txt
 
 touch custom_components/__init__.py
-
-CONFIG=/run/user/$(id -u)/gvfs/smb-share:server=hassio,share=config/
-if [ -d "$CONFIG" ] && [ ! -e dev-config ]; then
-    ln -s "$CONFIG" dev-config
-fi
