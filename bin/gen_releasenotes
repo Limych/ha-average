@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.CRITICAL)
 
 _LOGGER = logging.getLogger(__name__)
 
-VERSION = "1.1.7"
+VERSION = "1.1.8"
 
 ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
 
@@ -101,6 +101,7 @@ def gen_changes(repo: Repository, tag: str = None) -> str:
             msg = msg.split("\n")[0]
         if (
             "Bump version" in msg
+            or "Version bump" in msg
             or "Merge branch" in msg
             or "Merge tag" in msg
             or "Merge pull request" in msg
