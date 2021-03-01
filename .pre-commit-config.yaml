@@ -67,6 +67,6 @@ repos:
         files: ^custom_components/.+\.py$
       - id: pylint
         name: pylint
-        entry: python3 -m pylint.__main__
+        entry: bin/run-in-env pylint
         language: system
         types: [python]

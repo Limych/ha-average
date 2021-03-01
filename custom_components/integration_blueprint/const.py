@@ -20,7 +20,6 @@ SENSOR = "sensor"
 SWITCH = "switch"
 PLATFORMS = [BINARY_SENSOR, SENSOR, SWITCH]
 
-
 # Configuration and options
 CONF_ENABLED = "enabled"
 CONF_USERNAME = "username"
