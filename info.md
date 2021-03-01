@@ -1,3 +1,7 @@
+{% if prerelease %}
+### NB!: This is a Beta version!
+{% endif %}
+
 [![GitHub Release][releases-shield]][releases]
 [![GitHub Activity][commits-shield]][commits]
 [![License][license-shield]][license]

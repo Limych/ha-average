@@ -62,11 +62,22 @@ jobs:
         run: |
           echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
 
-      - name: "Set up Python 3.9"
+      - name: "Set up Python"
         if: env.release_version != '' && success()
         uses: actions/setup-python@v2
         with:
           python-version: 3.9
+
+      - name: "Cache pip"
+        uses: actions/cache@v2.1.4
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
 
       - name: "Install requirements"
         if: env.release_version != '' && success()

@@ -47,7 +47,7 @@ Use [black](https://github.com/ambv/black) to make sure the code follows the sty
 
 ## Test your code modification
 
-This custom component is based on [blueprint template](https://github.com/Limych/ha-blueprint).
+This custom component is based on [integration blueprint template](https://github.com/Limych/ha-blueprint).
 
 It comes with development environment in a container, easy to launch
 if you use Visual Studio Code. With this container you will have a stand alone

@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Helper script to generate release notes."""
 import argparse
-from datetime import datetime
 import logging
 import os
 import re
 import subprocess
+from datetime import datetime
 from typing import List
 
 from github import Github, GithubException, Repository, Tag
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.CRITICAL)
 
 _LOGGER = logging.getLogger(__name__)
 
-VERSION = "1.1.5"
+VERSION = "1.1.7"
 
 ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
 
@@ -56,6 +56,8 @@ def get_release_tags(repo: Repository) -> List[Tag.Tag]:
     """Get list of all release tags from repository."""
     reg = re.compile(
         r"^v?[0-9]+\.[0-9]+(?:\.[0-9]+)?"
+        r"(?:[._-]?[A-Za-z]*[._-]?[0-9]*)?"
+        r"(?:[._-]?dev[0-9]*)?"
         r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+)?$"
     )
     tags = list(filter(lambda tag: re.match(reg, tag.name), list(repo.get_tags())))
@@ -69,15 +71,20 @@ def get_period(repo: Repository, release: str = None) -> List[datetime]:
     data = [datetime.now()]
     dateformat = "%a, %d %b %Y %H:%M:%S GMT"
     found = release is None
+    last = False
+    is_prerelease = Version(release).is_prerelease
     for tag in get_release_tags(repo):
+        last = False
         commit = repo.get_commit(tag.commit.sha)
         timestamp = datetime.strptime(commit.last_modified, dateformat)
         _LOGGER.debug("Process tag %s => timestamp %s", tag.name, timestamp)
         data.append(timestamp)
-        if found:
+        if found and is_prerelease == Version(tag.name).is_prerelease:
             break
         if release is not None and release == tag.name:
-            found = True
+            found = last = True
+    if found and last:
+        data.append(datetime.fromtimestamp(0))
     return list(reversed(data[-2:]))
 
 
@@ -209,20 +216,22 @@ def main():
         else:
             print("Not enough changes for a release.")
     else:
-        version = arguments.release.replace("refs/tags/", "")
-        _LOGGER.debug("Release tag: %s", version)
+        tag = arguments.release.replace("refs/tags/", "")
+        _LOGGER.debug("Release tag: %s", tag)
+        version = Version(tag)
         msg = BODY.format(
             repo=arguments.repo,
-            version=version,
-            changes=gen_changes(repo, version),
+            version=str(version),
+            changes=gen_changes(repo, tag),
         )
         if arguments.dry_run:
+            print("Is prerelease:", version.is_prerelease)
             print("Generated release notes:\n" + msg)
         else:
-            release = repo.get_release(version)
+            release = repo.get_release(tag)
             release.update_release(
-                name=version,
-                prerelease=release.prerelease,
+                name=tag,
+                prerelease=version.is_prerelease,
                 draft=release.draft,
                 message=msg,
             )

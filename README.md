@@ -100,6 +100,9 @@ Platform | Description
 
 ![example][exampleimg]
 
+## Known Limitations and Issues
+
+- Some example limitation.
 
 ## Installation
 
