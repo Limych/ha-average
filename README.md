@@ -119,12 +119,12 @@ Platform | Description
 1. Restart Home Assistant
 
 1. Using the tool of choice open the directory (folder) for your HA configuration (where you find `configuration.yaml`).
-2. If you do not have a `custom_components` directory (folder) there, you need to create it.
-3. In the `custom_components` directory (folder) create a new folder called `integration_blueprint`.
+1. If you do not have a `custom_components` directory (folder) there, you need to create it.
+1. In the `custom_components` directory (folder) create a new folder called `integration_blueprint`.
 1. Download file `integration_blueprint.zip` from the [latest release section][releases-latest] in this repository.
 1. Extract _all_ files from this archive you downloaded in the directory (folder) you created.
-6. Restart Home Assistant
-7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint"
+1. Restart Home Assistant
+1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint"
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:

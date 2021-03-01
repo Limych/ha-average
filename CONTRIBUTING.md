@@ -7,6 +7,10 @@ Contributing to this project should be as easy and transparent as possible, whet
 - Submitting a fix
 - Proposing new features
 
+## IMPORTANT! Install development environment first
+
+When making changes in code, please use the existing development environment — this will save you from many errors and help create more convenient code to support. To install the environment, run the `./bin/setup` script.
+
 ## Github is used for everything
 
 Github is used to host code, to track issues and feature requests, as well as accept pull requests.
