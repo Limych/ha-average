@@ -1,7 +1,8 @@
 """BlueprintEntity class."""
+from homeassistant.const import ATTR_ATTRIBUTION, ATTR_ID
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import ATTRIBUTION, DOMAIN, NAME, VERSION
+from .const import ATTR_INTEGRATION, ATTRIBUTION, DOMAIN, NAME, VERSION
 
 
 class IntegrationBlueprintEntity(CoordinatorEntity):
@@ -31,7 +32,7 @@ class IntegrationBlueprintEntity(CoordinatorEntity):
     def device_state_attributes(self):
         """Return the state attributes."""
         return {
-            "attribution": ATTRIBUTION,
-            "id": str(self.coordinator.data.get("id")),
-            "integration": DOMAIN,
+            ATTR_ATTRIBUTION: ATTRIBUTION,
+            ATTR_ID: str(self.coordinator.data.get("id")),
+            ATTR_INTEGRATION: DOMAIN,
         }
