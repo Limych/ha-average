@@ -111,7 +111,10 @@ Platform | Description
 1. Have [HACS][hacs] installed, this will allow you to easily manage and track updates.
 1. Search for "Blueprint".
 1. Click Install below the found integration.
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+1. _If you want to configure component via Home Assistant UI..._\
+    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+1. _If you want to configure component via `configuration.yaml`..._\
+    follow instructions below, then restart Home Assistant.
 
 ### Manual installation
 
@@ -124,7 +127,10 @@ Platform | Description
 1. Download file `integration_blueprint.zip` from the [latest release section][releases-latest] in this repository.
 1. Extract _all_ files from this archive you downloaded in the directory (folder) you created.
 1. Restart Home Assistant
-1. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint"
+1. _If you want to configure component via Home Assistant UI..._\
+    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+1. _If you want to configure component via `configuration.yaml`..._\
+    follow instructions below, then restart Home Assistant.
 
 <p align="center">* * *</p>
 I put a lot of work into making this repo and component available and updated to inspire and help others! I will be glad to receive thanks from you — it will give me new strength and add enthusiasm:
