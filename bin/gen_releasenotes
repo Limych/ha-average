@@ -3,11 +3,11 @@
 import argparse
 import logging
 import os
-import re
 import subprocess
 from datetime import datetime
 from typing import List
 
+from awesomeversion.match import is_pep440
 from github import Github, GithubException, Repository, Tag
 from packaging.version import Version
 
@@ -54,13 +54,9 @@ def get_commits(repo: Repository, since: datetime, until: datetime):
 
 def get_release_tags(repo: Repository) -> List[Tag.Tag]:
     """Get list of all release tags from repository."""
-    reg = re.compile(
-        r"^v?[0-9]+\.[0-9]+(?:\.[0-9]+)?"
-        r"(?:[._-]?[A-Za-z]*[._-]?[0-9]*)?"
-        r"(?:[._-]?dev[0-9]*)?"
-        r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+)?$"
+    tags = list(
+        filter(lambda tag: is_pep440(tag.name.lstrip("v")), list(repo.get_tags()))
     )
-    tags = list(filter(lambda tag: re.match(reg, tag.name), list(repo.get_tags())))
     tags.sort(key=lambda x: x.name.lstrip("v"), reverse=True)
     _LOGGER.debug("Found tags: %s", tags)
     return tags

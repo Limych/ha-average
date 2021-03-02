@@ -1,8 +1,8 @@
 """Test integration_blueprint config flow."""
 from unittest.mock import patch
 
-from homeassistant import config_entries, data_entry_flow
 import pytest
+from homeassistant import config_entries, data_entry_flow
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.integration_blueprint.const import (
