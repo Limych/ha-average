@@ -108,8 +108,7 @@ async def async_setup_platform(
             template.hass = hass
 
     async_add_entities(
-        [AverageSensor(hass, name, start, end, duration, entities, precision, undef)],
-        update_before_add=True,
+        [AverageSensor(hass, name, start, end, duration, entities, precision, undef)]
     )
 
 
