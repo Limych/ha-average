@@ -1,7 +1,7 @@
 -r requirements.txt
 pytest==6.2.2
 pytest-cov==2.10.1
-pytest-homeassistant-custom-component==0.2.0
+pytest-homeassistant-custom-component==0.2.1
 flake8==3.8.4
 pylint==2.7.2
 pylint-strict-informational==0.1
