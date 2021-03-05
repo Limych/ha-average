@@ -39,6 +39,8 @@ git commit -a --no-verify -m "Bump version"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
-log.info "Patch files to version '${new}.dev0'..."
-sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}.dev0/" ${const_path}
+dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.).dev0"
+
+log.info "Patch files to version '${dev}'..."
+sed -i -E "s/(^VERSION = \")[^\"]*/\\1${dev}/" ${const_path}
 ./bin/update_manifest

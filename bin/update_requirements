@@ -54,6 +54,6 @@ for req in manifest["requirements"]:
     pkg = get_package(req)
     if pkg in harequire:
         print(f"{pkg} in HA requirements, no need here.")
-print(json.dumps(manifest["requirements"], indent=4, sort_keys=True))
+print(json.dumps(manifest["requirements"], indent=4))
 with open(f"{PKG_PATH}/manifest.json", "w") as manifestfile:
-    manifestfile.write(json.dumps(manifest, indent=4, sort_keys=True))
+    manifestfile.write(json.dumps(manifest, indent=4))

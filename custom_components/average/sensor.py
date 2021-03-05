@@ -16,6 +16,7 @@ from typing import Any, Dict, Optional, Union
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
+from _sha1 import sha1
 from homeassistant.components import history
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
@@ -147,6 +148,17 @@ class AverageSensor(Entity):
         self.available_sources = 0
         self.count = 0
         self.min_value = self.max_value = None
+
+        self._unique_id = sha1(
+            ";".join(
+                [str(start), str(duration), str(end), ",".join(self.sources)]
+            ).encode("utf-8")
+        )
+
+    @property
+    def unique_id(self):
+        """Return a unique ID to use for this entity."""
+        return self._unique_id
 
     @property
     def _has_period(self) -> bool:
