@@ -149,10 +149,12 @@ class AverageSensor(Entity):
         self.count = 0
         self.min_value = self.max_value = None
 
-        self._unique_id = sha1(
-            ";".join(
-                [str(start), str(duration), str(end), ",".join(self.sources)]
-            ).encode("utf-8")
+        self._unique_id = str(
+            sha1(
+                ";".join(
+                    [str(start), str(duration), str(end), ",".join(self.sources)]
+                ).encode("utf-8")
+            )
         )
 
     @property

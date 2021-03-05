@@ -141,6 +141,7 @@ async def test_sensor_initialization(default_sensor):
     }
 
     assert default_sensor.name == "test"
+    assert isinstance(default_sensor.unique_id, str)
     assert default_sensor.should_poll is True
     assert default_sensor.available is False
     assert default_sensor.state == STATE_UNAVAILABLE
