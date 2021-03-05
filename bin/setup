@@ -25,4 +25,4 @@ pip3 install colorlog pre-commit $(grep mypy requirements-dev.txt)
 pre-commit install
 pip3 install -r requirements-dev.txt
 
-touch custom_components/__init__.py
+echo '"""Custom components module."""' >custom_components/__init__.py
