@@ -81,7 +81,7 @@ PLATFORM_SCHEMA = vol.All(
             vol.Optional(CONF_END): cv.template,
             vol.Optional(CONF_DURATION): cv.positive_time_period,
             vol.Optional(CONF_PRECISION, default=DEFAULT_PRECISION): int,
-            vol.Optional(CONF_PROCESS_UNDEF_AS): float,
+            vol.Optional(CONF_PROCESS_UNDEF_AS): vol.Any(int, float),
         }
     ),
     check_period_keys,

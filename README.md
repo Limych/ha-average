@@ -28,7 +28,7 @@ This sensor copes with the averaging of data over a certain period of time. Howe
 > **_Note_**:\
 > You can find a real example of using this component in [my Home Assistant configuration](https://github.com/Limych/HomeAssistantConfiguration).
 
-I also suggest you [visit the support topic][forum-support] on the community forum.
+I also suggest you [visit the support topic][forum] on the community forum.
 
 ## Breaking changes
 
