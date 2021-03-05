@@ -19,7 +19,9 @@ from homeassistant.const import (
 )
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
+from homeassistant.setup import async_setup_component
 from pytest import raises
+from pytest_homeassistant_custom_component.common import assert_setup_component
 from voluptuous import Invalid
 
 from custom_components.average.const import CONF_DURATION, CONF_END, CONF_START, DOMAIN
@@ -131,7 +133,7 @@ async def test_setup_platform(hass: HomeAssistant):
     assert async_add_entities.called
 
 
-async def test_sensor_initialization(default_sensor):
+async def test_entity_initialization(default_sensor):
     """Test sensor initialization."""
     expected_attributes = {
         "available_sources": 0,
@@ -147,22 +149,39 @@ async def test_sensor_initialization(default_sensor):
     assert default_sensor.state == STATE_UNAVAILABLE
     assert default_sensor.unit_of_measurement is None
     assert default_sensor.icon is None
-    assert default_sensor.device_state_attributes == expected_attributes
+    assert default_sensor.state_attributes == expected_attributes
 
 
-#
-#
-# async def test_async_added_to_hass(hass: HomeAssistant):
-#     """Test async added to hass."""
-#     config = {
-#         CONF_PLATFORM: DOMAIN,
-#         CONF_NAME: "test",
-#         CONF_ENTITIES: ["sensor.test_monitored"],
-#         CONF_DURATION: timedelta(minutes=5),
-#     }
-#
-#     await async_setup_component(hass, SENSOR, {SENSOR: config})
-#     hass.block_till_done()
+async def test_async_setup_platform(hass: HomeAssistant):
+    """Test platform setup."""
+    mock_sensor = {
+        "platform": "template",
+        "sensors": {"test_monitored": {"value_template": "{{ 2 }}"}},
+    }
+    config = {
+        CONF_PLATFORM: DOMAIN,
+        CONF_ENTITIES: ["sensor.test_monitored", "sensor.nonexistent"],
+    }
+
+    with assert_setup_component(2, "sensor"):
+        assert await async_setup_component(
+            hass,
+            "sensor",
+            {
+                "sensor": [
+                    config,
+                    mock_sensor,
+                ]
+            },
+        )
+    await hass.async_block_till_done()
+
+    await hass.async_start()
+    await hass.async_block_till_done()
+
+    state = hass.states.get("sensor.average")
+    assert state is not None
+    assert state.state == "2.0"
 
 
 # pylint: disable=protected-access

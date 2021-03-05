@@ -202,7 +202,7 @@ class AverageSensor(Entity):
         return self._icon
 
     @property
-    def device_state_attributes(self) -> Optional[Dict[str, Any]]:
+    def state_attributes(self) -> Optional[Dict[str, Any]]:
         """Return the state attributes."""
         state_attr = {
             attr: getattr(self, attr)
