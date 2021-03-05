@@ -154,7 +154,7 @@ class AverageSensor(Entity):
                 ";".join(
                     [str(start), str(duration), str(end), ",".join(self.sources)]
                 ).encode("utf-8")
-            )
+            ).hexdigest()
         )
 
     @property
@@ -213,6 +213,7 @@ class AverageSensor(Entity):
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
+
         # pylint: disable=unused-argument
         @callback
         def sensor_state_listener(entity, old_state, new_state):

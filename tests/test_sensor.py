@@ -39,7 +39,7 @@ def mock_legacy_time(legacy_patchable_time):
 
 
 @pytest.fixture()
-def default_sensor(hass):
+def default_sensor(hass: HomeAssistant):
     """Create an AverageSensor with default values."""
     name = "test"
     entity_ids = ["sensor.test_monitored"]
@@ -141,7 +141,7 @@ async def test_sensor_initialization(default_sensor):
     }
 
     assert default_sensor.name == "test"
-    assert isinstance(default_sensor.unique_id, str)
+    assert default_sensor.unique_id == "2ef66732fb7155dce84ad53afe910beba59cfad4"
     assert default_sensor.should_poll is True
     assert default_sensor.available is False
     assert default_sensor.state == STATE_UNAVAILABLE
