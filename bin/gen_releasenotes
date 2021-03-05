@@ -96,8 +96,10 @@ def gen_changes(repo: Repository, tag: str = None) -> str:
         if "\n" in msg:
             msg = msg.split("\n")[0]
         if (
-            "Bump version" in msg
+            "Initial commit" in msg
+            or "Bump version" in msg
             or "Version bump" in msg
+            or "Merge remote-tracking branch" in msg
             or "Merge branch" in msg
             or "Merge tag" in msg
             or "Merge pull request" in msg
