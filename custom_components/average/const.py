@@ -9,7 +9,7 @@ from datetime import timedelta
 # Base component constants
 NAME = "Average Sensor"
 DOMAIN = "average"
-VERSION = "1.7.2.dev0"
+VERSION = "1.7.2"
 ISSUE_URL = "https://github.com/Limych/ha-average/issues"
 
 STARTUP_MESSAGE = f"""
