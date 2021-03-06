@@ -21,12 +21,23 @@ volume="${ROOT}:${workdir}"
 
 cmd="${1:-menu}"
 
+dk_start() {
+    tmp=$(echo "${port}" | cut -d":" -f-2)
+    tmp=$(${dk} ps | grep "${tmp}" | awk "{print \$NF}")
+    if [ -n "${tmp}" ] ; then
+        log.info "Stop container ${tmp}..."
+        ${dk} stop "${tmp}"
+    fi
+
+    log.info "Start container..."
+    ${dk} start "${container}"
+}
+
 if ! ${dk} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
     log.info "Create container..."
     ${dk} create -it --name "${container}" -p "${port}" -v "${volume}" "${image}"
 
-    log.info "Start container..."
-    ${dk} start "${container}"
+    dk_start
 
     log.info "Initialize container..."
     ${dk} exec -it -w "${workdir}" "${container}" container install
@@ -72,16 +83,14 @@ case "${cmd}" in
         ;;
     "bash" )
         if ! ${dk} ps | grep -wq ${container}; then
-            log.info "Start container..."
-            ${dk} start "${container}"
+            dk_start
         fi
         log.info "Interactive mode..."
         ${dk} exec -it "${container}" bash
         ;;
     * )
         if ! ${dk} ps | grep -wq ${container}; then
-            log.info "Start container..."
-            ${dk} start "${container}"
+            dk_start
         fi
         log.info "Send command '${cmd}' to container..."
         if [[ "${cmd}" == "start" ]]; then
