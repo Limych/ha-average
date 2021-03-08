@@ -28,13 +28,6 @@ jobs:
           git config --global user.name "release"
           git config --global user.email "release@GitHub"
 
-      - name: "Set version number"
-        if: env.release_version != '' && success()
-        working-directory: ./custom_components/${{ env.package }}
-        run: |
-          sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' __init__.py
-          sed -i '/VERSION = /c\VERSION = "${{ env.release_version }}"' const.py
-
       - name: "Zip component dir"
         if: env.release_version != '' && success()
         working-directory: ./custom_components/${{ env.package }}
