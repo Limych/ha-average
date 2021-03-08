@@ -1,3 +1,4 @@
+# pylint: disable=protected-access,redefined-outer-name
 """Global fixtures for integration."""
 # Fixtures allow you to replace functions with a Mock object. You can perform
 # many options via the Mock to reflect a particular behavior from the original

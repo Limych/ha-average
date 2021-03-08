@@ -1,4 +1,6 @@
+# pylint: disable=protected-access,redefined-outer-name
 """Test integration_blueprint setup process."""
+
 import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry

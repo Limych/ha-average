@@ -1,4 +1,6 @@
+# pylint: disable=protected-access,redefined-outer-name
 """Test integration_blueprint config flow."""
+
 from unittest.mock import patch
 
 import pytest

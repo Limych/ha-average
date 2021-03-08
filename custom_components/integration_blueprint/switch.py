@@ -5,10 +5,10 @@ from .const import DEFAULT_NAME, DOMAIN, ICON, SWITCH
 from .entity import IntegrationBlueprintEntity
 
 
-async def async_setup_entry(hass, entry, async_add_devices):
+async def async_setup_entry(hass, entry, async_add_entities):
     """Set up sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
-    async_add_devices([IntegrationBlueprintBinarySwitch(coordinator, entry)])
+    async_add_entities([IntegrationBlueprintBinarySwitch(coordinator, entry)])
 
 
 class IntegrationBlueprintBinarySwitch(IntegrationBlueprintEntity, SwitchEntity):
