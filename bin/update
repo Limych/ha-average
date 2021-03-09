@@ -7,5 +7,9 @@ set -e
 ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
 cd "${ROOT}"
 
-git pull
-git submodule update
+if git branch -r | grep -q "template/" ; then
+    git fetch template
+fi
+
+git fetch
+git submodule update --remote
