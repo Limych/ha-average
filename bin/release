@@ -39,7 +39,11 @@ git commit -a --no-verify -m "Bump version"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
-dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.).dev0"
+if echo "${new}" | grep -Eq "[0-9](a|b|rc)"; then
+    dev="$(echo "${version}" | awk -F. '/[0-9]+\./{$NF="dev"($NF+1);print}' OFS=.)"
+else
+    dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.).dev0"
+fi
 
 log.info "Patch files to version '${dev}'..."
 sed -i -E "s/(^VERSION = \")[^\"]*/\\1${dev}/" ${const_path}
