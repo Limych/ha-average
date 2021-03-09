@@ -68,3 +68,4 @@ venv.bak/
 
 /custom_components/__init__.py
 /test*.py
+secrets.yaml
