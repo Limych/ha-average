@@ -35,7 +35,7 @@ new=$(echo "${1}" | sed -E "s/\+.*//")
 log.info "Patch files to version '${new}'..."
 sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
 ./bin/update_manifest
-git commit -a --no-verify -m "Bump version"
+git commit -a --no-verify -m "Bump version to ${new}"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
