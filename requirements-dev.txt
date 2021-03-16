@@ -3,5 +3,5 @@ black==20.08b1
 packaging==20.9
 pre-commit==2.10.1
 PyGithub==1.54.1
-pyupgrade==2.10.0
+pyupgrade==2.10.1
 yamllint==1.26.0
