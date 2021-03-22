@@ -111,7 +111,7 @@ case "${cmd}" in
         fi
         log.info "Send command '${cmd}' to container..."
         if [[ "${cmd}" == "start" ]]; then
-            log.info "After Home Assistant initialization you can access to system on http://localhost:9123/"
+            log.info "Note: After Home Assistant initialization you can access to system on http://localhost:9123/"
         fi
         ${docker} exec -it -w "${workdir}" "${container}" container "${cmd}"
 
