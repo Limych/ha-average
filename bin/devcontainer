@@ -19,18 +19,31 @@ port="127.0.0.1:9123:8123"
 image="ludeeus/container:integration-debian"
 volume="${ROOT}:${workdir}"
 
+if [[ "${1}" == "--public" ]]; then
+    shift
+    log.info "Attention! The container is creating externally accessible."
+    port=$(echo "${port}" | sed "s/127.0.0.1/0.0.0.0/")
+fi
+
 cmd="${1:-menu}"
 
 docker_start() {
     tmp=$(echo "${port}" | cut -d":" -f-2)
     tmp=$(${docker} ps | grep "${tmp}" | awk "{print \$NF}")
-    if [ -n "${tmp}" ] ; then
+    if test -n "${tmp}" ; then
         log.info "Stop container ${tmp}..."
         ${docker} stop "${tmp}"
     fi
 
     log.info "Start container..."
     ${docker} start "${container}"
+}
+
+bootstrap() {
+    if test -f "${ROOT}/.devcontainer/bootstrap.sh"; then
+        log.info "Execute bootstrap.sh..."
+        ${docker} exec -it -w "${workdir}" "${container}" .devcontainer/bootstrap.sh "$1"
+    fi
 }
 
 if ! ${docker} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
@@ -41,6 +54,7 @@ if ! ${docker} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
 
     log.info "Initialize container..."
     ${docker} exec -it -w "${workdir}" "${container}" container install
+    bootstrap "install"
 fi
 
 if [[ "${cmd}" == "menu" ]]; then
@@ -88,6 +102,9 @@ case "${cmd}" in
         log.info "Interactive mode..."
         ${docker} exec -it "${container}" bash
         ;;
+    "bootstrap" )
+        bootstrap "${cmd}"
+        ;;
     * )
         if ! ${docker} ps | grep -wq ${container}; then
             docker_start
@@ -97,5 +114,9 @@ case "${cmd}" in
             log.info "After Home Assistant initialization you can access to system on http://localhost:9123/"
         fi
         ${docker} exec -it -w "${workdir}" "${container}" container "${cmd}"
+
+        if [[ "${cmd}" == "upgrade" ]]; then
+            bootstrap "${cmd}"
+        fi
         ;;
 esac

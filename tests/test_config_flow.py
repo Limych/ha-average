@@ -85,7 +85,7 @@ async def test_failed_config_flow(hass: HomeAssistant, error_on_get_data):
 
 
 # Our config flow also has an options flow, so we must test it as well.
-async def test_options_flow(hass):
+async def test_options_flow(hass: HomeAssistant):
     """Test an options flow."""
     # Create a new MockConfigEntry and add to HASS (we're bypassing config
     # flow entirely)
