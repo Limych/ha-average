@@ -1,11 +1,12 @@
 """Switch platform for integration_blueprint."""
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.core import HomeAssistant
 
 from .const import DEFAULT_NAME, DOMAIN, ICON, SWITCH
 from .entity import IntegrationBlueprintEntity
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry, async_add_entities):
     """Set up sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IntegrationBlueprintBinarySwitch(coordinator, entry)])

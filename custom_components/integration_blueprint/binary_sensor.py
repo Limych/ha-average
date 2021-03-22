@@ -1,11 +1,12 @@
 """Binary sensor platform for integration_blueprint."""
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.core import HomeAssistant
 
 from .const import BINARY_SENSOR, BINARY_SENSOR_DEVICE_CLASS, DEFAULT_NAME, DOMAIN
 from .entity import IntegrationBlueprintEntity
 
 
-async def async_setup_entry(hass, entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry, async_add_entities):
     """Set up binary_sensor platform."""
     coordinator = hass.data[DOMAIN][entry.entry_id]
     async_add_entities([IntegrationBlueprintBinarySensor(coordinator, entry)])

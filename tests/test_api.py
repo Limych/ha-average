@@ -4,13 +4,14 @@
 import asyncio
 
 import aiohttp
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pytest import raises
 
 from custom_components.integration_blueprint.api import IntegrationBlueprintApiClient
 
 
-async def test_api(hass, aioclient_mock, caplog):
+async def test_api(hass: HomeAssistant, aioclient_mock, caplog):
     """Test API calls."""
 
     # To test the api submodule, we first create an instance of our API client
