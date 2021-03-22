@@ -3,8 +3,8 @@ name: "Release"
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "[v1-9]+.[1-9]+*"
 
 jobs:
   release_zip_file:

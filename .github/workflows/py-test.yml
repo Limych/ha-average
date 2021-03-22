@@ -1,7 +1,13 @@
 ---
 name: "Python testing"
 
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+  pull_request:
 
 jobs:
   lint:

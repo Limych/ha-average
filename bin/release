@@ -10,8 +10,8 @@ cd "${ROOT}"
 source ./bin/_common
 
 if output=$(git branch --show-current) \
-&& [[ "$output" != "master" && "$output" != "main" ]]; then
-    log.fatal "Please, change HEAD to 'master' or 'main' branch."
+&& [[ "$output" != "master" && "$output" != "main" && "$output" != "dev" ]]; then
+    log.fatal "Please, change HEAD to 'master', 'main' or 'dev' branch."
     log.info "At now HEAD at '${output}' branch."
     exit 1
 fi

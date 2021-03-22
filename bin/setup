@@ -26,6 +26,26 @@ log.info "Installing development dependencies..."
 ${pip} install colorlog pre-commit $(grep mypy requirements-dev.txt)
 
 pre-commit install
+
+if [[ -f secrets.yaml ]]; then
+    GITHUB_TOKEN=$(grep github_token secrets.yaml | cut -d' ' -f2)
+    # Backup original requirements and insert tokens
+    FILES=$(ls requirements*)
+    for FILE in ${FILES}
+    do
+        cp ${FILE}{,.bak}
+        sed -i "s/{GITHUB_TOKEN}/${GITHUB_TOKEN}/g" ${FILE}
+    done
+fi
+
 ${pip} install -r requirements-dev.txt
+
+if [[ -f secrets.yaml ]]; then
+    # Restore original requirements
+    for FILE in ${FILES}
+    do
+        mv -f ${FILE}{.bak,}
+    done
+fi
 
 echo '"""Custom components module."""' >custom_components/__init__.py
