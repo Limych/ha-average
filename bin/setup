@@ -27,25 +27,26 @@ ${pip} install colorlog pre-commit $(grep mypy requirements-dev.txt)
 
 pre-commit install
 
-if [[ -f secrets.yaml ]]; then
+REQ=$(cat requirements-dev.txt)
+while true; do
+    FILES=$(echo "${REQ}" | grep "^-r " | sed "s/^-r\\s\+//g")
+    if test -z "${FILES}"; then
+        break
+    fi
+    for FILE in ${FILES}; do
+        FILE_R=$(echo "${FILE}" | sed "s/\\./\\\\./g")
+        REQ=$(echo "${REQ}" | sed -e "/^-r\\s\+${FILE_R}/{r ${FILE}" -e "d" -e "}")
+    done
+done
+GIT=$(echo "${REQ}" | grep "{GITHUB_TOKEN}" | tr '\r\n' ' ')
+REQ=$(echo "${REQ}" | grep -v "{GITHUB_TOKEN}" | tr '\r\n' ' ')
+
+if test -n "${GIT}"; then
     GITHUB_TOKEN=$(grep github_token secrets.yaml | cut -d' ' -f2)
-    # Backup original requirements and insert tokens
-    FILES=$(ls requirements*)
-    for FILE in ${FILES}
-    do
-        cp ${FILE}{,.bak}
-        sed -i "s/{GITHUB_TOKEN}/${GITHUB_TOKEN}/g" ${FILE}
-    done
+    GIT=$(echo "${GIT}" | sed "s/{GITHUB_TOKEN}/${GITHUB_TOKEN}/g")
+    ${pip} install --upgrade ${GIT}
 fi
 
-${pip} install -r requirements-dev.txt
-
-if [[ -f secrets.yaml ]]; then
-    # Restore original requirements
-    for FILE in ${FILES}
-    do
-        mv -f ${FILE}{.bak,}
-    done
-fi
+${pip} install --upgrade ${REQ}
 
 echo '"""Custom components module."""' >custom_components/__init__.py
