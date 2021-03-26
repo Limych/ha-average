@@ -8,7 +8,6 @@ ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
 cd "${ROOT}"
 
 python=$(which python3)
-pip="${python} -m pip"
 
 # Load common functions
 source ./bin/_common
@@ -17,7 +16,10 @@ if [ ! -d "venv" ]; then
     log.info "Initializing the virtual environment..."
     ${python} -m venv venv
     source ./venv/bin/activate
+    python="${ROOT}/venv/bin/python3"
 fi
+
+pip="${python} -m pip"
 
 log.info "Updating PIP..."
 ${pip} install --upgrade pip
