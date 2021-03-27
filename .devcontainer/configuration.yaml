@@ -13,8 +13,12 @@ sensor:
     sensors:
       test1:
         value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+        unit_of_measurement: '°C'
+        device_class: 'temperature'
       test2:
         value_template: "{{ 2 }}"
+        unit_of_measurement: '°C'
+        device_class: 'temperature'
 
   - platform: average
     entities:

@@ -24,10 +24,12 @@ from homeassistant.components.history import LazyState
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
     ATTR_ICON,
     ATTR_UNIT_OF_MEASUREMENT,
     CONF_ENTITIES,
     CONF_NAME,
+    DEVICE_CLASS_TEMPERATURE,
     EVENT_HOMEASSISTANT_START,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
@@ -142,6 +144,7 @@ class AverageSensor(Entity):
         self._unit_of_measurement = None
         self._icon = None
         self._temperature_mode = None
+        self._device_class = None
 
         self.sources = expand_entity_ids(hass, entity_ids)
         self.count_sources = len(self.sources)
@@ -190,6 +193,11 @@ class AverageSensor(Entity):
     def state(self) -> Union[None, str, int, float]:
         """Return the state of the sensor."""
         return self._state if self.available else STATE_UNAVAILABLE
+
+    @property
+    def device_class(self) -> Optional[str]:
+        """Return the class of this device, from component DEVICE_CLASSES."""
+        return self._device_class
 
     @property
     def unit_of_measurement(self) -> Optional[str]:
@@ -266,8 +274,8 @@ class AverageSensor(Entity):
 
         try:
             temperature = convert_temperature(float(temperature), entity_unit, ha_unit)
-        except ValueError:
-            _LOGGER.error('Could not convert value "%s" to float', state)
+        except ValueError as exc:
+            _LOGGER.error('Could not convert value "%s" to float: %s', state, exc)
             return None
 
         return temperature
@@ -280,8 +288,8 @@ class AverageSensor(Entity):
 
         try:
             state = float(state)
-        except ValueError:
-            _LOGGER.error('Could not convert value "%s" to float', state)
+        except ValueError as exc:
+            _LOGGER.error('Could not convert value "%s" to float: %s', state, exc)
             return None
 
         self.count += 1
@@ -300,14 +308,16 @@ class AverageSensor(Entity):
             self._update_state()
 
     @staticmethod
-    def handle_template_exception(ex, field):
+    def handle_template_exception(exc, field):
         """Log an error nicely if the template cannot be interpreted."""
-        if ex.args and ex.args[0].startswith("UndefinedError: 'None' has no attribute"):
+        if exc.args and exc.args[0].startswith(
+            "UndefinedError: 'None' has no attribute"
+        ):
             # Common during HA startup - so just a warning
-            _LOGGER.warning(ex)
-            return
-        _LOGGER.error("Error parsing template for field %s", field)
-        _LOGGER.error(ex)
+            _LOGGER.warning(exc)
+
+        else:
+            _LOGGER.error('Error parsing template for field "%s": %s', field, exc)
 
     def _update_period(self):  # pylint: disable=r0912
         """Parse the templates and calculate a datetime tuples."""
@@ -331,7 +341,7 @@ class AverageSensor(Entity):
                     )
                 except ValueError:
                     _LOGGER.error(
-                        "Parsing error: start must be a datetime" "or a timestamp"
+                        'Parsing error: field "start" must be a datetime or a timestamp'
                     )
                     return
 
@@ -352,7 +362,7 @@ class AverageSensor(Entity):
                     )
                 except ValueError:
                     _LOGGER.error(
-                        "Parsing error: end must be a datetime " "or a timestamp"
+                        'Parsing error: field "end" must be a datetime or a timestamp'
                     )
                     return
 
@@ -433,20 +443,21 @@ class AverageSensor(Entity):
 
             if self._temperature_mode is None:
                 domain = split_entity_id(state.entity_id)[0]
+                self._device_class = state.attributes.get(ATTR_DEVICE_CLASS)
+                self._unit_of_measurement = state.attributes.get(
+                    ATTR_UNIT_OF_MEASUREMENT
+                )
                 self._temperature_mode = (
-                    domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
-                    or state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
-                    in TEMPERATURE_UNITS
+                    self._device_class == DEVICE_CLASS_TEMPERATURE
+                    or domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
+                    or self._unit_of_measurement in TEMPERATURE_UNITS
                 )
                 if self._temperature_mode:
                     _LOGGER.debug("%s is a temperature entity.", entity_id)
+                    self._device_class = DEVICE_CLASS_TEMPERATURE
                     self._unit_of_measurement = self._hass.config.units.temperature_unit
-                    self._icon = "mdi:thermometer"
                 else:
                     _LOGGER.debug("%s is NOT a temperature entity.", entity_id)
-                    self._unit_of_measurement = state.attributes.get(
-                        ATTR_UNIT_OF_MEASUREMENT
-                    )
                     self._icon = state.attributes.get(ATTR_ICON)
 
             value = 0
