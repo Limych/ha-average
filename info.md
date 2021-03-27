@@ -52,7 +52,7 @@ I put a lot of work into making this repo and component available and updated to
 [commits]: https://github.com/Limych/ha-average/commits/master
 [hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
-[exampleimg]: https://github.com/Limych/ha-average/raw/master/example.png
+[exampleimg]: https://github.com/Limych/ha-average/raw/dev/example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/average-sensor/111674
 [license]: https://github.com/Limych/ha-average/blob/main/LICENSE.md
