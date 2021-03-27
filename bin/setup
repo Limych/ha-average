@@ -7,22 +7,48 @@ set -e
 ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
 cd "${ROOT}"
 
+python=$(which python3)
+
 # Load common functions
 source ./bin/_common
 
 if [ ! -d "venv" ]; then
     log.info "Initializing the virtual environment..."
-    /usr/bin/python3 -m venv venv
+    ${python} -m venv venv
     source ./venv/bin/activate
+    python="${ROOT}/venv/bin/python3"
 fi
 
+pip="${python} -m pip"
+
 log.info "Updating PIP..."
-/usr/bin/python3 -m pip install --upgrade pip
+${pip} install --upgrade pip
 
 log.info "Installing development dependencies..."
-pip3 install colorlog pre-commit $(grep mypy requirements-dev.txt)
+${pip} install colorlog pre-commit $(grep mypy requirements-dev.txt)
 
 pre-commit install
-pip3 install -r requirements-dev.txt
+
+REQ=$(cat requirements-dev.txt)
+while true; do
+    FILES=$(echo "${REQ}" | grep "^-r " | sed "s/^-r\\s\+//g")
+    if test -z "${FILES}"; then
+        break
+    fi
+    for FILE in ${FILES}; do
+        FILE_R=$(echo "${FILE}" | sed "s/\\./\\\\./g")
+        REQ=$(echo "${REQ}" | sed -e "/^-r\\s\+${FILE_R}/{r ${FILE}" -e "d" -e "}")
+    done
+done
+GIT=$(echo "${REQ}" | grep "{GITHUB_TOKEN}" | tr '\r\n' ' ')
+REQ=$(echo "${REQ}" | grep -v "{GITHUB_TOKEN}" | tr '\r\n' ' ')
+
+if test -n "${GIT}"; then
+    GITHUB_TOKEN=$(grep github_token secrets.yaml | cut -d' ' -f2)
+    GIT=$(echo "${GIT}" | sed "s/{GITHUB_TOKEN}/${GITHUB_TOKEN}/g")
+    ${pip} install --upgrade ${GIT}
+fi
+
+${pip} install --upgrade ${REQ}
 
 echo '"""Custom components module."""' >custom_components/__init__.py

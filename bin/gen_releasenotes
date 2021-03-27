@@ -75,7 +75,7 @@ def get_period(repo: Repository, release: str = None) -> List[datetime]:
         timestamp = datetime.strptime(commit.last_modified, dateformat)
         _LOGGER.debug("Process tag %s => timestamp %s", tag.name, timestamp)
         data.append(timestamp)
-        if found and (not Version(tag.name).is_prerelease or not is_prerelease):
+        if found and (not Version(tag.name).is_prerelease or is_prerelease):
             break
         if release is not None and release == tag.name:
             found = last = True
