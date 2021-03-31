@@ -1,45 +1,70 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a report to help us improve component
 title: ''
 labels: 'bug'
 assignees: ''
 
 ---
 
-<!-- Before you open a new issue, search through the existing issues to see if others have had the same problem.
+<!-- Please READ THIS FIRST
 
-Issues not containing the minimum requirements will be closed:
+Before opening a new issue, please check if a similar one is already open
 
-- Issues without a description (using the header is not good enough) will be closed.
-- Issues without debug logging will be closed.
-- Issues without configuration will be closed
+DO NOT DELETE ANY TEXT from this template! Otherwise, your issue may be closed without comment.
+
+Please check if the bug is already reported and add more information there instead of creating a new report.
 
 -->
 
-**Versions**
+**Environment**
 <!--
-If you are not using the newest version, download and try that before opening an issue.
-If you are unsure about the version check the manifest.json file of this component.
+If you are not using the newest release, download and try that before opening an issue.
+If you are unsure about the release check the manifest.json file of this component.
 -->
 
-* Version of the Home Assistant:
-* Version of the custom component:
+- Home Assistant Core release with the issue:
+- This custom component release with the issue:
+- Last working this custom component release (if known):
+- Operating environment (Home Assistant/Supervisor/Docker/venv):
 
-**Configuration**
+**Describe the bug**
+<!--
+  Make a brief description of the problem you are experiencing
+-->
+
+
+**Configuration.yaml**
 ```yaml
 
-Add your configs here.
+Add your configs here if any.
 
 ```
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**Steps to Reproduce**
+<!--
+  Please list the steps needed to reproduce the issue
+-->
+
+
+**Expected behavior**
+<!--
+  Insert a brief description of the expected behavior is
+-->
+
 
 **Debug log**
-<!-- To enable debug logs check "Troubleshooting" section of README of this component or this https://www.home-assistant.io/components/logger/ -->
+<!--
+  To enable debug logs check "Troubleshooting" section of README of this component
+  or this https://www.home-assistant.io/components/logger/
+-->
 ```text
 
 Add your logs here.
 
 ```
+
+**Additional context**
+<!--
+  Add any other context about the problem here.
+-->
