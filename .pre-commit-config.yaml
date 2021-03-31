@@ -71,9 +71,9 @@ repos:
         language: system
         types: [python]
         # Uncomment lines below to test code on every commit
-#      - id: pytest
-#        name: pytest
-#        entry: bin/run-in-env pytest
-#        language: system
-#        pass_filenames: false
-#        always_run: true
+      - id: pytest
+        name: pytest
+        entry: bin/run-in-env pytest
+        language: system
+        pass_filenames: false
+        always_run: true
