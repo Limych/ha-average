@@ -55,8 +55,11 @@ labels:
   - name: "stale"
     color: 930191
     description: "Stale issues and PRs."
-  - name: "question"
-    color: dd9c2c
+  - name: "can't reproduce"
+    color: 71c2dd
+  - name: "waiting for feedback"
+    color: bc2add
+    oldname: "question"
     description: "Further information is requested."
   - name: "tests"
     color: bfd4f2
@@ -66,7 +69,7 @@ labels:
     description: "This will not be worked on."
 
 branches:
-  - name: master
+  - name: dev
     # https://developer.github.com/v3/repos/branches/#update-branch-protection
     # Branch Protection settings. Set to null to disable
     protection:
