@@ -6,4 +6,4 @@ pylint~=2.7
 pylint-strict-informational==0.1
 pytest~=6.2
 pytest-cov~=2.10
-pytest-homeassistant-custom-component~=0.2
+pytest-homeassistant-custom-component~=0.3
