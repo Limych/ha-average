@@ -5,8 +5,8 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import callback
-from homeassistant.helpers import ConfigType
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.typing import ConfigType
 
 from .api import IntegrationBlueprintApiClient
 from .const import (  # pylint: disable=unused-import
