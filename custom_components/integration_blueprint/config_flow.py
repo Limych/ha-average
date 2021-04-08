@@ -1,7 +1,11 @@
 """Adds config flow for Blueprint."""
+from typing import Optional
+
 import voluptuous as vol
 from homeassistant import config_entries
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import callback
+from homeassistant.helpers import ConfigType
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 
 from .api import IntegrationBlueprintApiClient
@@ -23,7 +27,7 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         """Initialize."""
         self._errors = {}
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input: Optional[ConfigType] = None):
         """Handle a flow initialized by the user."""
         self._errors = {}
 
@@ -46,11 +50,12 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
+    def async_get_options_flow(config_entry: ConfigEntry):
         """Get component options flow."""
         return BlueprintOptionsFlowHandler(config_entry)
 
-    async def _show_config_form(self, user_input):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    async def _show_config_form(self, user_input: Optional[ConfigType]):
         """Show the configuration form to edit location data."""
         return self.async_show_form(
             step_id="user",
@@ -60,31 +65,32 @@ class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             errors=self._errors,
         )
 
-    async def _test_credentials(self, username, password):
+    async def _test_credentials(self, username: str, password: str) -> bool:
         """Return true if credentials is valid."""
         try:
             session = async_create_clientsession(self.hass)
             client = IntegrationBlueprintApiClient(username, password, session)
             await client.async_get_data()
             return True
+
         except Exception:  # pylint: disable=broad-except
-            pass
-        return False
+            return False
 
 
 class BlueprintOptionsFlowHandler(config_entries.OptionsFlow):
     """Blueprint config flow options handler."""
 
-    def __init__(self, config_entry):
+    def __init__(self, config_entry: ConfigEntry):
         """Initialize HACS options flow."""
         self.config_entry = config_entry
         self.options = dict(config_entry.options)
 
-    async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
+    # pylint: disable=unused-argument
+    async def async_step_init(self, user_input: Optional[ConfigType] = None):
         """Manage the options."""
         return await self.async_step_user()
 
-    async def async_step_user(self, user_input=None):
+    async def async_step_user(self, user_input: Optional[ConfigType] = None):
         """Handle a flow initialized by the user."""
         if user_input is not None:
             self.options.update(user_input)

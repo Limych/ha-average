@@ -53,10 +53,46 @@ File | Purpose
 
 ## How?
 
+* …or create a new repository on the command line:
+    ```bash
+    # Initialize your new origin repository
+    git init
+    git remote add origin https://github.com/YOUR_NEW_REPOSITORY
+
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/ha-blueprint.git
+    git fetch blueprint dev
+    git reset --hard blueprint/dev
+    git branch -M dev
+
+    # Push changes to origin repository
+    git push -u origin main
+    ```
+
+* …or apply blueprint to an existing repository from the command line:
+    ```bash
+    # Apply blueprint repository
+    git remote add blueprint https://github.com/Limych/ha-blueprint.git
+    git fetch blueprint dev
+    git merge blueprint/dev --allow-unrelated-histories
+
+    # Push changes to origin repository
+    git push -u origin main
+    ```
+
+After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
+```bash
+./bin/update
+git merge blueprint/dev
+```
+
+**Note:** Please, before starting to develop your own code, initialize the development environment with the command
+```bash
+./bin/setup
+```
+
 If you want to use all the potential and features of this blueprint template you
-should use Visual Studio Code to develop in a container. In this container you
-will have all the tools to ease your python development and a dedicated Home
-Assistant core instance to run your integration. See `.devcontainer/README.md` for more information.
+should use devcontainer. See [.devcontainer/README.md](./.devcontainer/README.md) for more information.
 
 If you need to work on the python library in parallel of this integration
 (`sampleclient` in this example) there are different options. The following one seems
