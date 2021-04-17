@@ -67,7 +67,7 @@ repos:
         files: ^custom_components/.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env pylint
+        entry: bin/run-in-env python3 -m pylint
         language: system
         types: [python]
       # Uncomment lines below to test code on every commit
