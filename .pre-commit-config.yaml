@@ -48,10 +48,10 @@ repos:
       - id: check-json
         files: ^(custom_components|tests)/.+\.json$
       - id: trailing-whitespace
-# Uncomment below lines if you want to follow classical GitHub flow style development
+      # Uncomment lines below if you want to follow classical GitHub flow style development
 #      - id: no-commit-to-branch
 #        args:
-#          - --branch=master
+#          - --branch=dev
   - repo: local
     hooks:
       # Run mypy through our wrapper script in order to get the possible
@@ -67,7 +67,7 @@ repos:
         files: ^custom_components/.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env pylint
+        entry: bin/run-in-env python3 -m pylint
         language: system
         types: [python]
         # Uncomment lines below to test code on every commit
