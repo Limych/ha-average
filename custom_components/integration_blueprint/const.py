@@ -3,7 +3,7 @@
 # Base component constants
 NAME = "Integration blueprint"
 DOMAIN = "integration_blueprint"
-VERSION = "0.1.0.dev0"
+VERSION = "0.1.0"
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/Limych/ha-blueprint/issues"
 
