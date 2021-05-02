@@ -9,6 +9,78 @@ cd "${ROOT}"
 # Load common functions
 source ./bin/_common
 
+
+NAT='0|[1-9][0-9]*'
+ALPHANUM='[0-9]*[A-Za-z-][0-9A-Za-z-]*'
+IDENT="$NAT|$ALPHANUM"
+FIELD='[0-9A-Za-z-]+'
+
+SEMVER_REGEX="\
+^($NAT)\\.($NAT)\\.($NAT)\
+(\\-(${IDENT})(\\.(${IDENT}))*)?\
+(\\+${FIELD}(\\.${FIELD})*)?$"
+
+function validate_version {
+    local version=$1
+    if [[ "$version" =~ $SEMVER_REGEX ]]; then
+        # if a second argument is passed, store the result in var named by $2
+        if test "$#" -eq "2"; then
+            local major=${BASH_REMATCH[1]}
+            local minor=${BASH_REMATCH[2]}
+            local patch=${BASH_REMATCH[3]}
+            local prere=${BASH_REMATCH[4]}
+            local build=${BASH_REMATCH[8]}
+            eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$build\")"
+        else
+            echo "$version"
+        fi
+    else
+        die "Version $version does not match the SemVer scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'"
+    fi
+}
+
+PREFIX_ALPHANUM='[.0-9A-Za-z-]*[.A-Za-z-]'
+DIGITS='[0-9][0-9]*'
+EXTRACT_REGEX="^(${PREFIX_ALPHANUM})*(${DIGITS})$"
+
+function extract_prerel {
+    local prefix; local numeric;
+
+    if [[ "$1" =~ $EXTRACT_REGEX ]]; then
+        # found prefix and trailing numeric parts
+        prefix="${BASH_REMATCH[1]}"
+        numeric="${BASH_REMATCH[2]}"
+    else
+        # no numeric part
+        prefix="${1}"
+        numeric=
+    fi
+
+    eval "$2=(\"$prefix\" \"$numeric\")"
+}
+
+function bump_prerel {
+    validate_version "${1}" parts
+    # shellcheck disable=SC2154
+    local major="${parts[0]}"
+    local minor="${parts[1]}"
+    local patch="${parts[2]}"
+
+    extract_prerel "${parts[3]#-}" prerel_parts  # extract parts of previous pre-release
+    # shellcheck disable=SC2154
+    prev_prefix="${prerel_parts[0]}"
+    prev_numeric="${prerel_parts[1]}"
+
+    if test -n "$prev_numeric"; then
+        # previous pre-release is already numbered, bump it
+        : $(( ++prev_numeric ))
+        echo "$(validate_version "${major}.${minor}.${patch}-${prev_prefix}${prev_numeric}")"
+    else
+        # append starting number
+        echo "$(validate_version "${major}.${minor}.${patch}-${prev_prefix}1")"
+    fi
+}
+
 if output=$(git branch --show-current) \
 && [[ "$output" != "master" && "$output" != "main" && "$output" != "dev" ]]; then
     log.fatal "Please, change HEAD to 'master', 'main' or 'dev' branch."
@@ -30,7 +102,7 @@ if [[ -z $1 ]]; then
     exit 3
 fi
 
-new=$(echo "${1}" | sed -E "s/\+.*//")
+new=$(validate_version "${1}")
 
 log.info "Patch files to version '${new}'..."
 sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
@@ -39,10 +111,10 @@ git commit -a --no-verify -m "Bump version to ${new}"
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
-if echo "${new}" | grep -Eq "[0-9](a|b|rc)"; then
-    dev="$(echo "${version}" | sed "s/dev//" | awk -F. '/[0-9]+\./{$NF="dev"($NF+1);print}' OFS=.)"
+if echo "${new}" | grep -q "-"; then
+    dev=$(bump_prerel "${new}")
 else
-    dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.).dev0"
+    dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)-alpha"
 fi
 
 log.info "Patch files to version '${dev}'..."
