@@ -12,7 +12,8 @@ jobs:
     name: HACS
     steps:
       - uses: "actions/checkout@v2"
-      - name: HACS validation
+      - if: github.repository != "Limych/ha-blueprint"
+        name: HACS validation
         uses: "hacs/action@main"
         with:
           CATEGORY: "integration"
