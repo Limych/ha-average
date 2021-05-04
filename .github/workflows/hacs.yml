@@ -8,12 +8,12 @@ on:
 
 jobs:
   validate:
+    if: github.repository != 'Limych/ha-blueprint'
     runs-on: "ubuntu-latest"
     name: HACS
     steps:
       - uses: "actions/checkout@v2"
-      - if: github.repository != 'Limych/ha-blueprint'
-        name: HACS validation
+      - name: HACS validation
         uses: "hacs/action@main"
         with:
           CATEGORY: "integration"
