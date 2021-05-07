@@ -92,6 +92,9 @@ if output=$(git status --porcelain) && [[ -n "$output" ]]; then
     log.info ${output}
     exit 2
 fi
+if pytest; then
+    exit 3
+fi
 
 const_path=$(find custom_components/ -name const.py)
 version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
