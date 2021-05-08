@@ -125,7 +125,6 @@ I put a lot of work into making this repo and component available and updated to
   _(string) (Optional)_\
   Name to use in the frontend.\
   _Default value: "Average"_
-The mechanism for specifying the unique ID of sensors has been changed. To prevent duplicate sensors from being created, add option `unique_id: __legacy__` to the settings of already available sensors. For more information, see the component's documentation.
 
 **start**:\
   _(template) (Optional)_\
