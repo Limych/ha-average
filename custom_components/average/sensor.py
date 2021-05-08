@@ -132,7 +132,6 @@ class AverageSensor(Entity):
         undef,
     ):
         """Initialize the sensor."""
-        self._hass = hass
         self._name = name
         self._start_template = start
         self._end_template = end
@@ -238,12 +237,10 @@ class AverageSensor(Entity):
             if self._has_period:
                 self.async_schedule_update_ha_state(True)
             else:
-                async_track_state_change(
-                    self._hass, self.sources, sensor_state_listener
-                )
+                async_track_state_change(self.hass, self.sources, sensor_state_listener)
                 sensor_state_listener(None, None, None)
 
-        self._hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, sensor_startup)
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, sensor_startup)
 
     @staticmethod
     def _has_state(state) -> bool:
@@ -257,7 +254,7 @@ class AverageSensor(Entity):
 
     def _get_temperature(self, state: LazyState) -> Optional[float]:
         """Get temperature value from entity."""
-        ha_unit = self._hass.config.units.temperature_unit
+        ha_unit = self.hass.config.units.temperature_unit
         domain = split_entity_id(state.entity_id)[0]
         if domain == WEATHER_DOMAIN:
             temperature = state.attributes.get("temperature")
@@ -435,7 +432,7 @@ class AverageSensor(Entity):
         for entity_id in self.sources:
             _LOGGER.debug('Processing entity "%s"', entity_id)
 
-            state = self._hass.states.get(entity_id)  # type: LazyState
+            state = self.hass.states.get(entity_id)  # type: LazyState
 
             if state is None:
                 _LOGGER.error('Unable to find an entity "%s"', entity_id)
@@ -455,7 +452,7 @@ class AverageSensor(Entity):
                 if self._temperature_mode:
                     _LOGGER.debug("%s is a temperature entity.", entity_id)
                     self._device_class = DEVICE_CLASS_TEMPERATURE
-                    self._unit_of_measurement = self._hass.config.units.temperature_unit
+                    self._unit_of_measurement = self.hass.config.units.temperature_unit
                 else:
                     _LOGGER.debug("%s is NOT a temperature entity.", entity_id)
                     self._icon = state.attributes.get(ATTR_ICON)

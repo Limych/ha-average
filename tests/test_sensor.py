@@ -31,6 +31,8 @@ from custom_components.average.sensor import (
     check_period_keys,
 )
 
+TEST_NAME = "test_name"
+TEST_ENTITY_IDS = ["sensor.test_monitored"]
 TEST_VALUES = [3, 11.16, -17, 4.29, -29, -16.8, 8, 5, -4.7, 5, -15]
 
 
@@ -43,19 +45,18 @@ def mock_legacy_time(legacy_patchable_time):
 @pytest.fixture()
 def default_sensor(hass: HomeAssistant):
     """Create an AverageSensor with default values."""
-    name = "test"
-    entity_ids = ["sensor.test_monitored"]
-
-    return AverageSensor(
+    entity = AverageSensor(
         hass,
-        name,
+        TEST_NAME,
         None,
         Template("{{ now() }}"),
         timedelta(minutes=3),
-        entity_ids,
+        TEST_ENTITY_IDS,
         2,
         None,
     )
+    entity.hass = hass
+    return entity
 
 
 class Objectview:
@@ -142,7 +143,7 @@ async def test_entity_initialization(default_sensor):
         "sources": ["sensor.test_monitored"],
     }
 
-    assert default_sensor.name == "test"
+    assert default_sensor.name == TEST_NAME
     assert default_sensor.unique_id == "2ef66732fb7155dce84ad53afe910beba59cfad4"
     assert default_sensor.should_poll is True
     assert default_sensor.available is False
@@ -331,3 +332,4 @@ async def test_update(default_sensor):
 async def test__update_period(default_sensor):
     """Test period updater."""
     # default_sensor._update_period()
+    # todo; pylint: disable=fixme
