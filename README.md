@@ -8,6 +8,7 @@
 
 [![hacs][hacs-shield]][hacs]
 [![Project Maintenance][maintenance-shield]][user_profile]
+[![Support me on Patreon][patreon-shield]][patreon]
 
 [![Community Forum][forum-shield]][forum]
 
@@ -334,3 +335,5 @@ See separate [license file](LICENSE.md) for full text.
 [report_bug]: https://github.com/Limych/ha-average/issues/new?template=bug_report.md
 [suggest_idea]: https://github.com/Limych/ha-average/issues/new?template=feature_request.md
 [contributors]: https://github.com/Limych/ha-average/graphs/contributors
+[patreon-shield]: https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3DLimych%26type%3Dpatrons&style=popout
+[patreon]: https://www.patreon.com/join/limych

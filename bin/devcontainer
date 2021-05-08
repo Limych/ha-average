@@ -19,13 +19,39 @@ port="127.0.0.1:9123:8123"
 image="ludeeus/container:integration-debian"
 volume="${ROOT}:${workdir}"
 
-if [[ "${1}" == "--public" ]]; then
+cmd="menu"
+while test $# -gt 0; do
+    case "${1}" in
+        --help|-h)
+            log.info "devcontainer [options] [command]"
+            log.info ""
+            log.info "Options:"
+            log.info "  -h, --help  Show this help."
+            log.info "  --public    Create dev container externally accessible"\
+                "(Only makes sense when creating a new container)."
+            log.info ""
+            log.info "Commands:"
+            log.info "  start           Start dev container."
+            log.info "  stop            Save current state of dev container and stop it."
+            log.info "  check           Run Home Assistant config check."
+            log.info "  set-version     Install a specific version of Home Assistant."
+            log.info "  upgrade         Upgrade Home Assistant to latest dev"\
+                "then run user's bootstrap script again."
+            log.info "  bootstrap       Run user's bootstrap script again."
+            log.info "  bash            Run command line into dev container."
+            log.info "  down            Destroy dev container."
+            die
+            ;;
+        --public)
+            log.info "Attention! The container is creating externally accessible."
+            port=$(echo "${port}" | sed "s/127.0.0.1/0.0.0.0/")
+            ;;
+        *)
+            cmd="${1}"
+            ;;
+    esac
     shift
-    log.info "Attention! The container is creating externally accessible."
-    port=$(echo "${port}" | sed "s/127.0.0.1/0.0.0.0/")
-fi
-
-cmd="${1:-menu}"
+done
 
 docker_start() {
     tmp=$(echo "${port}" | cut -d":" -f-2)

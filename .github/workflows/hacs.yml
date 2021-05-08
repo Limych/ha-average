@@ -1,0 +1,19 @@
+name: HACS
+
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  validate:
+    if: github.repository != 'Limych/ha-blueprint'
+    runs-on: "ubuntu-latest"
+    name: HACS
+    steps:
+      - uses: "actions/checkout@v2"
+      - name: HACS validation
+        uses: "hacs/action@main"
+        with:
+          CATEGORY: "integration"
