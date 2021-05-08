@@ -29,6 +29,7 @@ from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     CONF_ENTITIES,
     CONF_NAME,
+    CONF_UNIQUE_ID,
     DEVICE_CLASS_TEMPERATURE,
     EVENT_HOMEASSISTANT_START,
     STATE_UNAVAILABLE,
@@ -78,6 +79,7 @@ PLATFORM_SCHEMA = vol.All(
     PLATFORM_SCHEMA.extend(
         {
             vol.Required(CONF_ENTITIES): cv.entity_ids,
+            vol.Optional(CONF_UNIQUE_ID): cv.string,
             vol.Optional(CONF_NAME, default=DEFAULT_NAME): cv.string,
             vol.Optional(CONF_START): cv.template,
             vol.Optional(CONF_END): cv.template,
@@ -98,20 +100,27 @@ async def async_setup_platform(
     # Print startup message
     _LOGGER.info(STARTUP_MESSAGE)
 
-    name = config.get(CONF_NAME)
     start = config.get(CONF_START)
     end = config.get(CONF_END)
-    duration = config.get(CONF_DURATION)
-    entities = config.get(CONF_ENTITIES)
-    precision = config.get(CONF_PRECISION)
-    undef = config.get(CONF_PROCESS_UNDEF_AS)
 
     for template in [start, end]:
         if template is not None:
             template.hass = hass
 
     async_add_entities(
-        [AverageSensor(hass, name, start, end, duration, entities, precision, undef)]
+        [
+            AverageSensor(
+                hass,
+                config.get(CONF_UNIQUE_ID),
+                config.get(CONF_NAME),
+                start,
+                end,
+                config.get(CONF_DURATION),
+                config.get(CONF_ENTITIES),
+                config.get(CONF_PRECISION),
+                config.get(CONF_PROCESS_UNDEF_AS),
+            )
+        ]
     )
 
 
@@ -123,6 +132,7 @@ class AverageSensor(Entity):
     def __init__(
         self,
         hass: HomeAssistant,
+        unique_id: Optional[str],
         name: str,
         start,
         end,
@@ -151,12 +161,16 @@ class AverageSensor(Entity):
         self.count = 0
         self.min_value = self.max_value = None
 
-        self._unique_id = str(
-            sha1(
-                ";".join(
-                    [str(start), str(duration), str(end), ",".join(self.sources)]
-                ).encode("utf-8")
-            ).hexdigest()
+        self._unique_id = (
+            str(
+                sha1(
+                    ";".join(
+                        [str(start), str(duration), str(end), ",".join(self.sources)]
+                    ).encode("utf-8")
+                ).hexdigest()
+            )
+            if unique_id == "__legacy__"
+            else unique_id
         )
 
     @property

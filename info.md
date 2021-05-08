@@ -1,6 +1,11 @@
 {% if prerelease %}
 ### NB!: This is a Beta version!
 {% endif %}
+{% if (version_installed.split(".")[0:2] | join | int) < 20 %}
+### ATTENTION! Breaking changes!
+
+The mechanism for specifying the unique ID of sensors has been changed. To prevent duplicate sensors from being created, add option `unique_id: __legacy__` to the settings of already available sensors. For more information, see the component's documentation.
+{% endif %}
 
 _This sensor allows you to calculate the average state for one or more sensors over a specified period. Or just the average current state for one or more sensors, if you do not need historical data._
 

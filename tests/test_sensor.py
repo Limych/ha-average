@@ -31,6 +31,7 @@ from custom_components.average.sensor import (
     check_period_keys,
 )
 
+TEST_UNIQUE_ID = "test_id"
 TEST_NAME = "test_name"
 TEST_ENTITY_IDS = ["sensor.test_monitored"]
 TEST_VALUES = [3, 11.16, -17, 4.29, -29, -16.8, 8, 5, -4.7, 5, -15]
@@ -47,6 +48,7 @@ def default_sensor(hass: HomeAssistant):
     """Create an AverageSensor with default values."""
     entity = AverageSensor(
         hass,
+        TEST_UNIQUE_ID,
         TEST_NAME,
         None,
         Template("{{ now() }}"),
@@ -134,7 +136,7 @@ async def test_setup_platform(hass: HomeAssistant):
     assert async_add_entities.called
 
 
-async def test_entity_initialization(default_sensor):
+async def test_entity_initialization(hass: HomeAssistant, default_sensor):
     """Test sensor initialization."""
     expected_attributes = {
         "available_sources": 0,
@@ -143,14 +145,42 @@ async def test_entity_initialization(default_sensor):
         "sources": ["sensor.test_monitored"],
     }
 
+    assert default_sensor.unique_id == TEST_UNIQUE_ID
     assert default_sensor.name == TEST_NAME
-    assert default_sensor.unique_id == "2ef66732fb7155dce84ad53afe910beba59cfad4"
     assert default_sensor.should_poll is True
     assert default_sensor.available is False
     assert default_sensor.state == STATE_UNAVAILABLE
     assert default_sensor.unit_of_measurement is None
     assert default_sensor.icon is None
     assert default_sensor.state_attributes == expected_attributes
+
+    entity = AverageSensor(
+        hass,
+        None,
+        TEST_NAME,
+        None,
+        Template("{{ now() }}"),
+        timedelta(minutes=3),
+        TEST_ENTITY_IDS,
+        2,
+        None,
+    )
+
+    assert entity.unique_id is None
+
+    entity = AverageSensor(
+        hass,
+        "__legacy__",
+        TEST_NAME,
+        None,
+        Template("{{ now() }}"),
+        timedelta(minutes=3),
+        TEST_ENTITY_IDS,
+        2,
+        None,
+    )
+
+    assert entity.unique_id == "2ef66732fb7155dce84ad53afe910beba59cfad4"
 
 
 async def test_async_setup_platform(hass: HomeAssistant):

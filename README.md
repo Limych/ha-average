@@ -112,6 +112,14 @@ I put a lot of work into making this repo and component available and updated to
 > **_Note_**:\
 > You can use groups of entities as a data source. These groups will be automatically expanded to individual entities.
 
+**unique_id**\
+  _(string) (Optional)_\
+  An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI.
+
+> **_Note_**:\
+> If you used the component version 1.4.0 or earlier, you can specify the special value `__legacy__`, so that no duplicates of already existing sensors are created.\
+> The use of this special value in newly created sensors is not recommended.
+
 **name**:\
   _(string) (Optional)_\
   Name to use in the frontend.\
