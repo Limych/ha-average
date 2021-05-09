@@ -120,12 +120,11 @@ I put a lot of work into making this repo and component available and updated to
   An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI.
 
 > **_Note_**:\
-> If you used the component version 1.4.0 or earlier, you can specify the special value `__legacy__`, so that no duplicates of already existing sensors are created.
+> If you used the component version 1.4.0 or earlier, you can specify the special value `__legacy__`, so that no duplicates of already existing sensors are created.\
+> The use of this special value in newly created sensors is not recommended.
 >
 > Another way is to manually delete all old sensors via Configuration > Entities. Then restart HA and all the _2’s were was the original sensors again complete with their history.\
   [![My Entities](https://my.home-assistant.io/badges/entities.svg)](https://my.home-assistant.io/redirect/entities/)
->
-> The use of this special value in newly created sensors is not recommended.
 
 
 **name**:\
