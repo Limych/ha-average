@@ -33,7 +33,9 @@ I also suggest you [visit the support topic][forum] on the community forum.
 
 ## Breaking changes
 
-* Since version 2.0.0 the mechanism for specifying the unique ID of sensors has been changed. To prevent duplicate sensors from being created, add option `unique_id: __legacy__` to the settings of already available sensors. For more information, see below.
+* Since version 2.0.0 the mechanism for specifying the unique ID of sensors has been changed. To prevent duplicate sensors from being created, add option `unique_id: __legacy__` to the settings of already available sensors. For more information, see below.\
+  Another way is to manually delete all old sensors via Configuration > Entities. Then restart HA and all the _2’s were was the original sensors again complete with their history.\
+  [![My Entities](https://my.home-assistant.io/badges/entities.svg)](https://my.home-assistant.io/redirect/entities/)
 * Since version 1.3.0 the default sensor name is “Average” instead of “Average Temperature”
 
 ## Known Limitations and Issues
@@ -118,8 +120,13 @@ I put a lot of work into making this repo and component available and updated to
   An ID that uniquely identifies this sensor. Set this to a unique value to allow customization through the UI.
 
 > **_Note_**:\
-> If you used the component version 1.4.0 or earlier, you can specify the special value `__legacy__`, so that no duplicates of already existing sensors are created.\
+> If you used the component version 1.4.0 or earlier, you can specify the special value `__legacy__`, so that no duplicates of already existing sensors are created.
+>
+> Another way is to manually delete all old sensors via Configuration > Entities. Then restart HA and all the _2’s were was the original sensors again complete with their history.\
+  [![My Entities](https://my.home-assistant.io/badges/entities.svg)](https://my.home-assistant.io/redirect/entities/)
+>
 > The use of this special value in newly created sensors is not recommended.
+
 
 **name**:\
   _(string) (Optional)_\
