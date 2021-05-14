@@ -81,7 +81,7 @@ class BlueprintOptionsFlowHandler(config_entries.OptionsFlow):
     """Blueprint config flow options handler."""
 
     def __init__(self, config_entry: ConfigEntry):
-        """Initialize HACS options flow."""
+        """Initialize Blueprint options flow."""
         self.config_entry = config_entry
         self.options = dict(config_entry.options)
 

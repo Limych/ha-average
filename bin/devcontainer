@@ -141,7 +141,8 @@ case "${cmd}" in
         fi
         ${docker} exec -it -w "${workdir}" "${container}" container "${cmd}"
 
-        if [[ "${cmd}" == "upgrade" ]]; then
+        if [[ "${cmd}" == "upgrade" || "${cmd}" == "update" \
+        || "${cmd}" == "install" || "${cmd}" == "reinstall" ]]; then
             bootstrap "${cmd}"
         fi
         ;;
