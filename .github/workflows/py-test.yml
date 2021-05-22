@@ -69,6 +69,7 @@ jobs:
 
   tests:
     name: "Test package"
+    needs: lint
     runs-on: ${{ matrix.os }}
     strategy:
       max-parallel: 4
