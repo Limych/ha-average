@@ -75,7 +75,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.9, pypy3]  # py38 was processed on lint job
+        python-version: [3.9]  # py38 was processed on lint job
         experimental: [false]
         include:
           - python-version: '3.10-dev'
