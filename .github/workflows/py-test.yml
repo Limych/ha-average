@@ -75,7 +75,7 @@ jobs:
       max-parallel: 4
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.9, 3.10]  # py38 was processed on lint job
+        python-version: [3.9, 3.10-dev]  # py38 was processed on lint job
     steps:
       - name: "Checkout code"
         uses: actions/checkout@master
