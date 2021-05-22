@@ -39,7 +39,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           python -m pip install --upgrade pip
-#           Prefer requirements-dev.txt
+          # Prefer requirements-dev.txt
           if [ -f requirements-dev.txt ]; then
             pip install -r requirements-dev.txt
           elif [ -f requirements-test.txt ]; then
@@ -104,7 +104,7 @@ jobs:
       - name: "Install dependencies"
         run: |
           python -m pip install --upgrade pip
-#           Prefer requirements-test.txt
+          # Prefer requirements-test.txt
           if [ -f requirements-test.txt ]; then
             pip install -r requirements-test.txt
           elif [ -f requirements-dev.txt ]; then
