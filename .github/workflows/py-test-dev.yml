@@ -15,7 +15,6 @@ jobs:
   tests:
     name: "Test package on homeassistant@dev"
     runs-on: ubuntu-latest
-    continue-on-error: true
     strategy:
       max-parallel: 4
       matrix:
