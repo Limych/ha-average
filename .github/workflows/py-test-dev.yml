@@ -1,0 +1,65 @@
+---
+name: "Python testing on homeassistant@dev"
+
+on:
+  push:
+    branches:
+      - master
+      - main
+      - dev
+  pull_request:
+  schedule:
+    - cron: "30 3 * * 1"
+
+jobs:
+  tests:
+    name: "Test package on homeassistant@dev"
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8, 3.9, '3.10-dev']
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@master
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: "Cache pip"
+        uses: actions/cache@v2.1.5
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: "Install dependencies"
+        run: |
+          python -m pip install --upgrade pip
+          # Prefer requirements-test.txt
+          if [ -f requirements-test.txt ]; then
+            bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+          elif [ -f requirements-dev.txt ]; then
+            bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+          elif [ -f requirements.txt ]; then
+            bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+          fi
+          pip install pytest-xdist
+
+          pip install --upgrade git+git://github.com/home-assistant/home-assistant.git@dev
+
+          if [ -d custom_components ]; then
+            echo '"""Stub."""' >custom_components/__init__.py
+          fi
+
+      - name: "Run tests with pytest"
+        run: |
+          pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
+          ./bin/check_dirty
