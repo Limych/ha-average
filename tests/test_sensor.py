@@ -7,7 +7,6 @@ from unittest.mock import MagicMock, patch
 
 import homeassistant.util.dt as dt_util
 import pytest
-from homeassistant.components.history import LazyState
 from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     CONF_ENTITIES,
@@ -30,6 +29,13 @@ from custom_components.average.sensor import (
     async_setup_platform,
     check_period_keys,
 )
+
+# pylint: disable=ungrouped-imports
+try:
+    from homeassistant.components.recorder.models import LazyState
+except ImportError:
+    from homeassistant.components.history import LazyState
+
 
 TEST_UNIQUE_ID = "test_id"
 TEST_NAME = "test_name"
