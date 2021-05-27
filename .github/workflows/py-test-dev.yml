@@ -57,7 +57,8 @@ jobs:
           fi
           pip install pytest-xdist
 
-          pip install --upgrade git+git://github.com/home-assistant/home-assistant.git@dev
+          # Install last beta
+          pip install --upgrade --pre homeassistant
 
           if [ -d custom_components ]; then
             echo '"""Stub."""' >custom_components/__init__.py
