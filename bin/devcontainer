@@ -54,8 +54,14 @@ while test $# -gt 0; do
 done
 
 docker_start() {
-    tmp=$(echo "${port}" | cut -d":" -f-2)
-    tmp=$(${docker} ps | grep "${tmp}" | awk "{print \$NF}")
+    tmp=$(echo "${port}" | cut -d":" -f2)
+    tmp=$(${docker} ps | grep ":${tmp}" | awk "{print \$NF}")
+    if test -n "${tmp}" ; then
+        log.info "Stop container ${tmp}..."
+        ${docker} stop "${tmp}"
+    fi
+
+    tmp=$(${docker} ps | grep "${container}" | awk "{print \$NF}")
     if test -n "${tmp}" ; then
         log.info "Stop container ${tmp}..."
         ${docker} stop "${tmp}"
@@ -141,7 +147,8 @@ case "${cmd}" in
         fi
         ${docker} exec -it -w "${workdir}" "${container}" container "${cmd}"
 
-        if [[ "${cmd}" == "upgrade" ]]; then
+        if [[ "${cmd}" == "upgrade" || "${cmd}" == "update" \
+        || "${cmd}" == "install" || "${cmd}" == "reinstall" ]]; then
             bootstrap "${cmd}"
         fi
         ;;
