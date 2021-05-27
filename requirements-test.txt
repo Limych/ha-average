@@ -1,6 +1,7 @@
 -r requirements.txt
 asynctest~=0.13
 flake8~=3.9
+flake8-docstrings~=1.6
 mypy==0.812
 pylint~=2.8
 pylint-strict-informational==0.1
