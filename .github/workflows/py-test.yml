@@ -8,6 +8,8 @@ on:
       - main
       - dev
   pull_request:
+  schedule:
+    - cron: "30 3 * * 1"
 
 jobs:
   lint:
