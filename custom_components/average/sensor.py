@@ -17,7 +17,6 @@ from typing import Any, Dict, Optional, Union
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
 from _sha1 import sha1
-from homeassistant.components import history
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
@@ -59,8 +58,12 @@ from .const import (
 )
 
 try:
+    # HA version >=2021.6
+    from homeassistant.components.recorder import history
     from homeassistant.components.recorder.models import LazyState
 except ImportError:
+    # HA version <=2021.5
+    from homeassistant.components import history
     from homeassistant.components.history import LazyState
 
 
