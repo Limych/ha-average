@@ -105,9 +105,7 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           # Prefer requirements-test.txt
-          if [ -f requirements-test.txt ]; thenУвидел ваш коммит в репозиторий 123.
-Как, однако, приятно иметь автоматизированную систему обновлений!.. Мой репозиторий 234 связан с ним напрямую через гит (так как является его переработанной версией). Сейчас просто смержу ваши правки в мой репозиторий и проблема будет решена сама собой. А потом таким же путём они постепенно расползутся по всем моим компонентам -- у меня там всё связано через гит. Так что теперь и Вы будете немножко автором всех моих компонентов ;)
-Спасибо вам большое!
+          if [ -f requirements-test.txt ]; then
             bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements-dev.txt ]; then
             bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
