@@ -19,7 +19,7 @@ while test $# -gt 0; do
             flags+=("${1}")
             ;;
         *)
-            if test "${token}" -ne "nonexistent"; then
+            if test "${token}" != "nonexistent"; then
                 file="${token}"
             fi
             token="${1}"
