@@ -10,5 +10,5 @@
     "@Limych"
   ],
   "requirements": [],
-  "iot_class": "calculated"
+  "iot_class": "cloud_polling"
 }
