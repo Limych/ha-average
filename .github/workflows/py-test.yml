@@ -49,7 +49,6 @@ jobs:
           elif [ -f requirements.txt ]; then
             bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
-          pip install pytest-xdist coveralls
 
           if [ -d custom_components ]; then
             echo '"""Stub."""' >custom_components/__init__.py
@@ -115,6 +114,11 @@ jobs:
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
           ./bin/check_dirty
+
+      - name: "Install Coveralls"
+        if: matrix.python-version == '3.8'
+        run: |
+          pip install pytest-xdist coveralls
 
       - name: "Run tests with pytest & Calculate coverage"
         if: matrix.python-version == '3.8'
