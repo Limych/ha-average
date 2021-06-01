@@ -49,16 +49,13 @@ jobs:
           python -m pip install --upgrade pip
           # Prefer requirements-test.txt
           if [ -f requirements-test.txt ]; then
-            bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            bin/install_requirements --pre requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements-dev.txt ]; then
-            bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            bin/install_requirements --pre requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements.txt ]; then
-            bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            bin/install_requirements --pre requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
           pip install pytest-xdist
-
-          # Install last beta
-          pip install --upgrade --pre homeassistant
 
           if [ -d custom_components ]; then
             echo '"""Stub."""' >custom_components/__init__.py
