@@ -1,5 +1,5 @@
 -r requirements-test.txt
-black==21.5b2
+black==21.6b0
 packaging==20.9
 pre-commit~=2.13
 PyGithub~=1.54
