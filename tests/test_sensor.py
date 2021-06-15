@@ -1,18 +1,25 @@
 """The test for the average sensor platform."""
 # pylint: disable=redefined-outer-name
 import json
+import logging
 from asyncio import sleep
 from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
 import homeassistant.util.dt as dt_util
 import pytest
+from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.sensor import DOMAIN as SENSOR
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
+from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
+    ATTR_ICON,
     ATTR_UNIT_OF_MEASUREMENT,
     CONF_ENTITIES,
     CONF_NAME,
     CONF_PLATFORM,
+    DEVICE_CLASS_TEMPERATURE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
     TEMP_FAHRENHEIT,
@@ -20,6 +27,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
+from homeassistant.util.unit_system import TEMPERATURE_UNITS
 from pytest import raises
 from pytest_homeassistant_custom_component.common import assert_setup_component
 from voluptuous import Invalid
@@ -353,6 +361,130 @@ async def test__get_state_value(default_sensor):
 
     assert default_sensor.min_value == 21
     assert default_sensor.max_value == 34
+
+
+async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
+    """Test sensor mode initialization."""
+    caplog.set_level(logging.DEBUG)
+
+    assert default_sensor._temperature_mode is None
+    assert default_sensor._device_class is None
+    assert default_sensor._unit_of_measurement is None
+    assert default_sensor._icon is None
+
+    # Detect by device class
+    state = LazyState(
+        Objectview(
+            {
+                "entity_id": "sensor.test",
+                "state": None,
+                "attributes": json.dumps(
+                    {
+                        ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
+                    }
+                ),
+            }
+        )
+    )
+
+    caplog.clear()
+    default_sensor._temperature_mode = None
+    default_sensor._device_class = None
+    default_sensor._unit_of_measurement = None
+
+    default_sensor._init_mode(state)
+
+    assert default_sensor._temperature_mode is True
+    assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
+    assert default_sensor._unit_of_measurement is hass.config.units.temperature_unit
+    assert len(caplog.records) == 1
+
+    # Detect by measuring unit
+    for unit in TEMPERATURE_UNITS:
+        state = LazyState(
+            Objectview(
+                {
+                    "entity_id": "sensor.test",
+                    "state": None,
+                    "attributes": json.dumps(
+                        {
+                            ATTR_UNIT_OF_MEASUREMENT: unit,
+                        }
+                    ),
+                }
+            )
+        )
+
+        caplog.clear()
+        default_sensor._temperature_mode = None
+        default_sensor._device_class = None
+        default_sensor._unit_of_measurement = None
+
+        default_sensor._init_mode(state)
+
+        assert default_sensor._temperature_mode is True
+        assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
+        assert default_sensor._unit_of_measurement == hass.config.units.temperature_unit
+        assert len(caplog.records) == 1
+
+    # Detect by domain
+    for domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN):
+        state = LazyState(
+            Objectview(
+                {
+                    "entity_id": f"{domain}.test",
+                    "state": None,
+                    "attributes": json.dumps({}),
+                }
+            )
+        )
+
+        caplog.clear()
+        default_sensor._temperature_mode = None
+        default_sensor._device_class = None
+        default_sensor._unit_of_measurement = None
+
+        default_sensor._init_mode(state)
+
+        assert default_sensor._temperature_mode is True
+        assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
+        assert default_sensor._unit_of_measurement == hass.config.units.temperature_unit
+        assert len(caplog.records) == 1
+
+    # Can't detect
+    state = LazyState(
+        Objectview(
+            {
+                "entity_id": "sensor.test",
+                "state": None,
+                "attributes": json.dumps(
+                    {
+                        ATTR_ICON: "some_icon",
+                    }
+                ),
+            }
+        )
+    )
+
+    caplog.clear()
+    default_sensor._temperature_mode = None
+    default_sensor._device_class = None
+    default_sensor._unit_of_measurement = None
+
+    default_sensor._init_mode(state)
+
+    assert default_sensor._temperature_mode is False
+    assert default_sensor._device_class is None
+    assert default_sensor._unit_of_measurement is None
+    assert default_sensor._icon == "some_icon"
+    assert len(caplog.records) == 1
+
+    # Skip if mode already detected
+    caplog.clear()
+
+    default_sensor._init_mode(state)
+
+    assert len(caplog.records) == 0
 
 
 async def test_update(default_sensor):

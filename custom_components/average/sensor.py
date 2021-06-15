@@ -57,11 +57,11 @@ from .const import (
     UPDATE_MIN_TIME,
 )
 
-try:
+try:  # pragma: no cover
     # HA version >=2021.6
     from homeassistant.components.recorder import history
     from homeassistant.components.recorder.models import LazyState
-except ImportError:
+except ImportError:  # pragma: no cover
     # HA version <=2021.5
     from homeassistant.components import history
     from homeassistant.components.history import LazyState
@@ -344,8 +344,8 @@ class AverageSensor(Entity):
         now = dt_util.now()
 
         # Parse start
-        _LOGGER.debug("Process start template: %s", self._start_template)
         if self._start_template is not None:
+            _LOGGER.debug("Process start template: %s", self._start_template)
             try:
                 start_rendered = self._start_template.render()
             except (TemplateError, TypeError) as ex:
@@ -365,8 +365,8 @@ class AverageSensor(Entity):
                     return
 
         # Parse end
-        _LOGGER.debug("Process end template: %s", self._end_template)
         if self._end_template is not None:
+            _LOGGER.debug("Process end template: %s", self._end_template)
             try:
                 end_rendered = self._end_template.render()
             except (TemplateError, TypeError) as ex:
@@ -386,8 +386,8 @@ class AverageSensor(Entity):
                     return
 
         # Calculate start or end using the duration
-        _LOGGER.debug("Process duration: %s", self._duration)
         if self._duration is not None:
+            _LOGGER.debug("Process duration: %s", self._duration)
             if start is None:
                 if end is None:
                     end = now
@@ -395,9 +395,12 @@ class AverageSensor(Entity):
             else:
                 end = start + self._duration
 
-        _LOGGER.debug("Start: %s, End: %s", start, end)
+        _LOGGER.debug("Calculation period: start=%s, end=%s", start, end)
         if start is None or end is None:
             return
+
+        if start > end:
+            start, end = end, start
 
         if start > now:
             # History hasn't been written yet for this period
@@ -409,6 +412,27 @@ class AverageSensor(Entity):
         self._period = start, end
         self.start = start.replace(microsecond=0).isoformat()
         self.end = end.replace(microsecond=0).isoformat()
+
+    def _init_mode(self, state: LazyState):
+        """Initialize sensor mode."""
+        if self._temperature_mode is not None:
+            return
+
+        domain = split_entity_id(state.entity_id)[0]
+        self._device_class = state.attributes.get(ATTR_DEVICE_CLASS)
+        self._unit_of_measurement = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+        self._temperature_mode = (
+            self._device_class == DEVICE_CLASS_TEMPERATURE
+            or domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
+            or self._unit_of_measurement in TEMPERATURE_UNITS
+        )
+        if self._temperature_mode:
+            _LOGGER.debug("%s is a temperature entity.", state.entity_id)
+            self._device_class = DEVICE_CLASS_TEMPERATURE
+            self._unit_of_measurement = self.hass.config.units.temperature_unit
+        else:
+            _LOGGER.debug("%s is NOT a temperature entity.", state.entity_id)
+            self._icon = state.attributes.get(ATTR_ICON)
 
     def _update_state(self):  # pylint: disable=r0914,r0912,r0915
         """Update the sensor state."""
@@ -460,24 +484,7 @@ class AverageSensor(Entity):
                 _LOGGER.error('Unable to find an entity "%s"', entity_id)
                 continue
 
-            if self._temperature_mode is None:
-                domain = split_entity_id(state.entity_id)[0]
-                self._device_class = state.attributes.get(ATTR_DEVICE_CLASS)
-                self._unit_of_measurement = state.attributes.get(
-                    ATTR_UNIT_OF_MEASUREMENT
-                )
-                self._temperature_mode = (
-                    self._device_class == DEVICE_CLASS_TEMPERATURE
-                    or domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
-                    or self._unit_of_measurement in TEMPERATURE_UNITS
-                )
-                if self._temperature_mode:
-                    _LOGGER.debug("%s is a temperature entity.", entity_id)
-                    self._device_class = DEVICE_CLASS_TEMPERATURE
-                    self._unit_of_measurement = self.hass.config.units.temperature_unit
-                else:
-                    _LOGGER.debug("%s is NOT a temperature entity.", entity_id)
-                    self._icon = state.attributes.get(ATTR_ICON)
+            self._init_mode(state)
 
             value = 0
             elapsed = 0
@@ -540,6 +547,8 @@ class AverageSensor(Entity):
 
         if values:
             self._state = round(sum(values) / len(values), self._precision)
+            if self._precision < 1:
+                self._state = int(self._state)
         else:
             self._state = None
         _LOGGER.debug("Total average state: %s", self._state)
