@@ -20,7 +20,7 @@ jobs:
           python-version: '3.8'
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -34,11 +34,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if [ -f requirements-test.txt ]; then
-            pip install -r requirements-test.txt
+            bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements-dev.txt ]; then
-            pip install -r requirements-dev.txt
+            bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements.txt ]; then
-            pip install -r requirements.txt
+            bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
           pip install flake8-eradicate
 

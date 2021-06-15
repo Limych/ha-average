@@ -8,6 +8,8 @@ on:
       - main
       - dev
   pull_request:
+  schedule:
+    - cron: "23 3 * * 1"
 
 jobs:
   lint:
@@ -26,7 +28,7 @@ jobs:
           python-version: '3.8'
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -47,7 +49,6 @@ jobs:
           elif [ -f requirements.txt ]; then
             bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
-          pip install pytest-xdist coveralls
 
           if [ -d custom_components ]; then
             echo '"""Stub."""' >custom_components/__init__.py
@@ -58,16 +59,6 @@ jobs:
           flake8 ${{ env.package }} tests
           pylint ${{ env.package }} tests
 
-      - name: "Calculate coverage"
-        run: |
-          pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
-          ./bin/check_dirty
-
-      - name: "Send coverage to Coveralls"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: coveralls --service=github
-
   tests:
     name: "Test package"
     needs: lint
@@ -76,7 +67,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [3.9]  # py38 was processed on lint job stage
+        python-version: [3.8, 3.9]
         experimental: [false]
         include:
           - python-version: '3.10-dev'
@@ -91,7 +82,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.5
+        uses: actions/cache@v2.1.6
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -119,6 +110,24 @@ jobs:
           fi
 
       - name: "Run tests with pytest"
+        if: matrix.python-version != '3.8'
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
           ./bin/check_dirty
+
+      - name: "Install Coveralls"
+        if: matrix.python-version == '3.8'
+        run: |
+          pip install pytest-xdist coveralls
+
+      - name: "Run tests with pytest & Calculate coverage"
+        if: matrix.python-version == '3.8'
+        run: |
+          pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
+          ./bin/check_dirty
+
+      - name: "Send coverage to Coveralls"
+        if: matrix.python-version == '3.8'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: coveralls --service=github

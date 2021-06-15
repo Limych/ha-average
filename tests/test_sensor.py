@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 
 import homeassistant.util.dt as dt_util
 import pytest
+from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.const import (
     ATTR_UNIT_OF_MEASUREMENT,
     CONF_ENTITIES,
@@ -200,12 +201,12 @@ async def test_async_setup_platform(hass: HomeAssistant):
         CONF_ENTITIES: ["sensor.test_monitored", "sensor.nonexistent"],
     }
 
-    with assert_setup_component(2, "sensor"):
+    with assert_setup_component(2, SENSOR):
         assert await async_setup_component(
             hass,
-            "sensor",
+            SENSOR,
             {
-                "sensor": [
+                SENSOR: [
                     config,
                     mock_sensor,
                 ]

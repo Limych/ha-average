@@ -51,12 +51,13 @@ target/
 pythonenv*
 .env
 .venv
+.coverage
+.idea
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
-/.idea/
 
 # mkdocs documentation
 /site

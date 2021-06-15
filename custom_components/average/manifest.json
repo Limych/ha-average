@@ -1,14 +1,13 @@
 {
   "domain": "average",
   "name": "Average Sensor",
-  "version": "2.0.2",
+  "version": "2.0.3-alpha",
   "documentation": "https://github.com/Limych/ha-average",
   "issue_tracker": "https://github.com/Limych/ha-average/issues",
-  "dependencies": [
-    "history",
-    "recorder"
-  ],
+  "dependencies": [],
   "after_dependencies": [
+    "history",
+    "recorder",
     "weather"
   ],
   "config_flow": false,
