@@ -289,7 +289,8 @@ end: '{{ now() }}'
 ```
 
 > **_Note_**:\
-> The `/dev-template` page of your home-assistant UI can help you check if the values for `start`, `end` or `duration` are correct. If you want to check if your period is right, just click on your component, the `start` and `end` attributes will show the start and end of the period, nicely formatted.
+> The `Template Dev Tools` page of your home-assistant UI can help you check if the values for `start`, `end` or `duration` are correct. If you want to check if your period is right, just click on your component, the `start` and `end` attributes will show the start and end of the period, nicely formatted.\
+> [![Developer Tools: Templates](https://my.home-assistant.io/badges/developer_template.svg)](https://my.home-assistant.io/redirect/developer_template/)
 
 ## Track updates
 
