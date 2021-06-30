@@ -3,7 +3,7 @@ asynctest~=0.13
 flake8~=3.9
 flake8-docstrings~=1.6
 mypy==0.901
-pylint~=2.8
+pylint~=2.9
 pylint-strict-informational==0.1
 pytest~=6.2
 pytest-cov~=2.10
