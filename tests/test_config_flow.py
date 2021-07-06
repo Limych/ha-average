@@ -35,7 +35,7 @@ def bypass_setup_fixture():
         yield
 
 
-# Here we simiulate a successful config flow from the backend.
+# Here we simulate a successful config flow from the backend.
 # Note that we use the `bypass_get_data` fixture here because
 # we want the config flow validation to succeed during the test.
 async def test_successful_config_flow(hass: HomeAssistant, bypass_get_data):
