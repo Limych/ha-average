@@ -12,8 +12,7 @@ import datetime
 import logging
 import math
 import numbers
-from collections.abc import Mapping
-from typing import Any, Optional
+from typing import Any, Mapping, Optional
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
