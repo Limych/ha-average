@@ -167,7 +167,7 @@ async def test_entity_initialization(hass: HomeAssistant, default_sensor):
     assert default_sensor.state == STATE_UNAVAILABLE
     assert default_sensor.unit_of_measurement is None
     assert default_sensor.icon is None
-    assert default_sensor.state_attributes == expected_attributes
+    assert default_sensor.extra_state_attributes == expected_attributes
 
     entity = AverageSensor(
         hass,
@@ -368,9 +368,9 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     caplog.set_level(logging.DEBUG)
 
     assert default_sensor._temperature_mode is None
-    assert default_sensor._device_class is None
-    assert default_sensor._unit_of_measurement is None
-    assert default_sensor._icon is None
+    assert default_sensor._attr_device_class is None
+    assert default_sensor._attr_unit_of_measurement is None
+    assert default_sensor._attr_icon is None
 
     # Detect by device class
     state = LazyState(
@@ -389,14 +389,16 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
     caplog.clear()
     default_sensor._temperature_mode = None
-    default_sensor._device_class = None
-    default_sensor._unit_of_measurement = None
+    default_sensor._attr_device_class = None
+    default_sensor._attr_unit_of_measurement = None
 
     default_sensor._init_mode(state)
 
     assert default_sensor._temperature_mode is True
-    assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
-    assert default_sensor._unit_of_measurement is hass.config.units.temperature_unit
+    assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+    assert (
+        default_sensor._attr_unit_of_measurement is hass.config.units.temperature_unit
+    )
     assert len(caplog.records) == 1
 
     # Detect by measuring unit
@@ -417,14 +419,17 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
         caplog.clear()
         default_sensor._temperature_mode = None
-        default_sensor._device_class = None
-        default_sensor._unit_of_measurement = None
+        default_sensor._attr_device_class = None
+        default_sensor._attr_unit_of_measurement = None
 
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
-        assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
-        assert default_sensor._unit_of_measurement == hass.config.units.temperature_unit
+        assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+        assert (
+            default_sensor._attr_unit_of_measurement
+            == hass.config.units.temperature_unit
+        )
         assert len(caplog.records) == 1
 
     # Detect by domain
@@ -441,14 +446,17 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
         caplog.clear()
         default_sensor._temperature_mode = None
-        default_sensor._device_class = None
-        default_sensor._unit_of_measurement = None
+        default_sensor._attr_device_class = None
+        default_sensor._attr_unit_of_measurement = None
 
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
-        assert default_sensor._device_class is DEVICE_CLASS_TEMPERATURE
-        assert default_sensor._unit_of_measurement == hass.config.units.temperature_unit
+        assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+        assert (
+            default_sensor._attr_unit_of_measurement
+            == hass.config.units.temperature_unit
+        )
         assert len(caplog.records) == 1
 
     # Can't detect
@@ -468,15 +476,15 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
     caplog.clear()
     default_sensor._temperature_mode = None
-    default_sensor._device_class = None
-    default_sensor._unit_of_measurement = None
+    default_sensor._attr_device_class = None
+    default_sensor._attr_unit_of_measurement = None
 
     default_sensor._init_mode(state)
 
     assert default_sensor._temperature_mode is False
-    assert default_sensor._device_class is None
-    assert default_sensor._unit_of_measurement is None
-    assert default_sensor._icon == "some_icon"
+    assert default_sensor._attr_device_class is None
+    assert default_sensor._attr_unit_of_measurement is None
+    assert default_sensor._attr_icon == "some_icon"
     assert len(caplog.records) == 1
 
     # Skip if mode already detected
