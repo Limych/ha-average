@@ -6,5 +6,5 @@ mypy==0.910
 pylint~=2.10
 pylint-strict-informational==0.1
 pytest~=6.2
-pytest-cov~=2.10
+pytest-cov~=2.12
 pytest-homeassistant-custom-component>=0.4
