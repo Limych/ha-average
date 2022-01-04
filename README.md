@@ -25,7 +25,6 @@ File | Purpose
 `.devcontainer/*` | Used for development/testing with VSCODE, more info in the readme file in that dir.
 `.github/ISSUE_TEMPLATE/feature_request.md` | Template for Feature Requests
 `.github/ISSUE_TEMPLATE/issue.md` | Template for issues
-`.github/settings.yml` | Probot settings to control the repository settings.
 `.vscode/tasks.json` | Tasks for the devcontainer.
 `custom_components/integration_blueprint/translations/*` | [Translation files.](https://developers.home-assistant.io/docs/internationalization/custom_integration)
 `custom_components/integration_blueprint/__init__.py` | The component file for the integration.
@@ -149,7 +148,7 @@ Platform | Description
 1. Search for "Blueprint".
 1. Click Install below the found integration.
 1. _If you want to configure component via Home Assistant UI..._\
-    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint".
 1. _If you want to configure component via `configuration.yaml`..._\
     follow instructions below, then restart Home Assistant.
 
