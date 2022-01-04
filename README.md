@@ -335,7 +335,7 @@ See separate [license file](LICENSE.md) for full text.
 
 [component]: https://github.com/Limych/ha-average
 [commits-shield]: https://img.shields.io/github/commit-activity/y/Limych/ha-average.svg?style=popout
-[commits]: https://github.com/Limych/ha-average/commits/master
+[commits]: https://github.com/Limych/ha-average/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
 [exampleimg]: https://github.com/Limych/ha-average/raw/dev/example.png

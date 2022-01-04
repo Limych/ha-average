@@ -5,7 +5,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from awesomeversion.match import is_pep440
 from github import Github, GithubException, Repository, Tag
@@ -19,7 +19,7 @@ logging.basicConfig(level=logging.CRITICAL)
 
 _LOGGER = logging.getLogger(__name__)
 
-VERSION = "1.1.9"
+VERSION = "1.2.0"
 
 ROOT = os.path.dirname(os.path.abspath(f"{__file__}/.."))
 
@@ -27,6 +27,10 @@ BODY = """
 [![Downloads for this release](https://img.shields.io/github/downloads/{repo}/{version}/total.svg)](https://github.com/{repo}/releases/{version})
 
 {changes}
+
+... and by bots:
+
+{bot_changes}
 
 ## Links
 
@@ -84,9 +88,11 @@ def get_period(repo: Repository, release: Optional[str] = None) -> List[datetime
     return list(reversed(data[-2:]))
 
 
-def gen_changes(repo: Repository, tag: Optional[str] = None) -> str:
+def gen_changes(repo: Repository, tag: Optional[str] = None) -> Tuple[str, str, str]:
     """Generate list of commits."""
-    changes = ""
+    all_changes = ""
+    human_changes = ""
+    bot_changes = ""
     period = get_period(repo, tag)
     _LOGGER.debug("Period: %s", period)
 
@@ -106,11 +112,21 @@ def gen_changes(repo: Repository, tag: Optional[str] = None) -> str:
             or "Fix errors" in msg
         ):
             continue
-        changes += CHANGE.format(
+
+        change = CHANGE.format(
             line=msg, link=commit.html_url, author=commit.author.login
         )
+        all_changes += change
+        if "[bot]" not in commit.author.login:
+            human_changes += change
+        else:
+            bot_changes += change
 
-    return changes if changes != "" else NOCHANGE
+    return (
+        all_changes if all_changes != "" else NOCHANGE,
+        human_changes if human_changes != "" else NOCHANGE,
+        bot_changes if bot_changes != "" else NOCHANGE,
+    )
 
 
 def _bump_release(release, bump_type):
@@ -199,7 +215,7 @@ def main():
     _LOGGER.debug("Repo: %s", arguments.repo)
     repo = github.get_repo(arguments.repo)
     if arguments.release is None:
-        changes = gen_changes(repo)
+        changes = gen_changes(repo)[0]
         _LOGGER.debug(changes)
         if changes != NOCHANGE:
             version = Version(get_release_tags(repo)[0].name.lstrip("v"))
@@ -218,10 +234,12 @@ def main():
         tag = arguments.release.replace("refs/tags/", "")
         _LOGGER.debug("Release tag: %s", tag)
         version = Version(tag)
+        (_, human_changes, bot_changes) = gen_changes(repo, tag)
         msg = BODY.format(
             repo=arguments.repo,
             version=str(version),
-            changes=gen_changes(repo, tag),
+            changes=human_changes,
+            bot_changes=bot_changes,
         )
         if arguments.dry_run:
             print("Is prerelease:", version.is_prerelease)
