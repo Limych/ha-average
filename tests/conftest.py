@@ -15,7 +15,7 @@
 #
 # See here for more info: https://docs.pytest.org/en/latest/fixture.html (note that
 # pytest includes fixtures OOB which you can use as defined on this page)
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import pytest
 
@@ -49,7 +49,9 @@ def skip_notifications_fixture():
 @pytest.fixture(name="bypass_get_data")
 def bypass_get_data_fixture():
     """Skip calls to get data from API."""
-    with patch.object(IntegrationBlueprintApiClient, "async_get_data"):
+    with patch.object(
+        IntegrationBlueprintApiClient, "async_get_data", side_effect=Mock()
+    ):
         yield
 
 
