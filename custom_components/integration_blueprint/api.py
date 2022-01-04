@@ -42,7 +42,7 @@ class IntegrationBlueprintApiClient:
         if headers is None:
             headers = {}
         try:
-            async with async_timeout.timeout(TIMEOUT, loop=asyncio.get_event_loop()):
+            async with async_timeout.timeout(TIMEOUT):
                 if method == "get":  # pylint: disable=no-else-return
                     response = await self._session.get(url, headers=headers)
                     return await response.json()

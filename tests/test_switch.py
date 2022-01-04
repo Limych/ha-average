@@ -14,7 +14,7 @@ from custom_components.integration_blueprint.const import DEFAULT_NAME, DOMAIN, 
 from .const import MOCK_CONFIG
 
 
-async def test_switch_services(hass: HomeAssistant):
+async def test_switch_services(hass: HomeAssistant, bypass_get_data):
     """Test switch services."""
     # Create a mock entry so we don't have to go through config flow
     config_entry = MockConfigEntry(domain=DOMAIN, data=MOCK_CONFIG, entry_id="test")
