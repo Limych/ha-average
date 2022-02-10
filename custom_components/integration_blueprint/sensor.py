@@ -1,4 +1,5 @@
 """Sensor platform for integration_blueprint."""
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.core import HomeAssistant
 
 from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
@@ -11,7 +12,7 @@ async def async_setup_entry(hass: HomeAssistant, entry, async_add_entities):
     async_add_entities([IntegrationBlueprintSensor(coordinator, entry)])
 
 
-class IntegrationBlueprintSensor(IntegrationBlueprintEntity):
+class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
     """integration_blueprint Sensor class."""
 
     @property
@@ -20,8 +21,8 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity):
         return f"{DEFAULT_NAME}_{SENSOR}"
 
     @property
-    def state(self):
-        """Return the state of the sensor."""
+    def native_value(self):
+        """Return the native value of the sensor."""
         return self.coordinator.data.get("body")
 
     @property
