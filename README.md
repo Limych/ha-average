@@ -18,6 +18,8 @@ developers will have use for, please open a PR to add it :)
 
 ## What?
 
+This repository is an extension and addition to the [integration_blueprint](https://github.com/custom-components/integration_blueprint) repository. It is regularly updated with all the edits from parent repository and makes it easy to apply new edits to your project. This way you can easily keep it up to date.
+
 This repository contains multiple files, here is a overview:
 
 File | Purpose
