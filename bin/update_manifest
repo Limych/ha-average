@@ -17,10 +17,10 @@ fi
 component=$(ls -q "${ROOT}/custom_components/" | grep -v __ | head -n 1)
 const_path="custom_components/${component}/const.py"
 
-name=$(grep "^NAME =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-domain=$(grep "^DOMAIN =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-issue_url=$(grep "^ISSUE_URL =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+name=$(grep "^NAME: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+domain=$(grep "^DOMAIN: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+version=$(grep "^VERSION: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+issue_url=$(grep "^ISSUE_URL: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 
 log.info "Update manifest.json data..."
 manifest_path="custom_components/${component}/manifest.json"
