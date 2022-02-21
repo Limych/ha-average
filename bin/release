@@ -97,7 +97,7 @@ if ! pytest; then
 fi
 
 const_path=$(find custom_components/ -name const.py)
-version=$(grep "^VERSION =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+version=$(grep "^VERSION: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 
 if [[ -z $1 ]]; then
     log.fatal "Please, describe new version number as first argument."
@@ -108,7 +108,7 @@ fi
 new=$(validate_version "${1}")
 
 log.info "Patch files to version '${new}'..."
-sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
+sed -i -E "s/(^VERSION: Final = \")[^\"]*/\\1${new}/" ${const_path}
 ./bin/update_manifest
 if output=$(git status --porcelain) && [[ -n "$output" ]]; then
     git commit -a --no-verify -m "Bump version to ${new}"
