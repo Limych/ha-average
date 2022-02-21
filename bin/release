@@ -110,7 +110,9 @@ new=$(validate_version "${1}")
 log.info "Patch files to version '${new}'..."
 sed -i -E "s/(^VERSION = \")[^\"]*/\\1${new}/" ${const_path}
 ./bin/update_manifest
-git commit -a --no-verify -m "Bump version to ${new}"
+if output=$(git status --porcelain) && [[ -n "$output" ]]; then
+    git commit -a --no-verify -m "Bump version to ${new}"
+fi
 git tag -a "$new" -m "v$new"
 log.info "Commit tagged as v$new"
 
