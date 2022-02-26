@@ -1,14 +1,14 @@
 {
-  "domain": "",
-  "name": "",
-  "version": "",
-  "documentation": "https://github.com/Limych/ha-blueprint",
-  "issue_tracker": "",
-  "dependencies": [],
-  "config_flow": true,
-  "codeowners": [
-    "@Limych"
-  ],
-  "requirements": [],
-  "iot_class": "cloud_polling"
+    "domain": "",
+    "name": "",
+    "version": "",
+    "documentation": "https://github.com/Limych/ha-blueprint",
+    "issue_tracker": "",
+    "dependencies": [],
+    "config_flow": true,
+    "codeowners": [
+        "@Limych"
+    ],
+    "requirements": [],
+    "iot_class": "cloud_polling"
 }
