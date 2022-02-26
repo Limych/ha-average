@@ -1,5 +1,5 @@
 {
-    "name": "",
+    "name": "Integration blueprint",
     "hacs": "1.6.0",
     "domains": [
         "binary_sensor",

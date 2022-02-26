@@ -123,5 +123,5 @@ else
 fi
 
 log.info "Patch files to version '${dev}'..."
-sed -i -E "s/(^VERSION = \")[^\"]*/\\1${dev}/" ${const_path}
+sed -i -E "s/(^VERSION: Final = \")[^\"]*/\\1${dev}/" ${const_path}
 ./bin/update_manifest
