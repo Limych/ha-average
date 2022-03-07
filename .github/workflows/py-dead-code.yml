@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Checkout code"
-        uses: actions/checkout@master
+        uses: actions/checkout@v3
 
       - run: |
           echo "package=$(ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p")" >> $GITHUB_ENV
