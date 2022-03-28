@@ -28,7 +28,7 @@ jobs:
           python-version: '3.8'
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
@@ -77,7 +77,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
