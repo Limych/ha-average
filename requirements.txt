@@ -1,1 +1,1 @@
-homeassistant>=2022.2
+homeassistant>=2021.12

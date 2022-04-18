@@ -150,7 +150,7 @@ Platform | Description
 1. Search for "Blueprint".
 1. Click Install below the found integration.
 1. _If you want to configure component via Home Assistant UI..._\
-    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Integration blueprint".
+    in the HA UI go to "Configuration" > "Integrations" click "+" and search for "Integration blueprint".
 1. _If you want to configure component via `configuration.yaml`..._\
     follow instructions below, then restart Home Assistant.
 
@@ -163,7 +163,7 @@ Platform | Description
 1. Extract _all_ files from this archive you downloaded in the directory (folder) you created.
 1. Restart Home Assistant
 1. _If you want to configure component via Home Assistant UI..._\
-    in the HA UI go to "Configuration" -> "Integrations" click "+" and search for "Blueprint".
+    in the HA UI go to "Configuration" > "Integrations" click "+" and search for "Blueprint".
 1. _If you want to configure component via `configuration.yaml`..._\
     follow instructions below, then restart Home Assistant.
 
