@@ -490,7 +490,6 @@ class AverageSensor(SensorEntity):
                     )
                 else:
                     # Get the first state
-                    #item = history.get_state(self.hass, start, entity_id)
                     item = history_list[entity_id][0]
                     _LOGGER.debug("Initial historical state: %s", item)
                     last_state = None
