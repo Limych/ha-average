@@ -478,7 +478,9 @@ class AverageSensor(SensorEntity):
                     self.hass, start, end, str(entity_id)
                 )
 
-                if entity_id not in history_list.keys():
+                if (entity_id not in history_list.keys()
+                        or history_list[entity_id] is None
+                        or len(history_list[entity_id]) == 0) :
                     value = self._get_state_value(state)
                     _LOGGER.warning(
                         'Historical data not found for entity "%s". '
@@ -488,7 +490,8 @@ class AverageSensor(SensorEntity):
                     )
                 else:
                     # Get the first state
-                    item = history.get_state(self.hass, start, entity_id)
+                    #item = history.get_state(self.hass, start, entity_id)
+                    item = history_list[entity_id][0]
                     _LOGGER.debug("Initial historical state: %s", item)
                     last_state = None
                     last_time = start_ts
