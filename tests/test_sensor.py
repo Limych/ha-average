@@ -164,8 +164,8 @@ async def test_entity_initialization(hass: HomeAssistant, default_sensor):
     assert default_sensor.name == TEST_NAME
     assert default_sensor.should_poll is True
     assert default_sensor.available is False
-    assert default_sensor.state == STATE_UNAVAILABLE
-    assert default_sensor.unit_of_measurement is None
+    assert default_sensor.native_value is None
+    assert default_sensor.native_unit_of_measurement is None
     assert default_sensor.icon is None
     assert default_sensor.extra_state_attributes == expected_attributes
 
@@ -252,7 +252,7 @@ async def test__get_temperature(default_sensor):
             {
                 "entity_id": "weather.test",
                 "state": "test",
-                "attributes": json.dumps({"temperature": 25}),
+                "shared_attrs": json.dumps({"temperature": 25}),
             }
         )
     )
@@ -263,7 +263,7 @@ async def test__get_temperature(default_sensor):
             {
                 "entity_id": "climate.test",
                 "state": "test",
-                "attributes": json.dumps({"current_temperature": 16}),
+                "shared_attrs": json.dumps({"current_temperature": 16}),
             }
         )
     )
@@ -274,7 +274,7 @@ async def test__get_temperature(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": 125,
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -286,7 +286,7 @@ async def test__get_temperature(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": "",
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -298,7 +298,7 @@ async def test__get_temperature(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": "qwe",
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -316,7 +316,7 @@ async def test__get_state_value(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": "None",
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -328,7 +328,7 @@ async def test__get_state_value(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": "asd",
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -340,7 +340,7 @@ async def test__get_state_value(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": 21,
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -352,7 +352,7 @@ async def test__get_state_value(default_sensor):
             {
                 "entity_id": "sensor.test",
                 "state": 34,
-                "attributes": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
+                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
                 "last_changed": dt_util.now(),
             }
         )
@@ -378,7 +378,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
             {
                 "entity_id": "sensor.test",
                 "state": None,
-                "attributes": json.dumps(
+                "shared_attrs": json.dumps(
                     {
                         ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
                     }
@@ -409,7 +409,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
                 {
                     "entity_id": "sensor.test",
                     "state": None,
-                    "attributes": json.dumps(
+                    "shared_attrs": json.dumps(
                         {
                             ATTR_UNIT_OF_MEASUREMENT: unit,
                         }
@@ -440,7 +440,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
                 {
                     "entity_id": f"{domain}.test",
                     "state": None,
-                    "attributes": json.dumps({}),
+                    "shared_attrs": json.dumps({}),
                 }
             )
         )
@@ -466,7 +466,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
             {
                 "entity_id": "sensor.test",
                 "state": None,
-                "attributes": json.dumps(
+                "shared_attrs": json.dumps(
                     {
                         ATTR_ICON: "some_icon",
                     }
