@@ -16,7 +16,7 @@ workdir="/workspaces/${workspace}"
 
 container="dev-${workspace}"
 port="127.0.0.1:9123:8123"
-image="ludeeus/container:integration-debian"
+image="ghcr.io/ludeeus/devcontainer/integration:stable"
 volume="${ROOT}:${workdir}"
 
 cmd="menu"
