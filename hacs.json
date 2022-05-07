@@ -1,5 +1,5 @@
 {
-    "name": "Average Sensor",
+    "name": "",
     "domains": ["sensor"],
     "hacs": "1.6.0",
     "iot_class": "Assumed State",

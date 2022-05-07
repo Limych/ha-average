@@ -79,9 +79,9 @@ def default_sensor(hass: HomeAssistant):
 class Objectview:
     """Mock dict to object."""
 
-    def __init__(self, d):
+    def __init__(self, dct):
         """Mock dict to object."""
-        self.__dict__ = d
+        self.__dict__ = dct
 
 
 async def test_valid_check_period_keys(hass: HomeAssistant):
@@ -369,7 +369,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
     assert default_sensor._temperature_mode is None
     assert default_sensor._attr_device_class is None
-    assert default_sensor._attr_unit_of_measurement is None
+    assert default_sensor._attr_native_unit_of_measurement is None
     assert default_sensor._attr_icon is None
 
     # Detect by device class
@@ -390,14 +390,15 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     caplog.clear()
     default_sensor._temperature_mode = None
     default_sensor._attr_device_class = None
-    default_sensor._attr_unit_of_measurement = None
+    default_sensor._attr_native_unit_of_measurement = None
 
     default_sensor._init_mode(state)
 
     assert default_sensor._temperature_mode is True
     assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
     assert (
-        default_sensor._attr_unit_of_measurement is hass.config.units.temperature_unit
+        default_sensor._attr_native_unit_of_measurement
+        is hass.config.units.temperature_unit
     )
     assert len(caplog.records) == 1
 
@@ -420,14 +421,14 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         caplog.clear()
         default_sensor._temperature_mode = None
         default_sensor._attr_device_class = None
-        default_sensor._attr_unit_of_measurement = None
+        default_sensor._attr_native_unit_of_measurement = None
 
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
         assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
         assert (
-            default_sensor._attr_unit_of_measurement
+            default_sensor._attr_native_unit_of_measurement
             == hass.config.units.temperature_unit
         )
         assert len(caplog.records) == 1
@@ -447,14 +448,14 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         caplog.clear()
         default_sensor._temperature_mode = None
         default_sensor._attr_device_class = None
-        default_sensor._attr_unit_of_measurement = None
+        default_sensor._attr_native_unit_of_measurement = None
 
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
         assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
         assert (
-            default_sensor._attr_unit_of_measurement
+            default_sensor._attr_native_unit_of_measurement
             == hass.config.units.temperature_unit
         )
         assert len(caplog.records) == 1
@@ -477,13 +478,13 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     caplog.clear()
     default_sensor._temperature_mode = None
     default_sensor._attr_device_class = None
-    default_sensor._attr_unit_of_measurement = None
+    default_sensor._attr_native_unit_of_measurement = None
 
     default_sensor._init_mode(state)
 
     assert default_sensor._temperature_mode is False
     assert default_sensor._attr_device_class is None
-    assert default_sensor._attr_unit_of_measurement is None
+    assert default_sensor._attr_native_unit_of_measurement is None
     assert default_sensor._attr_icon == "some_icon"
     assert len(caplog.records) == 1
 
