@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - working-directory: ./custom_components
         run: |
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "Check out repository"
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
 
       - working-directory: ./custom_components
         run: |
@@ -57,12 +57,12 @@ jobs:
 
       - name: "Set up Python"
         if: env.release_version != '' && success()
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: 3.9
 
       - name: "Cache pip"
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
