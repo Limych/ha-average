@@ -498,10 +498,10 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
 async def test_update(default_sensor):
     """Test update throttler."""
-    with patch.object(default_sensor, "_update_state") as ups:
-        default_sensor.update()
+    with patch.object(default_sensor, "_async_update_state") as ups:
+        await default_sensor.async_update()
         await sleep(1)
-        default_sensor.update()
+        await default_sensor.async_update()
 
         assert ups.call_count == 1
 

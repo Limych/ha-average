@@ -59,7 +59,7 @@ from .const import (
 
 try:  # pragma: no cover
     # HA version >=2021.6
-    from homeassistant.components.recorder import history
+    from homeassistant.components.recorder import get_instance, history
     from homeassistant.components.recorder.models import LazyState
 except ImportError:  # pragma: no cover
     # HA version <=2021.5
@@ -217,24 +217,26 @@ class AverageSensor(SensorEntity):
 
         # pylint: disable=unused-argument
         @callback
-        def sensor_state_listener(entity, old_state, new_state):
+        async def async_sensor_state_listener(entity, old_state, new_state):
             """Handle device state changes."""
             last_state = self._attr_native_value
-            self._update_state()
+            await self._async_update_state()
             if last_state != self._attr_native_value:
                 self.async_schedule_update_ha_state(True)
 
         # pylint: disable=unused-argument
         @callback
-        def sensor_startup(event):
+        async def async_sensor_startup(event):
             """Update template on startup."""
             if self._has_period:
                 self.async_schedule_update_ha_state(True)
             else:
-                async_track_state_change(self.hass, self.sources, sensor_state_listener)
-                sensor_state_listener(None, None, None)
+                async_track_state_change(
+                    self.hass, self.sources, async_sensor_state_listener
+                )
+                await async_sensor_state_listener(None, None, None)
 
-        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, sensor_startup)
+        self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, async_sensor_startup)
 
     @staticmethod
     def _has_state(state) -> bool:
@@ -293,10 +295,10 @@ class AverageSensor(SensorEntity):
         return state
 
     @Throttle(UPDATE_MIN_TIME)
-    def update(self):
+    async def async_update(self):
         """Update the sensor state if it needed."""
         if self._has_period:
-            self._update_state()
+            await self._async_update_state()
 
     @staticmethod
     def handle_template_exception(exc, field):
@@ -310,7 +312,7 @@ class AverageSensor(SensorEntity):
         else:
             _LOGGER.error('Error parsing template for field "%s": %s', field, exc)
 
-    def _update_period(self):  # pylint: disable=too-many-branches
+    async def _async_update_period(self):  # pylint: disable=too-many-branches
         """Parse the templates and calculate a datetime tuples."""
         start = end = None
         now = dt_util.now()
@@ -319,7 +321,7 @@ class AverageSensor(SensorEntity):
         if self._start_template is not None:
             _LOGGER.debug("Process start template: %s", self._start_template)
             try:
-                start_rendered = self._start_template.render()
+                start_rendered = self._start_template.async_render()
             except (TemplateError, TypeError) as ex:
                 self.handle_template_exception(ex, "start")
                 return
@@ -340,7 +342,7 @@ class AverageSensor(SensorEntity):
         if self._end_template is not None:
             _LOGGER.debug("Process end template: %s", self._end_template)
             try:
-                end_rendered = self._end_template.render()
+                end_rendered = self._end_template.async_render()
             except (TemplateError, TypeError) as ex:
                 self.handle_template_exception(ex, "end")
                 return
@@ -410,7 +412,7 @@ class AverageSensor(SensorEntity):
             _LOGGER.debug("%s is NOT a temperature entity.", state.entity_id)
             self._attr_icon = state.attributes.get(ATTR_ICON)
 
-    def _update_state(
+    async def _async_update_state(
         self,
     ):  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
         """Update the sensor state."""
@@ -419,7 +421,7 @@ class AverageSensor(SensorEntity):
         p_period = self._period
 
         # Parse templates
-        self._update_period()
+        await self._async_update_period()
 
         if self._period is not None:
             now = datetime.datetime.now()
@@ -474,8 +476,12 @@ class AverageSensor(SensorEntity):
 
             else:
                 # Get history between start and now
-                history_list = history.state_changes_during_period(
-                    self.hass, start, end, str(entity_id)
+                history_list = await get_instance(self.hass).async_add_executor_job(
+                    history.state_changes_during_period,
+                    self.hass,
+                    start,
+                    end,
+                    str(entity_id),
                 )
 
                 if (
