@@ -325,6 +325,8 @@ The original setup of this component is by [Andrey "Limych" Khrolenok](https://g
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
 
+This Home Assistant custom component was created and is updated using the [HA-Blueprint template](https://github.com/Limych/ha-blueprint). You can use this template to maintain your own Home Assistant custom components.
+
 ## License
 
 creative commons Attribution-NonCommercial-ShareAlike 4.0 International License
