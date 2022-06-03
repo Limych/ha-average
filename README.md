@@ -54,6 +54,17 @@ File | Purpose
 
 ## How?
 
+* …or [use this template](https://github.com/Limych/ha-blueprint/generate) to create your new repository.
+  Then download a copy of the new repository to your IDE and run the final environment setup commands:
+    ```bash
+    # Configure future updates from blueprint repository
+    git remote add blueprint https://github.com/Limych/ha-blueprint.git
+    git fetch blueprint dev
+
+    # Initialize the development environment
+    ./bin/setup
+    ```
+
 * …or create a new repository on the command line:
     ```bash
     # Initialize your new origin repository
@@ -68,6 +79,9 @@ File | Purpose
 
     # Push changes to origin repository
     git push -u origin dev
+
+    # Initialize the development environment
+    ./bin/setup
     ```
 
 * …or apply blueprint to an existing repository from the command line:
@@ -79,17 +93,15 @@ File | Purpose
 
     # Push changes to origin repository
     git push -u origin dev
+
+    # Initialize the development environment
+    ./bin/setup
     ```
 
 After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
 ```bash
 ./bin/update
 git merge blueprint/dev
-```
-
-**Note:** Please, before starting to develop your own code, initialize the development environment with the command
-```bash
-./bin/setup
 ```
 
 If you want to use all the potential and features of this blueprint template you
