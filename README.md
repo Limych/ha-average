@@ -60,6 +60,10 @@ File | Purpose
     # Configure future updates from blueprint repository
     git remote add blueprint https://github.com/Limych/ha-blueprint.git
     git fetch blueprint dev
+    git merge blueprint/dev --allow-unrelated-histories
+
+    # Push changes to origin repository
+    git push -u origin dev
 
     # Initialize the development environment
     ./bin/setup
