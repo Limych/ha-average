@@ -34,49 +34,11 @@ jobs:
         run: |
           zip ${{ env.package }}.zip -r ./
 
-      - name: "Upload zip to release"
+      - name: "Release"
         if: env.release_version != '' && success()
-        uses: svenstaro/upload-release-action@v2
+        uses: softprops/action-gh-release@v1
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: ${{ env.basedir }}/${{ env.package }}.zip
-          asset_name: ${{ env.package }}.zip
-          tag: ${{ env.release_version }}
-          overwrite: true
-
-  releasenotes:
-    name: "Prepare releasenotes"
-    runs-on: ubuntu-latest
-    steps:
-      - name: "Check out repository"
-        uses: actions/checkout@v3
-
-      - working-directory: ./custom_components
-        run: |
-          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
-
-      - name: "Set up Python"
-        if: env.release_version != '' && success()
-        uses: actions/setup-python@v3
-        with:
-          python-version: 3.9
-
-      - name: "Cache pip"
-        uses: actions/cache@v3
-        with:
-          # This path is specific to Ubuntu
-          path: ~/.cache/pip
-          # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
-            ${{ runner.os }}-
-
-      - name: "Install requirements"
-        if: env.release_version != '' && success()
-        run: |
-          python3 -m pip install setuptools wheel
-          python3 -m pip install -r ./requirements-dev.txt
+          files: ${{ env.basedir }}/${{ env.package }}.zip
 
       - name: "Update release notes"
         if: env.release_version != '' && success()
