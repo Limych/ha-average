@@ -15,7 +15,7 @@ jobs:
           echo "package=$(ls -F | grep \/$ | grep -v "bin\|examples\|tests" | sed -n "s/\///g;1p")" >> $GITHUB_ENV
 
       - name: "Set up Python"
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
