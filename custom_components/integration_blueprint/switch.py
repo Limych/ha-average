@@ -1,8 +1,9 @@
 """Switch platform for integration_blueprint."""
 from homeassistant.components.switch import SwitchEntity
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import DEFAULT_NAME, DOMAIN, ICON, SWITCH
+from .const import DEFAULT_NAME, DOMAIN, ICON
 from .entity import IntegrationBlueprintEntity
 
 
@@ -28,7 +29,7 @@ class IntegrationBlueprintBinarySwitch(IntegrationBlueprintEntity, SwitchEntity)
     @property
     def name(self):
         """Return the name of the switch."""
-        return f"{DEFAULT_NAME}_{SWITCH}"
+        return f"{DEFAULT_NAME}_{Platform.SWITCH}"
 
     @property
     def icon(self):

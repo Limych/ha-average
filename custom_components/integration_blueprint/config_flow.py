@@ -4,17 +4,13 @@ from typing import Optional
 import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.config_entries import ConfigEntry
+from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_create_clientsession
 from homeassistant.helpers.typing import ConfigType
 
 from .api import IntegrationBlueprintApiClient
-from .const import (  # pylint: disable=unused-import
-    CONF_PASSWORD,
-    CONF_USERNAME,
-    DOMAIN,
-    PLATFORMS,
-)
+from .const import DOMAIN, PLATFORMS  # pylint: disable=unused-import
 
 
 class BlueprintFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):

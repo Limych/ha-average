@@ -1,8 +1,9 @@
 """Binary sensor platform for integration_blueprint."""
 from homeassistant.components.binary_sensor import BinarySensorEntity
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import BINARY_SENSOR, BINARY_SENSOR_DEVICE_CLASS, DEFAULT_NAME, DOMAIN
+from .const import BINARY_SENSOR_DEVICE_CLASS, DEFAULT_NAME, DOMAIN
 from .entity import IntegrationBlueprintEntity
 
 
@@ -18,7 +19,7 @@ class IntegrationBlueprintBinarySensor(IntegrationBlueprintEntity, BinarySensorE
     @property
     def name(self):
         """Return the name of the binary_sensor."""
-        return f"{DEFAULT_NAME}_{BINARY_SENSOR}"
+        return f"{DEFAULT_NAME}_{Platform.BINARY_SENSOR}"
 
     @property
     def device_class(self):

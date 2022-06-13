@@ -1,8 +1,9 @@
 """Sensor platform for integration_blueprint."""
 from homeassistant.components.sensor import SensorEntity
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 
-from .const import DEFAULT_NAME, DOMAIN, ICON, SENSOR
+from .const import DEFAULT_NAME, DOMAIN, ICON
 from .entity import IntegrationBlueprintEntity
 
 
@@ -18,7 +19,7 @@ class IntegrationBlueprintSensor(IntegrationBlueprintEntity, SensorEntity):
     @property
     def name(self):
         """Return the name of the sensor."""
-        return f"{DEFAULT_NAME}_{SENSOR}"
+        return f"{DEFAULT_NAME}_{Platform.SENSOR}"
 
     @property
     def native_value(self):

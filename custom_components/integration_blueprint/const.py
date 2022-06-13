@@ -1,8 +1,10 @@
 """Constants for integration_blueprint."""
 
-# Base component constants
 from typing import Final
 
+from homeassistant.const import Platform
+
+# Base component constants
 NAME: Final = "Integration blueprint"
 DOMAIN: Final = "integration_blueprint"
 VERSION: Final = "0.1.0"
@@ -26,15 +28,14 @@ ICON: Final = "mdi:format-quote-close"
 BINARY_SENSOR_DEVICE_CLASS: Final = "connectivity"
 
 # Platforms
-BINARY_SENSOR: Final = "binary_sensor"
-SENSOR: Final = "sensor"
-SWITCH: Final = "switch"
-PLATFORMS: Final = [BINARY_SENSOR, SENSOR, SWITCH]
+PLATFORMS: Final = [
+    Platform.BINARY_SENSOR,
+    Platform.SENSOR,
+    Platform.SWITCH,
+]
 
 # Configuration and options
 CONF_ENABLED: Final = "enabled"
-CONF_USERNAME: Final = "username"
-CONF_PASSWORD: Final = "password"
 
 # Defaults
 DEFAULT_NAME: Final = DOMAIN
