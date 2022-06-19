@@ -10,7 +10,7 @@ from typing import Final
 # Base component constants
 NAME: Final = "Average Sensor"
 DOMAIN: Final = "average"
-VERSION: Final = "2.2.3"
+VERSION: Final = "2.2.4-alpha"
 ISSUE_URL: Final = "https://github.com/Limych/ha-average/issues"
 
 STARTUP_MESSAGE: Final = f"""

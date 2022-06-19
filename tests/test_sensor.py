@@ -1,6 +1,7 @@
 """The test for the average sensor platform."""
 # pylint: disable=redefined-outer-name
-import json
+from __future__ import annotations
+
 import logging
 from asyncio import sleep
 from datetime import timedelta
@@ -24,7 +25,7 @@ from homeassistant.const import (
     STATE_UNKNOWN,
     TEMP_FAHRENHEIT,
 )
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
@@ -39,23 +40,10 @@ from custom_components.average.sensor import (
     check_period_keys,
 )
 
-# pylint: disable=ungrouped-imports
-try:
-    from homeassistant.components.recorder.models import LazyState
-except ImportError:
-    from homeassistant.components.history import LazyState
-
-
 TEST_UNIQUE_ID = "test_id"
 TEST_NAME = "test_name"
 TEST_ENTITY_IDS = ["sensor.test_monitored"]
 TEST_VALUES = [3, 11.16, -17, 4.29, -29, -16.8, 8, 5, -4.7, 5, -15]
-
-
-@pytest.fixture(autouse=True)
-def mock_legacy_time(legacy_patchable_time):
-    """Make time patchable for all the tests."""
-    yield
 
 
 @pytest.fixture()
@@ -74,14 +62,6 @@ def default_sensor(hass: HomeAssistant):
     )
     entity.hass = hass
     return entity
-
-
-class Objectview:
-    """Mock dict to object."""
-
-    def __init__(self, dct):
-        """Mock dict to object."""
-        self.__dict__ = dct
 
 
 async def test_valid_check_period_keys(hass: HomeAssistant):
@@ -247,61 +227,41 @@ async def test__has_state():
 # pylint: disable=protected-access
 async def test__get_temperature(default_sensor):
     """Test temperature getter."""
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "weather.test",
-                "state": "test",
-                "shared_attrs": json.dumps({"temperature": 25}),
-            }
-        )
+    state = State(
+        "weather.test",
+        "test",
+        {"temperature": 25},
     )
     assert default_sensor._get_temperature(state) == 25
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "climate.test",
-                "state": "test",
-                "shared_attrs": json.dumps({"current_temperature": 16}),
-            }
-        )
+    state = State(
+        "climate.test",
+        "test",
+        {"current_temperature": 16},
     )
     assert default_sensor._get_temperature(state) == 16
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": 125,
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "125",
+        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        dt_util.now(),
     )
     assert round(default_sensor._get_temperature(state), 3) == 51.667
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": "",
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "",
+        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        dt_util.now(),
     )
     assert default_sensor._get_temperature(state) is None
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": "qwe",
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "qwe",
+        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        dt_util.now(),
     )
     assert default_sensor._get_temperature(state) is None
 
@@ -311,51 +271,35 @@ async def test__get_state_value(default_sensor):
     """Test state getter."""
     default_sensor._undef = "Undef"
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": "None",
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "None",
+        {ATTR_UNIT_OF_MEASUREMENT: None},
+        dt_util.now(),
     )
     assert default_sensor._get_state_value(state) == "Undef"
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": "asd",
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "asd",
+        {ATTR_UNIT_OF_MEASUREMENT: None},
+        dt_util.now(),
     )
     assert default_sensor._get_state_value(state) is None
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": 21,
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "21",
+        {ATTR_UNIT_OF_MEASUREMENT: None},
+        dt_util.now(),
     )
     assert default_sensor._get_state_value(state) == 21
 
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": 34,
-                "shared_attrs": json.dumps({ATTR_UNIT_OF_MEASUREMENT: None}),
-                "last_changed": dt_util.now(),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "34",
+        {ATTR_UNIT_OF_MEASUREMENT: None},
+        dt_util.now(),
     )
     assert default_sensor._get_state_value(state) == 34
 
@@ -373,18 +317,12 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     assert default_sensor._attr_icon is None
 
     # Detect by device class
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": None,
-                "shared_attrs": json.dumps(
-                    {
-                        ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
-                    }
-                ),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "None",
+        {
+            ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
+        },
     )
 
     caplog.clear()
@@ -404,18 +342,12 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
     # Detect by measuring unit
     for unit in TEMPERATURE_UNITS:
-        state = LazyState(
-            Objectview(
-                {
-                    "entity_id": "sensor.test",
-                    "state": None,
-                    "shared_attrs": json.dumps(
-                        {
-                            ATTR_UNIT_OF_MEASUREMENT: unit,
-                        }
-                    ),
-                }
-            )
+        state = State(
+            "sensor.test",
+            "None",
+            {
+                ATTR_UNIT_OF_MEASUREMENT: unit,
+            },
         )
 
         caplog.clear()
@@ -435,14 +367,9 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
 
     # Detect by domain
     for domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN):
-        state = LazyState(
-            Objectview(
-                {
-                    "entity_id": f"{domain}.test",
-                    "state": None,
-                    "shared_attrs": json.dumps({}),
-                }
-            )
+        state = State(
+            f"{domain}.test",
+            "None",
         )
 
         caplog.clear()
@@ -461,18 +388,12 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         assert len(caplog.records) == 1
 
     # Can't detect
-    state = LazyState(
-        Objectview(
-            {
-                "entity_id": "sensor.test",
-                "state": None,
-                "shared_attrs": json.dumps(
-                    {
-                        ATTR_ICON: "some_icon",
-                    }
-                ),
-            }
-        )
+    state = State(
+        "sensor.test",
+        "None",
+        {
+            ATTR_ICON: "some_icon",
+        },
     )
 
     caplog.clear()

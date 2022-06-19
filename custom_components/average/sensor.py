@@ -1,4 +1,4 @@
-#  Copyright (c) 2019-2021, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Copyright (c) 2019-2022, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -8,6 +8,8 @@ The Average Sensor.
 For more details about this sensor, please refer to the documentation at
 https://github.com/Limych/ha-average/
 """
+from __future__ import annotations
+
 import datetime
 import logging
 import math
@@ -19,6 +21,7 @@ import voluptuous as vol
 from _sha1 import sha1
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
+from homeassistant.components.recorder import get_instance, history
 from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
@@ -34,7 +37,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
-from homeassistant.core import HomeAssistant, callback, split_entity_id
+from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
@@ -56,16 +59,6 @@ from .const import (
     STARTUP_MESSAGE,
     UPDATE_MIN_TIME,
 )
-
-try:  # pragma: no cover
-    # HA version >=2021.6
-    from homeassistant.components.recorder import get_instance, history
-    from homeassistant.components.recorder.models import LazyState
-except ImportError:  # pragma: no cover
-    # HA version <=2021.5
-    from homeassistant.components import history
-    from homeassistant.components.history import LazyState
-
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -248,7 +241,7 @@ class AverageSensor(SensorEntity):
             "",
         ]
 
-    def _get_temperature(self, state: LazyState) -> Optional[float]:
+    def _get_temperature(self, state: State) -> Optional[float]:
         """Get temperature value from entity."""
         ha_unit = self.hass.config.units.temperature_unit
         domain = split_entity_id(state.entity_id)[0]
@@ -273,7 +266,7 @@ class AverageSensor(SensorEntity):
 
         return temperature
 
-    def _get_state_value(self, state: LazyState) -> Optional[float]:
+    def _get_state_value(self, state: State) -> Optional[float]:
         """Return value of given entity state and count some sensor attributes."""
         state = self._get_temperature(state) if self._temperature_mode else state.state
         if not self._has_state(state):
@@ -387,7 +380,7 @@ class AverageSensor(SensorEntity):
         self.start = start.replace(microsecond=0).isoformat()
         self.end = end.replace(microsecond=0).isoformat()
 
-    def _init_mode(self, state: LazyState):
+    def _init_mode(self, state: State):
         """Initialize sensor mode."""
         if self._temperature_mode is not None:
             return
@@ -458,7 +451,7 @@ class AverageSensor(SensorEntity):
         for entity_id in self.sources:
             _LOGGER.debug('Processing entity "%s"', entity_id)
 
-            state = self.hass.states.get(entity_id)  # type: LazyState
+            state = self.hass.states.get(entity_id)  # type: State
 
             if state is None:
                 _LOGGER.error('Unable to find an entity "%s"', entity_id)
@@ -539,4 +532,9 @@ class AverageSensor(SensorEntity):
                 self._attr_native_value = int(self._attr_native_value)
         else:
             self._attr_native_value = None
-        _LOGGER.debug("Total average state: %s", self._attr_native_value)
+
+        _LOGGER.debug(
+            "Total average state: %s %s",
+            self._attr_native_value,
+            self._attr_native_unit_of_measurement,
+        )
