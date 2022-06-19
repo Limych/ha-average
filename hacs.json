@@ -1,7 +1,5 @@
 {
     "name": "Average Sensor",
-    "domains": ["sensor"],
     "hacs": "1.6.0",
-    "iot_class": "Assumed State",
     "homeassistant": "0.118.0"
 }
