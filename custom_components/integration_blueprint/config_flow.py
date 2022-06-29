@@ -104,7 +104,7 @@ class BlueprintOptionsFlowHandler(config_entries.OptionsFlow):
             step_id="user",
             data_schema=vol.Schema(
                 {
-                    vol.Required(x, default=self.options.get(x, True)): bool
+                    vol.Required(str(x), default=self.options.get(str(x), True)): bool
                     for x in sorted(PLATFORMS)
                 }
             ),

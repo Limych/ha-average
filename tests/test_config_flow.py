@@ -5,16 +5,11 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant import config_entries, data_entry_flow
+from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.integration_blueprint.const import (
-    BINARY_SENSOR,
-    DOMAIN,
-    PLATFORMS,
-    SENSOR,
-    SWITCH,
-)
+from custom_components.integration_blueprint.const import DOMAIN, PLATFORMS
 
 from .const import MOCK_CONFIG
 
@@ -102,7 +97,7 @@ async def test_options_flow(hass: HomeAssistant):
     # Enter some fake data into the form
     result = await hass.config_entries.options.async_configure(
         result["flow_id"],
-        user_input={platform: platform != SENSOR for platform in PLATFORMS},
+        user_input={platform: platform != Platform.SENSOR for platform in PLATFORMS},
     )
 
     # Verify that the flow finishes
@@ -110,4 +105,8 @@ async def test_options_flow(hass: HomeAssistant):
     assert result["title"] == "test_username"
 
     # Verify that the options were updated
-    assert entry.options == {BINARY_SENSOR: True, SENSOR: False, SWITCH: True}
+    assert entry.options == {
+        Platform.BINARY_SENSOR: True,
+        Platform.SENSOR: False,
+        Platform.SWITCH: True,
+    }
