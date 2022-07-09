@@ -7,8 +7,8 @@ on:
       - "[v0-9]+.[0-9]+*"
 
 jobs:
-  release_zip_file:
-    name: "Prepare release asset"
+  release:
+    name: "Publish new release"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out repository"
@@ -17,7 +17,7 @@ jobs:
       - working-directory: ./custom_components
         run: |
           echo "package=$(ls -F | grep \/$ | sed -n "s/\///g;1p")" >> $GITHUB_ENV
-          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
+          echo "release_version=$(git describe --tags | sed s/v//)" >> $GITHUB_ENV
       - working-directory: ./custom_components
         run: |
           echo "basedir=$(pwd)/${{ env.package }}" >> $GITHUB_ENV
