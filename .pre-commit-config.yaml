@@ -5,7 +5,7 @@ repos:
         name: Update manifest.json
         entry: bin/update_manifest
         language: script
-        files: ^custom_components/.+/const\.py$
+        files: ^(custom_components/.+/const\.py|requirements\.txt)$
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.7.4
     hooks:
