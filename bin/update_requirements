@@ -34,29 +34,20 @@ for req in request:
     if "=" in req:
         harequire.append(get_package(req))
 
-print(harequire)
-
 with open(f"{PKG_PATH}/manifest.json", encoding="utf8") as manifest:
     manifest = json.load(manifest)
-    requirements = []
-    for req in manifest["requirements"]:
-        requirements.append(get_package(req))
-    manifest["requirements"] = requirements
+
 with open(f"{ROOT}/requirements.txt", encoding="utf8") as requirements:
     tmp = requirements.readlines()
     requirements = []
     for req in tmp:
         requirements.append(req.replace("\n", ""))
-for req in requirements:
-    pkg = get_package(req)
-    if pkg in manifest["requirements"]:
-        manifest["requirements"].remove(pkg)
-        manifest["requirements"].append(req)
+    manifest["requirements"] = requirements
 
 for req in manifest["requirements"]:
     pkg = get_package(req)
     if pkg in harequire:
         print(f"{pkg} in HA requirements, no need here.")
-print(json.dumps(manifest["requirements"], indent=4))
+
 with open(f"{PKG_PATH}/manifest.json", "w", encoding="utf8") as manifestfile:
     manifestfile.write(json.dumps(manifest, indent=4))
