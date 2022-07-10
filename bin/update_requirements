@@ -25,7 +25,7 @@ def get_package(requre: str) -> str:
     return requre.split(">")[0].split("<")[0].split("!")[0].split("=")[0].split("~")[0]
 
 
-harequire = []
+harequire = ["homeassistant"]
 request = requests.get(
     "https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt"
 )
@@ -41,13 +41,10 @@ with open(f"{ROOT}/requirements.txt", encoding="utf8") as requirements:
     tmp = requirements.readlines()
     requirements = []
     for req in tmp:
-        requirements.append(req.replace("\n", ""))
+        pkg = get_package(req)
+        if pkg not in harequire:
+            requirements.append(req.replace("\n", ""))
     manifest["requirements"] = requirements
-
-for req in manifest["requirements"]:
-    pkg = get_package(req)
-    if pkg in harequire:
-        print(f"{pkg} in HA requirements, no need here.")
 
 with open(f"{PKG_PATH}/manifest.json", "w", encoding="utf8") as manifestfile:
     manifestfile.write(json.dumps(manifest, indent=4))
