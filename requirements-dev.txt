@@ -1,7 +1,7 @@
 -r requirements-test.txt
 black==22.6.0
 packaging==21.3
-pre-commit~=2.19
+pre-commit~=2.20
 PyGithub~=1.55
 pyupgrade~=2.34
 yamllint~=1.26
