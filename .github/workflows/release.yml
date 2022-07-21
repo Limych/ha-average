@@ -7,8 +7,8 @@ on:
       - "[v0-9]+.[0-9]+*"
 
 jobs:
-  release_zip_file:
-    name: "Prepare release asset"
+  release:
+    name: "Publish new release"
     runs-on: ubuntu-latest
     steps:
       - name: "Check out repository"
@@ -17,7 +17,7 @@ jobs:
       - working-directory: ./custom_components
         run: |
           echo "package=$(ls -F | grep \/$ | sed -n "s/\///g;1p")" >> $GITHUB_ENV
-          echo "release_version=$(git describe --abbrev=0 | sed s/v//)" >> $GITHUB_ENV
+          echo "release_version=$(git describe --tags | sed s/v//)" >> $GITHUB_ENV
       - working-directory: ./custom_components
         run: |
           echo "basedir=$(pwd)/${{ env.package }}" >> $GITHUB_ENV
@@ -39,6 +39,42 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ env.basedir }}/${{ env.package }}.zip
+
+  release-notes:
+    name: "Compose release notes"
+    needs: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Check out repository"
+        uses: actions/checkout@v3
+
+      - working-directory: ./custom_components
+        run: |
+          echo "release_version=$(git describe --tags | sed s/v//)" >> $GITHUB_ENV
+
+      - name: "Set up Python"
+        if: env.release_version != '' && success()
+        uses: actions/setup-python@v3
+        with:
+          python-version: 3.9
+
+      - name: "Cache pip"
+        if: env.release_version != '' && success()
+        uses: actions/cache@v3
+        with:
+          # This path is specific to Ubuntu
+          path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+            ${{ runner.os }}-
+
+      - name: "Install requirements"
+        if: env.release_version != '' && success()
+        run: |
+          python3 -m pip install setuptools wheel
+          python3 -m pip install -r ./requirements-dev.txt
 
       - name: "Update release notes"
         if: env.release_version != '' && success()

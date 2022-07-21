@@ -16,11 +16,13 @@ fi
 
 component=$(ls -q "${ROOT}/custom_components/" | grep -v __ | head -n 1)
 const_path="custom_components/${component}/const.py"
+reqs_path="requirements.txt"
 
 name=$(grep "^NAME: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 domain=$(grep "^DOMAIN: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 version=$(grep "^VERSION: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
 issue_url=$(grep "^ISSUE_URL: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+ha_version=$(grep "^homeassistant>=" ${reqs_path} | sed -E "s/^[^=]+=(\S*).*$/\\1/")
 
 log.info "Update manifest.json data..."
 manifest_path="custom_components/${component}/manifest.json"
@@ -29,6 +31,9 @@ sed -i -E "s!(\"domain\": \")[^\"]*!\\1${domain}!" ${manifest_path}
 sed -i -E "s!(\"version\": \")[^\"]*!\\1${version}!" ${manifest_path}
 sed -i -E "s!(\"issue_tracker\": \")[^\"]*!\\1${issue_url}!" ${manifest_path}
 
+bin/update_requirements
+
 log.info "Update hacs.json data..."
 hacs_path="${ROOT}/hacs.json"
 sed -i -E "s!(\"name\": \")[^\"]*!\\1${name}!" ${hacs_path}
+sed -i -E "s!(\"homeassistant\": \")[^\"]*!\\1${ha_version}!" ${hacs_path}
