@@ -40,10 +40,7 @@ from custom_components.average.sensor import (
     check_period_keys,
 )
 
-TEST_UNIQUE_ID = "test_id"
-TEST_NAME = "test_name"
-TEST_ENTITY_IDS = ["sensor.test_monitored"]
-TEST_VALUES = [3, 11.16, -17, 4.29, -29, -16.8, 8, 5, -4.7, 5, -15]
+from .const import TEST_ENTITY_IDS, TEST_NAME, TEST_UNIQUE_ID
 
 
 @pytest.fixture()

@@ -56,7 +56,6 @@ from .const import (
     CONF_START,
     DEFAULT_NAME,
     DEFAULT_PRECISION,
-    STARTUP_MESSAGE,
     UPDATE_MIN_TIME,
 )
 
@@ -98,9 +97,6 @@ async def async_setup_platform(
     hass: HomeAssistant, config, async_add_entities, discovery_info=None
 ):
     """Set up platform."""
-    # Print startup message
-    _LOGGER.info(STARTUP_MESSAGE)
-
     start = config.get(CONF_START)
     end = config.get(CONF_END)
 

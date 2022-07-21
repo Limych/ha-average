@@ -1,0 +1,6 @@
+sensor:
+  - platform: average
+    entities:
+      - sensor.test_monitored
+#    unique_id: test_id
+    name: test_name

@@ -8,6 +8,8 @@ from datetime import timedelta
 from typing import Final
 
 # Base component constants
+from homeassistant.const import Platform
+
 NAME: Final = "Average Sensor"
 DOMAIN: Final = "average"
 VERSION: Final = "2.2.4-alpha"
@@ -22,6 +24,10 @@ If you have ANY issues with this you need to open an issue here:
 {ISSUE_URL}
 -------------------------------------------------------------------
 """
+
+PLATFORMS = [
+    Platform.SENSOR,
+]
 
 # Configuration and options
 CONF_START: Final = "start"

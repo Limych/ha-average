@@ -1,19 +1,19 @@
 {
-  "domain": "average",
-  "name": "Average Sensor",
-  "version": "2.2.4-alpha",
-  "documentation": "https://github.com/Limych/ha-average",
-  "issue_tracker": "https://github.com/Limych/ha-average/issues",
-  "dependencies": [],
-  "after_dependencies": [
-    "history",
-    "recorder",
-    "weather"
-  ],
-  "config_flow": false,
-  "codeowners": [
-    "@Limych"
-  ],
-  "requirements": [],
-  "iot_class": "calculated"
+    "domain": "average",
+    "name": "Average Sensor",
+    "version": "2.2.4-alpha",
+    "documentation": "https://github.com/Limych/ha-average",
+    "issue_tracker": "https://github.com/Limych/ha-average/issues",
+    "dependencies": [],
+    "after_dependencies": [
+        "history",
+        "recorder",
+        "weather"
+    ],
+    "config_flow": false,
+    "codeowners": [
+        "@Limych"
+    ],
+    "requirements": [],
+    "iot_class": "calculated"
 }
