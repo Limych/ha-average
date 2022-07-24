@@ -3,6 +3,14 @@ name: Lock Inactive Threads
 on:
   schedule:
     - cron: '0 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: lock
 
 jobs:
   lock:
