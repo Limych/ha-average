@@ -14,15 +14,16 @@ import datetime
 import logging
 import math
 import numbers
+from _sha1 import sha1
 from typing import Any, Mapping, Optional
 
 import homeassistant.util.dt as dt_util
 import voluptuous as vol
-from _sha1 import sha1
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.recorder import get_instance, history
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, \
+    SensorEntity
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -43,7 +44,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import Throttle
-from homeassistant.util.temperature import convert as convert_temperature
+from homeassistant.util.unit_conversion import TemperatureConverter
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
 
 from .const import (
@@ -255,7 +256,7 @@ class AverageSensor(SensorEntity):
             return None
 
         try:
-            temperature = convert_temperature(float(temperature), entity_unit, ha_unit)
+            temperature = TemperatureConverter.convert(float(temperature), entity_unit, ha_unit)
         except ValueError as exc:
             _LOGGER.error('Could not convert value "%s" to float: %s', state, exc)
             return None
