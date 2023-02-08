@@ -4,11 +4,11 @@
 import asyncio
 
 import aiohttp
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from pytest import raises
 
 from custom_components.integration_blueprint.api import IntegrationBlueprintApiClient
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 
 async def test_api(hass: HomeAssistant, aioclient_mock, caplog):

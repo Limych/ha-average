@@ -3,9 +3,6 @@
 
 from unittest.mock import call, patch
 
-from homeassistant.components.switch import SERVICE_TURN_OFF, SERVICE_TURN_ON
-from homeassistant.const import ATTR_ENTITY_ID, Platform
-from homeassistant.core import HomeAssistant
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.integration_blueprint import (
@@ -13,6 +10,9 @@ from custom_components.integration_blueprint import (
     async_setup_entry,
 )
 from custom_components.integration_blueprint.const import DEFAULT_NAME, DOMAIN
+from homeassistant.components.switch import SERVICE_TURN_OFF, SERVICE_TURN_ON
+from homeassistant.const import ATTR_ENTITY_ID, Platform
+from homeassistant.core import HomeAssistant
 
 from .const import MOCK_CONFIG
 

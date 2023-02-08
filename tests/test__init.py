@@ -2,8 +2,6 @@
 """Test integration_blueprint setup process."""
 
 import pytest
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.integration_blueprint import (
@@ -13,6 +11,8 @@ from custom_components.integration_blueprint import (
     async_unload_entry,
 )
 from custom_components.integration_blueprint.const import DOMAIN
+from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 
 from .const import MOCK_CONFIG
 

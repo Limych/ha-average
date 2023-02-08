@@ -1,12 +1,11 @@
-"""
-Custom integration to integrate integration_blueprint with Home Assistant.
+"""Custom integration to integrate integration_blueprint with Home Assistant.
 
 For more details about this integration, please refer to
 https://github.com/Limych/ha-blueprint
 """
 import asyncio
-import logging
 from datetime import timedelta
+import logging
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
