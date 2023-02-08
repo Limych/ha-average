@@ -63,10 +63,15 @@ jobs:
     name: "Test package"
     needs: lint
     runs-on: ubuntu-latest
+    continue-on-error: ${{ matrix.experimental }}
     strategy:
       max-parallel: 3
       matrix:
         python-version: ['3.9', '3.10']
+        experimental: [false]
+        include:
+          - python-version: '3.11-dev'
+            experimental: true
     steps:
       - name: "Checkout code"
         uses: actions/checkout@v3
