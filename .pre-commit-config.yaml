@@ -7,20 +7,20 @@ repos:
         language: script
         files: ^(custom_components/.+/const\.py|requirements\.txt)$
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.7.4
+    rev: v3.3.1
     hooks:
       - id: pyupgrade
-        args: [--py37-plus]
+        args: [ --py37-plus ]
   - repo: https://github.com/psf/black
-    rev: 22.3.0
+    rev: 23.1.0
     hooks:
       - id: black
         args:
           - --safe
           - --quiet
         files: ^(custom_components|bin|tests)/.+\.py$
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.1
+  - repo: https://github.com/pycqa/flake8.git
+    rev: 6.0.0
     hooks:
       - id: flake8
         additional_dependencies:
@@ -28,7 +28,7 @@ repos:
           - pydocstyle==5.0.2
         files: ^(custom_components|bin|tests)/.+\.py$
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.7.0
+    rev: 1.7.4
     hooks:
       - id: bandit
         args:
@@ -37,11 +37,11 @@ repos:
           - --configfile=tests/bandit.yaml
         files: ^(custom_components|bin|tests)/.+\.py$
   - repo: https://github.com/pre-commit/mirrors-isort
-    rev: v5.6.4
+    rev: v5.10.1
     hooks:
       - id: isort
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v2.5.0
+    rev: v4.4.0
     hooks:
       - id: check-executables-have-shebangs
         stages: [manual]

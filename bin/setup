@@ -14,7 +14,9 @@ source ./bin/_common
 
 if [ ! -d "venv" ]; then
     log.info "Initializing the virtual environment..."
-    ${python} -m venv venv
+    # For error 'executable `python` not found' run
+    # rm -Rf ~/.local/share/virtualenv
+    ${python} -m venv ./venv
     source ./venv/bin/activate
     python="${ROOT}/venv/bin/python3"
 fi
