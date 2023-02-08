@@ -119,7 +119,7 @@ log.info "Commit tagged as v$new"
 if echo "${new}" | grep -q "-"; then
     dev=$(bump_prerel "${new}")
 else
-    dev="$(echo "${new}" | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)-alpha"
+    dev="$(echo "${new}" | awk -F. '/[0-9]+\./{($NF)++;print}' OFS=.)-alpha"
 fi
 
 log.info "Patch files to version '${dev}'..."
