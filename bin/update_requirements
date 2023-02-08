@@ -27,7 +27,8 @@ def get_package(requre: str) -> str:
 
 harequire = ["homeassistant"]
 request = requests.get(
-    "https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt"
+    "https://raw.githubusercontent.com/home-assistant/core/dev/requirements.txt",
+    timeout=10
 )
 request = request.text.split("\n")
 for req in request:
