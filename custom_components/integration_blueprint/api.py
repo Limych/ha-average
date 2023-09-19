@@ -1,85 +1,90 @@
 """Sample API Client."""
+from __future__ import annotations
+
 import asyncio
-import logging
 import socket
 
 import aiohttp
 import async_timeout
 
-TIMEOUT = 10
+
+class IntegrationBlueprintApiClientError(Exception):
+    """Exception to indicate a general API error."""
 
 
-_LOGGER: logging.Logger = logging.getLogger(__package__)
+class IntegrationBlueprintApiClientCommunicationError(
+    IntegrationBlueprintApiClientError
+):
+    """Exception to indicate a communication error."""
 
-HEADERS = {"Content-type": "application/json; charset=UTF-8"}
+
+class IntegrationBlueprintApiClientAuthenticationError(
+    IntegrationBlueprintApiClientError
+):
+    """Exception to indicate an authentication error."""
 
 
 class IntegrationBlueprintApiClient:
-    """Blueprint API client class."""
+    """Sample API Client."""
 
     def __init__(
-        self, username: str, password: str, session: aiohttp.ClientSession
+        self,
+        username: str,
+        password: str,
+        session: aiohttp.ClientSession,
     ) -> None:
         """Sample API Client."""
         self._username = username
         self._password = password
         self._session = session
 
-    async def async_get_data(self) -> dict:
+    async def async_get_data(self) -> any:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        return await self.api_wrapper("get", url)
+        return await self._api_wrapper(
+            method="get", url="https://jsonplaceholder.typicode.com/posts/1"
+        )
 
-    async def async_set_title(self, value: str) -> None:
+    async def async_set_title(self, value: str) -> any:
         """Get data from the API."""
-        url = "https://jsonplaceholder.typicode.com/posts/1"
-        await self.api_wrapper("patch", url, data={"title": value}, headers=HEADERS)
+        return await self._api_wrapper(
+            method="patch",
+            url="https://jsonplaceholder.typicode.com/posts/1",
+            data={"title": value},
+            headers={"Content-type": "application/json; charset=UTF-8"},
+        )
 
-    async def api_wrapper(self, method: str, url: str, data=None, headers=None) -> dict:
+    async def _api_wrapper(
+        self,
+        method: str,
+        url: str,
+        data: dict | None = None,
+        headers: dict | None = None,
+    ) -> any:
         """Get information from the API."""
-        if data is None:
-            data = {}
-        if headers is None:
-            headers = {}
         try:
-            async with async_timeout.timeout(TIMEOUT):
-                if method == "get":  # pylint: disable=no-else-return
-                    response = await self._session.get(url, headers=headers)
-                    return await response.json()
-
-                elif method == "put":
-                    await self._session.put(url, headers=headers, json=data)
-
-                elif method == "patch":
-                    await self._session.patch(url, headers=headers, json=data)
-
-                elif method == "post":
-                    await self._session.post(url, headers=headers, json=data)
+            async with async_timeout.timeout(10):
+                response = await self._session.request(
+                    method=method,
+                    url=url,
+                    headers=headers,
+                    json=data,
+                )
+                if response.status in (401, 403):
+                    raise IntegrationBlueprintApiClientAuthenticationError(
+                        "Invalid credentials",
+                    )
+                response.raise_for_status()
+                return await response.json()
 
         except asyncio.TimeoutError as exception:
-            _LOGGER.error(
-                "Timeout error fetching information from %s - %s",
-                url,
-                exception,
-            )
-            raise exception
-
-        except (KeyError, TypeError) as exception:
-            _LOGGER.error(
-                "Error parsing information from %s - %s",
-                url,
-                exception,
-            )
-            raise exception
-
+            raise IntegrationBlueprintApiClientCommunicationError(
+                "Timeout error fetching information",
+            ) from exception
         except (aiohttp.ClientError, socket.gaierror) as exception:
-            _LOGGER.error(
-                "Error fetching information from %s - %s",
-                url,
-                exception,
-            )
-            raise exception
-
+            raise IntegrationBlueprintApiClientCommunicationError(
+                "Error fetching information",
+            ) from exception
         except Exception as exception:  # pylint: disable=broad-except
-            _LOGGER.error("Something really wrong happened! - %s", exception)
-            raise exception
+            raise IntegrationBlueprintApiClientError(
+                "Something really wrong happened!"
+            ) from exception

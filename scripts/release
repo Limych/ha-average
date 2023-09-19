@@ -7,7 +7,7 @@ ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
 cd "${ROOT}"
 
 # Load common functions
-source ./bin/_common
+source ./scripts/_common
 
 
 NAT='0|[1-9][0-9]*'
@@ -109,7 +109,7 @@ new=$(validate_version "${1}")
 
 log.info "Patch files to version '${new}'..."
 sed -i -E "s/(^VERSION: Final = \")[^\"]*/\\1${new}/" ${const_path}
-./bin/update_manifest
+./scripts/update_manifest
 if output=$(git status --porcelain) && [[ -n "$output" ]]; then
     git commit -a --no-verify -m "Bump version to ${new}"
 fi
@@ -124,4 +124,4 @@ fi
 
 log.info "Patch files to version '${dev}'..."
 sed -i -E "s/(^VERSION: Final = \")[^\"]*/\\1${dev}/" ${const_path}
-./bin/update_manifest
+./scripts/update_manifest

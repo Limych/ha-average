@@ -10,7 +10,7 @@ cd "${ROOT}"
 python=$(which python3)
 
 # Load common functions
-source ./bin/_common
+source ./scripts/_common
 
 if [ ! -d "venv" ]; then
     log.info "Initializing the virtual environment..."

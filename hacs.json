@@ -1,5 +1,8 @@
 {
-    "name": "Integration blueprint",
-    "hacs": "1.6.0",
-    "homeassistant": "2022.10.0"
+    "name": "",
+    "filename": "integration_blueprint.zip",
+    "hide_default_branch": true,
+    "homeassistant": "2023.2.0",
+    "render_readme": true,
+    "zip_release": true
 }

@@ -1,14 +1,16 @@
 {
-    "domain": "integration_blueprint",
-    "name": "Integration blueprint",
-    "version": "0.1.0",
-    "documentation": "https://github.com/Limych/ha-blueprint",
-    "issue_tracker": "https://github.com/Limych/ha-blueprint/issues",
-    "dependencies": [],
-    "config_flow": true,
+    "domain": "",
+    "name": "",
     "codeowners": [
-        "@Limych"
+        "@ludeeus"
     ],
-    "requirements": [],
-    "iot_class": "cloud_polling"
+    "config_flow": true,
+    "documentation": "https://github.com/ludeeus/integration_blueprint",
+    "iot_class": "cloud_polling",
+    "issue_tracker": "",
+    "version": "",
+    "requirements": [
+        "colorlog==6.7.0",
+        "ruff==0.0.267"
+    ]
 }

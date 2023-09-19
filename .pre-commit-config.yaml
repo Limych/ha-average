@@ -3,7 +3,7 @@ repos:
     hooks:
       - id: manifest
         name: Update manifest.json
-        entry: bin/update_manifest
+        entry: scripts/update_manifest
         language: script
         files: ^(custom_components/.+/const\.py|requirements\.txt)$
   - repo: https://github.com/charliermarsh/ruff-pre-commit
@@ -69,20 +69,20 @@ repos:
       # shell.
       - id: mypy
         name: mypy
-        entry: bin/run-in-env mypy
+        entry: scripts/run-in-env mypy
         language: script
         types: [python]
         require_serial: true
         files: ^custom_components/.+\.py$
       - id: pylint
         name: pylint
-        entry: bin/run-in-env python3 -m pylint
+        entry: scripts/run-in-env python3 -m pylint
         language: system
         types: [python]
       # Uncomment lines below to test code on every commit
 #      - id: pytest
 #        name: pytest
-#        entry: bin/run-in-env pytest
+#        entry: scripts/run-in-env pytest
 #        language: system
 #        pass_filenames: false
 #        always_run: true
