@@ -8,7 +8,7 @@ ROOT="$( cd "$( dirname "$(readlink -f "$0")" )/.." >/dev/null 2>&1 && pwd )"
 cd "${ROOT}"
 
 # Load common functions
-source ./bin/_common
+source ./scripts/_common
 
 if [[ $(ls -q "${ROOT}/custom_components/" | grep -v __ | wc -l) > 1 ]]; then
     log.error "WARNING: Detected more than one custom component. This script will update only first one of them."
@@ -31,7 +31,7 @@ sed -i -E "s!(\"domain\": \")[^\"]*!\\1${domain}!" ${manifest_path}
 sed -i -E "s!(\"version\": \")[^\"]*!\\1${version}!" ${manifest_path}
 sed -i -E "s!(\"issue_tracker\": \")[^\"]*!\\1${issue_url}!" ${manifest_path}
 
-bin/update_requirements
+./scripts/update_requirements
 
 log.info "Update hacs.json data..."
 hacs_path="${ROOT}/hacs.json"

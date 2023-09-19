@@ -2,13 +2,22 @@
 # pylint: disable=redefined-outer-name
 from __future__ import annotations
 
-import logging
 from asyncio import sleep
 from datetime import timedelta
+import logging
 from unittest.mock import MagicMock, patch
 
-import homeassistant.util.dt as dt_util
 import pytest
+from pytest import raises
+from pytest_homeassistant_custom_component.common import assert_setup_component
+from voluptuous import Invalid
+
+from custom_components.average.const import CONF_DURATION, CONF_END, CONF_START, DOMAIN
+from custom_components.average.sensor import (
+    AverageSensor,
+    async_setup_platform,
+    check_period_keys,
+)
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.sensor import DOMAIN as SENSOR
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
@@ -28,17 +37,8 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
+import homeassistant.util.dt as dt_util
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
-from pytest import raises
-from pytest_homeassistant_custom_component.common import assert_setup_component
-from voluptuous import Invalid
-
-from custom_components.average.const import CONF_DURATION, CONF_END, CONF_START, DOMAIN
-from custom_components.average.sensor import (
-    AverageSensor,
-    async_setup_platform,
-    check_period_keys,
-)
 
 from .const import TEST_ENTITY_IDS, TEST_NAME, TEST_UNIQUE_ID
 

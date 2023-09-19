@@ -5,9 +5,9 @@ __pycache__/
 
 # Distribution / packaging
 .Python
-build/
+*/build/*
 develop-eggs/
-dist/
+*/dist/*
 downloads/
 eggs/
 .eggs/
@@ -36,7 +36,7 @@ nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
-.pytest_cache/
+.pytest*
 
 # Sphinx documentation
 docs/_build/
@@ -53,17 +53,23 @@ pythonenv*
 .venv
 .coverage
 .idea
+.vscode
 env/
 venv/
 ENV/
 env.bak/
 venv.bak/
+coverage.xml
 
 # mkdocs documentation
 /site
 
 # mypy
 .mypy_cache/
+
+# Home Assistant configuration
+config/*
+!config/configuration.yaml
 
 
 

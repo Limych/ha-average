@@ -1,16 +1,9 @@
 """The tests for recorder platform."""
 from __future__ import annotations
 
-import logging
 from datetime import timedelta
+import logging
 
-from homeassistant.components.input_boolean import DOMAIN
-from homeassistant.components.recorder.db_schema import StateAttributes, States
-from homeassistant.components.recorder.util import session_scope
-from homeassistant.const import ATTR_EDITABLE
-from homeassistant.core import HomeAssistant, State
-from homeassistant.setup import async_setup_component
-from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import (
     SetupRecorderInstanceT,
     async_fire_time_changed,
@@ -20,6 +13,13 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 )
 
 from custom_components.average.const import ATTR_SOURCES, ATTR_TO_PROPERTY
+from homeassistant.components.input_boolean import DOMAIN
+from homeassistant.components.recorder.db_schema import StateAttributes, States
+from homeassistant.components.recorder.util import session_scope
+from homeassistant.const import ATTR_EDITABLE
+from homeassistant.core import HomeAssistant, State
+from homeassistant.setup import async_setup_component
+from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,9 +30,8 @@ async def async_wait_recording_done_without_instance(hass: HomeAssistant) -> Non
 
 
 async def test_exclude_attributes(
-    hass: HomeAssistant,
     async_setup_recorder_instance: SetupRecorderInstanceT,
-    enable_custom_integrations: None,
+    hass: HomeAssistant,
 ):
     """Test attributes to be excluded."""
     await async_setup_recorder_instance(hass)
