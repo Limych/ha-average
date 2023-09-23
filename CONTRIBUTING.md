@@ -9,7 +9,7 @@ Contributing to this project should be as easy and transparent as possible, whet
 
 ## IMPORTANT! Install development environment first
 
-When making changes in code, please use the existing development environment — this will save you from many errors and help create more convenient code to support. To install the environment, run the `./bin/setup` script.
+When making changes in code, please use the existing development environment — this will save you from many errors and help create more convenient code to support. To install the environment, run the `./script/setup` script.
 
 ## Github is used for everything
 

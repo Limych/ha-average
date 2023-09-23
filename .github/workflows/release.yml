@@ -78,4 +78,4 @@ jobs:
 
       - name: "Update release notes"
         if: env.release_version != '' && success()
-        run: python3 ./bin/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ env.release_version }}
+        run: python3 ./script/gen_releasenotes --token ${{ secrets.GITHUB_TOKEN }} --repo ${{ github.repository }} --release ${{ env.release_version }}
