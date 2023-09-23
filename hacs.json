@@ -2,7 +2,7 @@
     "name": "Average Sensor",
     "filename": "average_sensor.zip",
     "hide_default_branch": true,
-    "homeassistant": "2023.7.0",
+    "homeassistant": "2023.1.0",
     "render_readme": true,
     "zip_release": true
 }
