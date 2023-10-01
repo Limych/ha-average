@@ -48,7 +48,7 @@ File | Purpose | Documentation
     git push -u origin dev
 
     # Initialize the development environment
-    ./bin/setup
+    ./scripts/setup
     ```
 
 * …or create a new repository on the command line:
@@ -67,7 +67,7 @@ File | Purpose | Documentation
     git push -u origin dev
 
     # Initialize the development environment
-    ./bin/setup
+    ./scripts/setup
     ```
 
 * …or apply blueprint to an existing repository from the command line:
@@ -81,12 +81,12 @@ File | Purpose | Documentation
     git push -u origin dev
 
     # Initialize the development environment
-    ./bin/setup
+    ./scripts/setup
     ```
 
 After these steps, your repository will developing on a own branch. But in parallel there will be this blueprint repository, new changes in which you can always apply with a couple of simple commands:
 ```bash
-./bin/update
+./scripts/update
 git merge blueprint/dev
 ```
 

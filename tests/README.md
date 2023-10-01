@@ -6,7 +6,7 @@ While tests aren't required to publish a custom component for Home Assistant, th
 
 To begin, it is recommended to create a virtual environment and install all necessary dependencies:
 ```bash
-./bin/setup
+./scripts/setup
 ```
 
 # Useful commands

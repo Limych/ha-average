@@ -108,7 +108,7 @@ jobs:
         if: matrix.python-version != '3.11'
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
-          ./bin/check_dirty
+          ./scripts/check_dirty
 
       - name: "Install Coveralls"
         if: matrix.python-version == '3.11'
@@ -119,7 +119,7 @@ jobs:
         if: matrix.python-version == '3.11'
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
-          ./bin/check_dirty
+          ./scripts/check_dirty
 
       - name: "Send coverage to Coveralls"
         if: matrix.python-version == '3.11'
