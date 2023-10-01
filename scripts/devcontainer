@@ -72,9 +72,9 @@ docker_start() {
 }
 
 bootstrap() {
-    if test -f "${ROOT}/.devcontainer/bootstrap.sh"; then
+    if test -f "${ROOT}/config/bootstrap.sh"; then
         log.info "Execute bootstrap.sh..."
-        ${docker} exec -it -w "${workdir}" "${container}" .devcontainer/bootstrap.sh "$1"
+        ${docker} exec -it -w "${workdir}" "${container}" config/bootstrap.sh "$1"
     fi
 }
 
