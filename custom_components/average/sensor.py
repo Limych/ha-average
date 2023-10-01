@@ -2,28 +2,27 @@
 #  Creative Commons BY-NC-SA 4.0 International Public License
 #  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
-"""
-The Average Sensor.
+"""The Average Sensor.
 
 For more details about this sensor, please refer to the documentation at
 https://github.com/Limych/ha-average/
 """
 from __future__ import annotations
 
+from collections.abc import Mapping
 import datetime
 import logging
 import math
 import numbers
-from _sha1 import sha1
-from typing import Any, Mapping, Optional
+from typing import Any, Optional
 
-import homeassistant.util.dt as dt_util
+from _sha1 import sha1
 import voluptuous as vol
+
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.recorder import get_instance, history
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, \
-    SensorEntity
+from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -44,10 +43,18 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.event import async_track_state_change
 from homeassistant.util import Throttle
+import homeassistant.util.dt as dt_util
 from homeassistant.util.unit_conversion import TemperatureConverter
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
 
 from .const import (
+    ATTR_AVAILABLE_SOURCES,
+    ATTR_COUNT,
+    ATTR_COUNT_SOURCES,
+    ATTR_END,
+    ATTR_MAX_VALUE,
+    ATTR_MIN_VALUE,
+    ATTR_START,
     ATTR_TO_PROPERTY,
     CONF_DURATION,
     CONF_END,
@@ -125,6 +132,18 @@ async def async_setup_platform(
 # pylint: disable=too-many-instance-attributes
 class AverageSensor(SensorEntity):
     """Implementation of an Average sensor."""
+
+    _unrecorded_attributes = frozenset(
+        {
+            ATTR_START,
+            ATTR_END,
+            ATTR_COUNT_SOURCES,
+            ATTR_AVAILABLE_SOURCES,
+            ATTR_COUNT,
+            ATTR_MAX_VALUE,
+            ATTR_MIN_VALUE,
+        }
+    )
 
     # pylint: disable=too-many-arguments
     def __init__(
@@ -256,7 +275,9 @@ class AverageSensor(SensorEntity):
             return None
 
         try:
-            temperature = TemperatureConverter.convert(float(temperature), entity_unit, ha_unit)
+            temperature = TemperatureConverter.convert(
+                float(temperature), entity_unit, ha_unit
+            )
         except ValueError as exc:
             _LOGGER.error('Could not convert value "%s" to float: %s', state, exc)
             return None
