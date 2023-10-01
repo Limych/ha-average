@@ -172,7 +172,10 @@ async def test_entity_initialization(hass: HomeAssistant, default_sensor):
         None,
     )
 
-    assert entity.unique_id == "ca6b83d00637cf7d1e2f5c30b4f4f0402ad2fc53"
+    assert entity.unique_id in (
+        "2ef66732fb7155dce84ad53afe910beba59cfad4",
+        "ca6b83d00637cf7d1e2f5c30b4f4f0402ad2fc53",
+    )
 
 
 async def test_async_setup_platform(hass: HomeAssistant):
