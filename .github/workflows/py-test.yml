@@ -25,7 +25,7 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.11'
 
       - name: "Cache pip"
         uses: actions/cache@v3
@@ -105,24 +105,24 @@ jobs:
           fi
 
       - name: "Run tests with pytest"
-        if: matrix.python-version != '3.9'
+        if: matrix.python-version != '3.11'
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar
           ./bin/check_dirty
 
       - name: "Install Coveralls"
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.11'
         run: |
           pip install pytest-xdist coveralls
 
       - name: "Run tests with pytest & Calculate coverage"
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.11'
         run: |
           pytest --basetemp=$RUNNER_TEMP --durations=10 -n auto --dist=loadfile -qq -o console_output_style=count -p no:sugar --cov --cov-report=
           ./bin/check_dirty
 
       - name: "Send coverage to Coveralls"
-        if: matrix.python-version == '3.9'
+        if: matrix.python-version == '3.11'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: coveralls --service=github
