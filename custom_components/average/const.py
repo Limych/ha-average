@@ -12,7 +12,7 @@ from homeassistant.const import Platform
 
 NAME: Final = "Average Sensor"
 DOMAIN: Final = "average"
-VERSION: Final = "2.3.1-alpha"
+VERSION: Final = "2.3.1"
 ISSUE_URL: Final = "https://github.com/Limych/ha-average/issues"
 
 STARTUP_MESSAGE: Final = f"""
