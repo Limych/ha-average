@@ -43,11 +43,11 @@ jobs:
           python -m pip install --upgrade pip
           # Prefer requirements-dev.txt
           if [ -f requirements-dev.txt ]; then
-            bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements-test.txt ]; then
-            bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements.txt ]; then
-            bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
 
           if [ -d custom_components ]; then
@@ -92,11 +92,11 @@ jobs:
           python -m pip install --upgrade pip
           # Prefer requirements-test.txt
           if [ -f requirements-test.txt ]; then
-            bin/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements-test.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements-dev.txt ]; then
-            bin/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements-dev.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           elif [ -f requirements.txt ]; then
-            bin/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
+            scripts/install_requirements requirements.txt "${{ secrets.ADMIN_GITHUB_TOKEN }}"
           fi
           pip install pytest-xdist
 
