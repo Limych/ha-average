@@ -14,8 +14,8 @@
     "documentation": "https://github.com/Limych/ha-average",
     "iot_class": "calculated",
     "issue_tracker": "https://github.com/Limych/ha-average/issues",
-    "version": "2.3.1-alpha",
     "requirements": [
       "colorlog==6.7.0"
-    ]
+    ],
+    "version": "2.3.1-alpha"
 }
