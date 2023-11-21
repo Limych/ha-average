@@ -9,9 +9,6 @@
     "documentation": "https://github.com/Limych/ha-blueprint",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/Limych/ha-blueprint/issues",
-    "requirements": [
-        "colorlog==6.7.0",
-        "ruff==0.0.267"
-    ],
+    "requirements": [],
     "version": "0.1.0"
 }
