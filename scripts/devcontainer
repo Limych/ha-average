@@ -16,7 +16,7 @@ workdir="/workspaces/${workspace}"
 
 container="dev-${workspace}"
 port="127.0.0.1:9123:8123"
-image="ghcr.io/ludeeus/devcontainer/integration:stable"
+image="python:3.11-slim-bookworm"
 volume="${ROOT}:${workdir}"
 
 cmd="menu"
