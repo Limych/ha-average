@@ -2,4 +2,3 @@
 
 uname -m
 printenv
-

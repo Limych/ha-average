@@ -39,9 +39,6 @@ apt-get install -y --no-install-recommends \
     xz-utils \
     zlib1g-dev
 
-
-mkdir -p /config/custom_components
-
 python3 -m pip --disable-pip-version-check install --upgrade \
     git+https://github.com/home-assistant/home-assistant.git@dev
 python3 -m pip --disable-pip-version-check install --upgrade wheel setuptools

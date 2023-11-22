@@ -4,25 +4,25 @@
 source /opt/container/helpers/common/paths.sh
 mkdir -p /config
 
-if test -f ".devcontainer/configuration.yaml"; then
+if test -f "$(workspacePath)config/configuration.yaml"; then
   echo "Copy configuration.yaml"
-  ln -sf "$(workspacePath).devcontainer/configuration.yaml" /config/configuration.yaml || echo ".devcontainer/configuration.yaml are missing"
+  ln -sf "$(workspacePath)config/configuration.yaml" /config/configuration.yaml || echo "config/configuration.yaml are missing"
 fi
 
-if test -f ".devcontainer/ui-lovelace.yaml"; then
+if test -f "$(workspacePath)config/ui-lovelace.yaml"; then
   echo "Copy ui-lovelace.yaml"
-  ln -sf "$(workspacePath).devcontainer/ui-lovelace.yaml" /config/ui-lovelace.yaml || echo ""
+  ln -sf "$(workspacePath)config/ui-lovelace.yaml" /config/ui-lovelace.yaml || echo ""
 fi
 
-if test -f ".devcontainer/secrets.yaml"; then
+if test -f "$(workspacePath)config/secrets.yaml"; then
   echo "Copy secrets.yaml"
-  ln -sf "$(workspacePath).devcontainer/secrets.yaml" /config/secrets.yaml || echo ""
+  ln -sf "$(workspacePath)config/secrets.yaml" /config/secrets.yaml || echo ""
 fi
 
-if test -d "custom_components"; then
+if test -d "$(workspacePath)custom_components"; then
   echo "Symlink the custom component directory"
 
-  if test -d "custom_components"; then
+  if test -d "$(workspacePath)custom_components"; then
     rm -R /config/custom_components
   fi
 
