@@ -31,7 +31,8 @@ Platform | Description
 ### Install from HACS (recommended)
 
 1. Have [HACS][hacs] installed, this will allow you to easily manage and track updates.
-1. Search for "Blueprint".
+1. Search in HACS for "Blueprint" integration or just press the button below:\
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](hacs-repository)
 1. Click Install below the found integration.
 1. _If you want to configure component via Home Assistant UI..._\
     in the HA UI go to "Configuration" > "Integrations" click "+" and search for "Integration blueprint".
@@ -112,6 +113,7 @@ See separate [license file](LICENSE.md) for full text.
 [commits]: https://github.com/Limych/ha-blueprint/commits/master
 [hacs-shield]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=popout
 [hacs]: https://hacs.xyz
+[hacs-repository]: https://my.home-assistant.io/redirect/hacs_repository/?owner=Limych&repository=ha-blueprint&category=integration
 [exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/
