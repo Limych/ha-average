@@ -32,7 +32,7 @@ Platform | Description
 
 1. Have [HACS][hacs] installed, this will allow you to easily manage and track updates.
 1. Search in HACS for "Blueprint" integration or just press the button below:\
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](hacs-repository)
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)][hacs-repository]
 1. Click Install below the found integration.
 1. _If you want to configure component via Home Assistant UI..._\
     in the HA UI go to "Configuration" > "Integrations" click "+" and search for "Integration blueprint".
