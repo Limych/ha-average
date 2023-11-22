@@ -44,7 +44,7 @@ body:
 - type: textarea
   attributes:
     label: "Debug logs"
-    description: "To enable debug logs check this https://www.home-assistant.io/integrations/logger/, this **needs** to include _everything_ from startup of Home Assistant to the point where you encounter the issue."
+    description: "To enable debug logs check this https://www.home-assistant.io/integrations/logger/, this **needs** to install _everything_ from startup of Home Assistant to the point where you encounter the issue."
     render: text
   validations:
     required: true

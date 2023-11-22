@@ -16,7 +16,7 @@ workdir="/workspaces/${workspace}"
 
 container="dev-${workspace}"
 port="127.0.0.1:9123:8123"
-image="python:3.11-slim-bookworm"
+image="devcontainer"
 volume="${ROOT}:${workdir}"
 
 cmd="menu"
@@ -80,6 +80,7 @@ bootstrap() {
 
 if ! ${docker} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
     log.info "Create container..."
+    ${docker} build -t "${image}" "${ROOT}/.devcontainer/"
     ${docker} create -it --name "${container}" -p "${port}" -v "${volume}" "${image}"
 
     docker_start
