@@ -56,6 +56,7 @@ from .const import (
     ATTR_MIN_VALUE,
     ATTR_START,
     ATTR_TO_PROPERTY,
+    ATTR_TRENDING_TOWARDS,
     CONF_DURATION,
     CONF_END,
     CONF_PERIOD_KEYS,
@@ -142,6 +143,7 @@ class AverageSensor(SensorEntity):
             ATTR_COUNT,
             ATTR_MAX_VALUE,
             ATTR_MIN_VALUE,
+            ATTR_TRENDING_TOWARDS,
         }
     )
 
@@ -171,6 +173,7 @@ class AverageSensor(SensorEntity):
         self.count_sources = len(self.sources)
         self.available_sources = 0
         self.count = 0
+        self.trending_towards = None
         self.min_value = self.max_value = None
 
         self._attr_name = name
@@ -387,6 +390,8 @@ class AverageSensor(SensorEntity):
         if start > end:
             start, end = end, start
 
+        self._actual_end = end
+
         if start > now:
             # History hasn't been written yet for this period
             return
@@ -443,8 +448,10 @@ class AverageSensor(SensorEntity):
                 p_start, p_end = p_period
 
             # Convert times to UTC
+            now = dt_util.as_utc(now)
             start = dt_util.as_utc(start)
             end = dt_util.as_utc(end)
+            actual_end = dt_util.as_utc(self._actual_end)
             p_start = dt_util.as_utc(p_start)
             p_end = dt_util.as_utc(p_end)
 
@@ -452,6 +459,7 @@ class AverageSensor(SensorEntity):
             now_ts = math.floor(dt_util.as_timestamp(now))
             start_ts = math.floor(dt_util.as_timestamp(start))
             end_ts = math.floor(dt_util.as_timestamp(end))
+            actual_end_ts = math.floor(dt_util.as_timestamp(actual_end))
             p_start_ts = math.floor(dt_util.as_timestamp(p_start))
             p_end_ts = math.floor(dt_util.as_timestamp(p_end))
 
@@ -462,6 +470,7 @@ class AverageSensor(SensorEntity):
 
         self.available_sources = 0
         values = []
+        current_values = []
         self.count = 0
         self.min_value = self.max_value = None
 
@@ -515,6 +524,7 @@ class AverageSensor(SensorEntity):
                     last_time = start_ts
                     if item is not None and self._has_state(item.state):
                         last_state = self._get_state_value(item)
+                        current_values.append(last_state)
 
                     # Get the other states
                     for item in history_list.get(entity_id):
@@ -550,6 +560,19 @@ class AverageSensor(SensorEntity):
                 self._attr_native_value = int(self._attr_native_value)
         else:
             self._attr_native_value = None
+
+        if current_values and values:
+            current_average = round(
+                sum(current_values) / len(current_values), self._precision
+            )
+            if self._precision < 1:
+                current_average = int(current_average)
+            part_of_period = (now_ts - start_ts) / (actual_end_ts - start_ts)
+            to_now = self._attr_native_value * part_of_period
+            to_end = current_average * (1 - part_of_period)
+            self.trending_towards = to_now + to_end
+
+        _LOGGER.debug("Current trend: %s", self.trending_towards)
 
         _LOGGER.debug(
             "Total average state: %s %s",
