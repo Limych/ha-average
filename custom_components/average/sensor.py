@@ -168,6 +168,7 @@ class AverageSensor(SensorEntity):
         self._precision = precision
         self._undef = undef
         self._temperature_mode = None
+        self._actual_end = None
 
         self.sources = expand_entity_ids(hass, entity_ids)
         self.count_sources = len(self.sources)
@@ -524,7 +525,6 @@ class AverageSensor(SensorEntity):
                     last_time = start_ts
                     if item is not None and self._has_state(item.state):
                         last_state = self._get_state_value(item)
-                        current_values.append(last_state)
 
                     # Get the other states
                     for item in history_list.get(entity_id):
@@ -545,6 +545,7 @@ class AverageSensor(SensorEntity):
                         last_elapsed = end_ts - last_time
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
+                        current_values.append(last_state)
 
                     if elapsed:
                         value /= elapsed
