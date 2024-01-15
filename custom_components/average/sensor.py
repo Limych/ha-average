@@ -22,7 +22,7 @@ import voluptuous as vol
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.recorder import get_instance, history
-from homeassistant.components.sensor import SensorStateClass, SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass, SensorEntity
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -34,8 +34,7 @@ from homeassistant.const import (
     CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
     STATE_UNAVAILABLE,
-    STATE_UNKNOWN,
-    SensorDeviceClass
+    STATE_UNKNOWN
 )
 from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 from homeassistant.exceptions import TemplateError
