@@ -1,6 +1,6 @@
 {
-    "domain": "",
-    "name": "",
+    "domain": "integration_blueprint",
+    "name": "Integration blueprint",
     "codeowners": [
         "@Limych"
     ],
@@ -10,5 +10,5 @@
     "iot_class": "cloud_polling",
     "issue_tracker": "",
     "requirements": [],
-    "version": ""
+    "version": "0.0.0"
 }
