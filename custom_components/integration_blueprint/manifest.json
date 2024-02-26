@@ -9,8 +9,6 @@
     "documentation": "https://github.com/Limych/ha-blueprint",
     "iot_class": "cloud_polling",
     "issue_tracker": "",
-    "requirements": [
-        "async-timeout"
-    ],
+    "requirements": [],
     "version": ""
 }

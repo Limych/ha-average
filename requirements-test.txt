@@ -1,4 +1,5 @@
 -r requirements.txt
+async-timeout
 asynctest~=0.13
 colorlog~=6.7
 flake8~=6.1
