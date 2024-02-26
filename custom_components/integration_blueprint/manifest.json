@@ -1,6 +1,6 @@
 {
-    "domain": "integration_blueprint",
-    "name": "Integration blueprint",
+    "domain": "",
+    "name": "",
     "codeowners": [
         "@Limych"
     ],
@@ -8,7 +8,7 @@
     "dependencies": [],
     "documentation": "https://github.com/Limych/ha-blueprint",
     "iot_class": "cloud_polling",
-    "issue_tracker": "https://github.com/Limych/ha-blueprint/issues",
+    "issue_tracker": "",
     "requirements": [],
-    "version": "0.1.0"
+    "version": ""
 }
