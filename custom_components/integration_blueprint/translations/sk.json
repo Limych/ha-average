@@ -1,0 +1,18 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "description": "Ak potrebujete pomoc s konfiguráciou, pozrite sa sem: https://github.com/ludeeus/integration_blueprint",
+                "data": {
+                    "username": "Užívateľské meno",
+                    "password": "Heslo"
+                }
+            }
+        },
+        "error": {
+            "auth": "Používateľské meno/heslo je nesprávne.",
+            "connection": "Nedá sa pripojiť k serveru.",
+            "unknown": "Vyskytla sa neznáma chyba."
+        }
+    }
+}

@@ -9,8 +9,12 @@ cd "${ROOT}"
 
 if git branch -r | grep -q "blueprint/dev" ; then
     git fetch blueprint dev
+elif git branch -r | grep -q "blueprint/develop" ; then
+    git fetch blueprint develop
 elif git branch -r | grep -q "blueprint/master" ; then
     git fetch blueprint master
+elif git branch -r | grep -q "blueprint/main" ; then
+    git fetch blueprint main
 fi
 
 git fetch
