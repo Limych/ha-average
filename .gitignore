@@ -69,6 +69,7 @@ coverage.xml
 
 # Home Assistant configuration
 config/*
+!config/bootstrap.sh
 !config/configuration.yaml
 
 

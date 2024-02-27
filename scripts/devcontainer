@@ -16,7 +16,7 @@ workdir="/workspaces/${workspace}"
 
 container="dev-${workspace}"
 port="127.0.0.1:9123:8123"
-image="ghcr.io/ludeeus/devcontainer/integration:stable"
+image="devcontainer"
 volume="${ROOT}:${workdir}"
 
 cmd="menu"
@@ -72,14 +72,15 @@ docker_start() {
 }
 
 bootstrap() {
-    if test -f "${ROOT}/.devcontainer/bootstrap.sh"; then
+    if test -f "${ROOT}/config/bootstrap.sh"; then
         log.info "Execute bootstrap.sh..."
-        ${docker} exec -it -w "${workdir}" "${container}" .devcontainer/bootstrap.sh "$1"
+        ${docker} exec -it -w "${workdir}" "${container}" config/bootstrap.sh "$1"
     fi
 }
 
 if ! ${docker} ps -a | grep -wq ${container} && [[ "${cmd}" != "down" ]]; then
     log.info "Create container..."
+    ${docker} build -t "${image}" "${ROOT}/.devcontainer/"
     ${docker} create -it --name "${container}" -p "${port}" -v "${volume}" "${image}"
 
     docker_start

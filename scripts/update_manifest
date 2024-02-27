@@ -18,11 +18,11 @@ component=$(ls -q "${ROOT}/custom_components/" | grep -v __ | head -n 1)
 const_path="custom_components/${component}/const.py"
 reqs_path="requirements.txt"
 
-name=$(grep "^NAME: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-domain=$(grep "^DOMAIN: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-version=$(grep "^VERSION: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-issue_url=$(grep "^ISSUE_URL: Final =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
-ha_version=$(grep "^homeassistant>=" ${reqs_path} | sed -E "s/^[^=]+=(\S*).*$/\\1/")
+name=$(grep -Ei "^NAME(: Final)? =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+domain=$(grep -Ei "^DOMAIN(: Final)? =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+version=$(grep -Ei "^VERSION(: Final)? =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+issue_url=$(grep -Ei "^ISSUE_URL(: Final)? =" ${const_path} | sed -E "s/^[^\"]+\"([^\"]*).*$/\\1/")
+ha_version=$(grep -Ei "^homeassistant>=" ${reqs_path} | sed -E "s/^[^=]+=(\S*).*$/\\1/")
 
 log.info "Update manifest.json data..."
 manifest_path="custom_components/${component}/manifest.json"
