@@ -19,7 +19,7 @@ from custom_components.average.sensor import (
     check_period_keys,
 )
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
-from homeassistant.components.sensor import DOMAIN as SENSOR
+from homeassistant.components.sensor import DOMAIN as SENSOR, SensorDeviceClass
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -29,10 +29,9 @@ from homeassistant.const import (
     CONF_ENTITIES,
     CONF_NAME,
     CONF_PLATFORM,
-    DEVICE_CLASS_TEMPERATURE,
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
-    TEMP_FAHRENHEIT,
+    UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.template import Template
@@ -244,7 +243,7 @@ async def test__get_temperature(default_sensor):
     state = State(
         "sensor.test",
         "125",
-        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        {ATTR_UNIT_OF_MEASUREMENT: UnitOfTemperature.FAHRENHEIT},
         dt_util.now(),
     )
     assert round(default_sensor._get_temperature(state), 3) == 51.667
@@ -252,7 +251,7 @@ async def test__get_temperature(default_sensor):
     state = State(
         "sensor.test",
         "",
-        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        {ATTR_UNIT_OF_MEASUREMENT: UnitOfTemperature.FAHRENHEIT},
         dt_util.now(),
     )
     assert default_sensor._get_temperature(state) is None
@@ -260,7 +259,7 @@ async def test__get_temperature(default_sensor):
     state = State(
         "sensor.test",
         "qwe",
-        {ATTR_UNIT_OF_MEASUREMENT: TEMP_FAHRENHEIT},
+        {ATTR_UNIT_OF_MEASUREMENT: UnitOfTemperature.FAHRENHEIT},
         dt_util.now(),
     )
     assert default_sensor._get_temperature(state) is None
@@ -321,7 +320,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         "sensor.test",
         "None",
         {
-            ATTR_DEVICE_CLASS: DEVICE_CLASS_TEMPERATURE,
+            ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE,
         },
     )
 
@@ -333,7 +332,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     default_sensor._init_mode(state)
 
     assert default_sensor._temperature_mode is True
-    assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+    assert default_sensor._attr_device_class is SensorDeviceClass.TEMPERATURE
     assert (
         default_sensor._attr_native_unit_of_measurement
         is hass.config.units.temperature_unit
@@ -358,7 +357,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
-        assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+        assert default_sensor._attr_device_class is SensorDeviceClass.TEMPERATURE
         assert (
             default_sensor._attr_native_unit_of_measurement
             == hass.config.units.temperature_unit
@@ -380,7 +379,7 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
         default_sensor._init_mode(state)
 
         assert default_sensor._temperature_mode is True
-        assert default_sensor._attr_device_class is DEVICE_CLASS_TEMPERATURE
+        assert default_sensor._attr_device_class is SensorDeviceClass.TEMPERATURE
         assert (
             default_sensor._attr_native_unit_of_measurement
             == hass.config.units.temperature_unit
