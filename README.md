@@ -47,7 +47,8 @@ I also suggest you [visit the support topic][forum] on the community forum.
 ### Install from HACS (recommended)
 
 1. Have [HACS][hacs] installed, this will allow you to easily manage and track updates.
-1. Search for "Average".
+1. Search in HACS for "Average" integration or just press the button below:\
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)][hacs-repository]
 1. Click Install below the found integration.
 
 ... then if you want to use `configuration.yaml` to configure sensor...
@@ -340,6 +341,7 @@ See separate [license file](LICENSE.md) for full text.
 [commits]: https://github.com/Limych/ha-average/commits/dev
 [hacs-shield]: https://img.shields.io/badge/HACS-Default-orange.svg?style=popout
 [hacs]: https://hacs.xyz
+[hacs-repository]: https://my.home-assistant.io/redirect/hacs_repository/?owner=Limych&repository=ha-average&category=integration
 [exampleimg]: https://github.com/Limych/ha-average/raw/dev/example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=popout
 [forum]: https://community.home-assistant.io/t/average-sensor/111674
