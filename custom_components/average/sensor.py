@@ -22,7 +22,7 @@ import voluptuous as vol
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.recorder import get_instance, history
-from homeassistant.components.sensor import STATE_CLASS_MEASUREMENT, SensorEntity
+from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass, SensorEntity
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -32,10 +32,9 @@ from homeassistant.const import (
     CONF_ENTITIES,
     CONF_NAME,
     CONF_UNIQUE_ID,
-    DEVICE_CLASS_TEMPERATURE,
     EVENT_HOMEASSISTANT_START,
     STATE_UNAVAILABLE,
-    STATE_UNKNOWN,
+    STATE_UNKNOWN
 )
 from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 from homeassistant.exceptions import TemplateError
@@ -177,7 +176,7 @@ class AverageSensor(SensorEntity):
         self._attr_native_value = None
         self._attr_native_unit_of_measurement = None
         self._attr_icon = None
-        self._attr_state_class = STATE_CLASS_MEASUREMENT
+        self._attr_state_class = SensorStateClass.MEASUREMENT
         self._attr_device_class = None
         #
         self._attr_unique_id = (
@@ -409,13 +408,13 @@ class AverageSensor(SensorEntity):
             ATTR_UNIT_OF_MEASUREMENT
         )
         self._temperature_mode = (
-            self._attr_device_class == DEVICE_CLASS_TEMPERATURE
+            self._attr_device_class == SensorDeviceClass.TEMPERATURE
             or domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
             or self._attr_native_unit_of_measurement in TEMPERATURE_UNITS
         )
         if self._temperature_mode:
             _LOGGER.debug("%s is a temperature entity.", state.entity_id)
-            self._attr_device_class = DEVICE_CLASS_TEMPERATURE
+            self._attr_device_class = SensorDeviceClass.TEMPERATURE
             self._attr_native_unit_of_measurement = (
                 self.hass.config.units.temperature_unit
             )
