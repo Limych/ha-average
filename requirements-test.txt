@@ -1,7 +1,7 @@
 -r requirements.txt
 async-timeout
 asynctest~=0.13
-colorlog~=6.7
+colorlog~=6.8
 flake8~=7.0
 flake8-docstrings~=1.7
 mypy==1.8.0
