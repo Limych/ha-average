@@ -185,6 +185,9 @@ I put a lot of work into making this repo and component available and updated to
 **max**:\
   Maximum value of processed values of source sensors.
 
+**trending_towards**:\
+  The predicted value if monitored entities keep their current states for the remainder of the period. Requires "end" configuration variable to be set to actual end of period and not now().
+
 ## Time periods
 
 The `average` integration will execute a measure within a precise time period. You should provide none, only `duration` (when period ends at now) or exactly 2 of the following:

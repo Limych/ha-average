@@ -1,5 +1,4 @@
-"""
-The Average Sensor.
+"""The Average Sensor.
 
 For more details about this sensor, please refer to the documentation at
 https://github.com/Limych/ha-average/
@@ -50,6 +49,7 @@ ATTR_AVAILABLE_SOURCES: Final = "available_sources"
 ATTR_COUNT: Final = "count"
 ATTR_MIN_VALUE: Final = "min_value"
 ATTR_MAX_VALUE: Final = "max_value"
+ATTR_TRENDING_TOWARDS: Final = "trending_towards"
 #
 ATTR_TO_PROPERTY: Final = [
     ATTR_START,
@@ -60,6 +60,7 @@ ATTR_TO_PROPERTY: Final = [
     ATTR_COUNT,
     ATTR_MAX_VALUE,
     ATTR_MIN_VALUE,
+    ATTR_TRENDING_TOWARDS,
 ]
 
 
