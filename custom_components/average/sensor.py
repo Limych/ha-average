@@ -471,9 +471,9 @@ class AverageSensor(SensorEntity):
 
         self.available_sources = 0
         values = []
-        current_values = []
         self.count = 0
         self.min_value = self.max_value = None
+        trending_last_state = 0
 
         # pylint: disable=too-many-nested-blocks
         for entity_id in self.sources:
@@ -545,7 +545,7 @@ class AverageSensor(SensorEntity):
                         last_elapsed = end_ts - last_time
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
-                        current_values.append(last_state)
+                        trending_last_state = last_state
 
                     if elapsed:
                         value /= elapsed
@@ -562,9 +562,9 @@ class AverageSensor(SensorEntity):
         else:
             self._attr_native_value = None
 
-        if current_values and values:
+        if trending_last_state:
             current_average = round(
-                sum(current_values) / len(current_values), self._precision
+                (sum(values) + trending_last_state) / (len(values) + 1), self._precision
             )
             if self._precision < 1:
                 current_average = int(current_average)
