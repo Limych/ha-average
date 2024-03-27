@@ -1,5 +1,4 @@
-"""
-The Average Sensor.
+"""The Average Sensor.
 
 For more details about this sensor, please refer to the documentation at
 https://github.com/Limych/ha-average/
@@ -12,7 +11,7 @@ from homeassistant.const import Platform
 
 NAME: Final = "Average Sensor"
 DOMAIN: Final = "average"
-VERSION: Final = "2.3.3"
+VERSION: Final = "2.3.4-alpha"
 ISSUE_URL: Final = "https://github.com/Limych/ha-average/issues"
 
 STARTUP_MESSAGE: Final = f"""

@@ -22,7 +22,11 @@ import voluptuous as vol
 from homeassistant.components.climate import DOMAIN as CLIMATE_DOMAIN
 from homeassistant.components.group import expand_entity_ids
 from homeassistant.components.recorder import get_instance, history
-from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass, SensorEntity
+from homeassistant.components.sensor import (
+    SensorDeviceClass,
+    SensorEntity,
+    SensorStateClass,
+)
 from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
 from homeassistant.components.weather import DOMAIN as WEATHER_DOMAIN
 from homeassistant.const import (
@@ -34,7 +38,7 @@ from homeassistant.const import (
     CONF_UNIQUE_ID,
     EVENT_HOMEASSISTANT_START,
     STATE_UNAVAILABLE,
-    STATE_UNKNOWN
+    STATE_UNKNOWN,
 )
 from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 from homeassistant.exceptions import TemplateError
@@ -389,9 +393,7 @@ class AverageSensor(SensorEntity):
         if start > now:
             # History hasn't been written yet for this period
             return
-        if now < end:
-            # No point in making stats of the future
-            end = now
+        end = min(end, now)  # No point in making stats of the future
 
         self._period = start, end
         self.start = start.replace(microsecond=0).isoformat()
@@ -530,13 +532,15 @@ class AverageSensor(SensorEntity):
                         last_time = current_time
 
                     # Count time elapsed between last history state and now
-                    if last_state is not None:
+                    if last_state is None:
+                        value = None
+                    else:
                         last_elapsed = end_ts - last_time
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
+                        if elapsed:
+                            value /= elapsed
 
-                    if elapsed:
-                        value /= elapsed
                     _LOGGER.debug("Historical average state: %s", value)
 
             if isinstance(value, numbers.Number):
