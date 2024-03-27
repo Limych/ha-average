@@ -15,5 +15,5 @@
     "iot_class": "calculated",
     "issue_tracker": "https://github.com/Limych/ha-average/issues",
     "requirements": [],
-    "version": "2.3.4-alpha"
+    "version": "2.3.4"
 }
