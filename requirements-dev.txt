@@ -3,5 +3,5 @@ black~=24.8
 packaging~=24.1
 pre-commit~=3.8
 PyGithub~=2.4
-pyupgrade~=3.17
+pyupgrade~=3.18
 yamllint~=1.35
