@@ -150,6 +150,7 @@ I put a lot of work into making this repo and component available and updated to
   Determines whether, if the source entity is unavailable and that is ignored (`ignore_undef`), it is assumed that the last valid status is valid until now(value 1). For example, if at 8 o'clock the entity had a value of 112 and was then unavailable, if this option is enabled, it is assumed that the entity retains this value until now (assuming it is now 9 o'clock) and this is calculated. If this option is disabled, the calculation only considers the period up to 8 o'clock and the time period from then until now is omitted.
   ignore_undef must be set to 1 in order to use this option.
   _Default value: 0_
+
 **duration**:\
   _(time) (Optional)_\
   Duration of the measure.
