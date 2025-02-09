@@ -388,15 +388,6 @@ class AverageSensor(SensorEntity):
                         'Parsing error: field "end" must be a datetime or a timestamp'
                     )
                     return
-            if (
-                (end is not None or start is not None)
-                and self.ignoreundef == 0
-                and self.calculatetillnowundef == 1
-            ):
-                _LOGGER.exception(
-                    "Wrong Configuration! You cant set calculate_to_end_undef to 1 when ignore_undef is 0 / not set"
-                )
-                return
 
         # Calculate start or end using the duration
         if self._duration is not None:
@@ -410,6 +401,15 @@ class AverageSensor(SensorEntity):
 
         _LOGGER.debug("Calculation period: start=%s, end=%s", start, end)
         if start is None or end is None:
+            return
+        if (
+            (end is not None or start is not None)
+            and self.ignoreundef == 0
+            and self.calculatetillnowundef == 1
+        ):
+            _LOGGER.exception(
+                "Wrong Configuration! You cant set calculate_to_end_undef to 1 when ignore_undef is 0 / not set"
+            )
             return
 
         if start > end:
