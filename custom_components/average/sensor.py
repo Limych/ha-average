@@ -78,6 +78,8 @@ from .const import (
     CONF_PRECISION,
     CONF_PROCESS_UNDEF_AS,
     CONF_START,
+    CONF_IGNORE_UNDEF_VAL,
+    CONF_CALCULATE_TILL_NOW_UNDEF_VAL,
     DEFAULT_NAME,
     DEFAULT_PRECISION,
     UPDATE_MIN_TIME,
@@ -109,6 +111,8 @@ PLATFORM_SCHEMA = vol.All(
             vol.Optional(CONF_DURATION): cv.positive_time_period,
             vol.Optional(CONF_PRECISION, default=DEFAULT_PRECISION): int,
             vol.Optional(CONF_PROCESS_UNDEF_AS): vol.Any(int, float),
+            vol.Optional(CONF_IGNORE_UNDEF_VAL, default=0): int,
+            vol.Optional(CONF_CALCULATE_TILL_NOW_UNDEF_VAL, default=0): int,
         }
     ),
     check_period_keys,
@@ -161,6 +165,8 @@ class AverageSensor(SensorEntity):
         self._period = self.start = self.end = None
         self._precision = config.get(CONF_PRECISION, DEFAULT_PRECISION)
         self._undef = config.get(CONF_PROCESS_UNDEF_AS)
+        self.ignoreundef = config.get(CONF_IGNORE_UNDEF_VAL)
+        self.calculatetillnowundef = config.get(CONF_CALCULATE_TILL_NOW_UNDEF_VAL)
         self._temperature_mode = None
         self._actual_end = None
 
@@ -209,7 +215,12 @@ class AverageSensor(SensorEntity):
     @property
     def available(self) -> bool:
         """Return True if entity is available."""
-        return self.available_sources > 0 and self._has_state(self._attr_native_value)
+        if self.ignoreundef == 0:
+            return self.available_sources > 0 and self._has_state(
+                self._attr_native_value
+            )
+        else:
+            return True
 
     @property
     def extra_state_attributes(self) -> Mapping[str, Any] | None:
@@ -377,6 +388,15 @@ class AverageSensor(SensorEntity):
                         'Parsing error: field "end" must be a datetime or a timestamp'
                     )
                     return
+            if (
+                (end is not None or start is not None)
+                and self.ignoreundef == 0
+                and self.calculatetillnowundef == 1
+            ):
+                _LOGGER.exception(
+                    "Wrong Configuration! You cant set calculate_to_end_undef to 1 when ignore_undef is 0 / not set"
+                )
+                return
 
         # Calculate start or end using the duration
         if self._duration is not None:
@@ -522,6 +542,7 @@ class AverageSensor(SensorEntity):
                 item = history_list[entity_id][0]
                 _LOGGER.debug("Initial historical state: %s", item)
                 last_state = None
+                isPlaceholderState = False
                 last_time = start_ts
                 if item is not None and self._has_state(item.state):
                     last_state = self._get_state_value(item)
@@ -532,18 +553,36 @@ class AverageSensor(SensorEntity):
                     current_state = self._get_state_value(item)
                     current_time = item.last_changed.timestamp()
 
-                    if last_state is not None:
+                    if last_state is not None and isPlaceholderState is False:
                         last_elapsed = current_time - last_time
                         value += last_state * last_elapsed
                         elapsed += last_elapsed
-
-                    last_state = current_state
-                    last_time = current_time
+                        # we need a valid last state if we want to calculate up to now(calculatetillnowundef) and the last state is undefined
+                        if self.calculatetillnowundef == 1:
+                            last_state = current_state
+                            last_time = current_time
+                            isPlaceholderState = True
+                        # we dont set last_state and last_time to undefined values when calculatetillnowundef is active and the last value is undefined
+                    if (
+                        current_state is None and self.calculatetillnowundef == 0
+                    ) or current_state is not None:
+                        last_state = current_state
+                        last_time = current_time
 
                 # Count time elapsed between last history state and now
-                if last_state is None:
+                # If the last value of the source sensor is undefined and the user does not ignore this (ignoreundef), the average sensor is also undefined
+                if last_state is None and self.ignoreundef == 0:
                     value = None
-                else:
+                # If the last value of the source sensor is undefined and the user ignores this but does not want to calculate to the end, the average sensor returns the average from the start to the last defined value
+                elif (
+                    last_state is None
+                    and self.ignoreundef == 1
+                    and self.calculatetillnowundef == 0
+                ):
+                    if elapsed:
+                        value /= elapsed
+                # If the last value is undefined and ignored, calculate the average to the end, assuming the last known value remains constant until now.
+                elif last_state is not None:
                     last_elapsed = end_ts - last_time
                     value += last_state * last_elapsed
                     elapsed += last_elapsed
@@ -555,7 +594,10 @@ class AverageSensor(SensorEntity):
 
             if isinstance(value, numbers.Number):
                 values.append(value)
-                self.available_sources += 1
+                if last_state is None:
+                    self.available_sources = 0
+                else:
+                    self.available_sources += 1
 
             if isinstance(trending_last_state, numbers.Number):
                 last_values.append(trending_last_state)
