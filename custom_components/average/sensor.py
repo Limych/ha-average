@@ -53,7 +53,7 @@ from homeassistant.core import (
     callback,
     split_entity_id,
 )
-from homeassistant.exceptions import TemplateError
+from homeassistant.exceptions import HomeAssistantError, TemplateError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.config_validation import PLATFORM_SCHEMA
 from homeassistant.helpers.event import async_track_state_change_event
@@ -93,7 +93,8 @@ def check_period_keys(conf: ConfigType) -> ConfigType:
         raise vol.Invalid(
             "You must provide none, only "
             + CONF_DURATION
-            + " or maximum 2 of the following: " ", ".join(CONF_PERIOD_KEYS)
+            + " or maximum 2 of the following: "
+            + ", ".join(CONF_PERIOD_KEYS)
         )
     return conf
 
@@ -256,6 +257,11 @@ class AverageSensor(SensorEntity):
             "",
         ]
 
+    @staticmethod
+    def _is_temperature_device_class(device_class: Any) -> bool:
+        """Return True if device class is temperature."""
+        return device_class == SensorDeviceClass.TEMPERATURE
+
     def _get_temperature(self, state: State) -> float | None:
         """Get temperature value from entity."""
         ha_unit = self.hass.config.units.temperature_unit
@@ -269,6 +275,10 @@ class AverageSensor(SensorEntity):
         else:
             temperature = state.state
             entity_unit = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+            if entity_unit is None and self._is_temperature_device_class(
+                state.attributes.get(ATTR_DEVICE_CLASS)
+            ):
+                entity_unit = ha_unit
 
         if not self._has_state(temperature):
             return None
@@ -277,7 +287,7 @@ class AverageSensor(SensorEntity):
             temperature = TemperatureConverter.convert(
                 float(temperature), entity_unit, ha_unit
             )
-        except ValueError:
+        except (HomeAssistantError, ValueError):
             _LOGGER.exception('Could not convert value "%s" to float', state)
             return None
 
@@ -329,7 +339,7 @@ class AverageSensor(SensorEntity):
             _LOGGER.warning(exc)
 
         else:
-            _LOGGER.exception('Error parsing template for field "%s": %s', field, exc)
+            _LOGGER.error('Error parsing template for field "%s": %s', field, exc)
 
     async def _async_update_period(self) -> None:  # noqa: PLR0912
         """Parse the templates and calculate a datetime tuples."""
@@ -408,20 +418,23 @@ class AverageSensor(SensorEntity):
 
     def _init_mode(self, state: State) -> None:
         """Initialize sensor mode."""
-        if self._temperature_mode is not None:
+        if self._temperature_mode is True:
             return
 
         domain = split_entity_id(state.entity_id)[0]
-        self._attr_device_class = state.attributes.get(ATTR_DEVICE_CLASS)
-        self._attr_native_unit_of_measurement = state.attributes.get(
-            ATTR_UNIT_OF_MEASUREMENT
-        )
-        self._temperature_mode = (
-            self._attr_device_class == SensorDeviceClass.TEMPERATURE
+        device_class = state.attributes.get(ATTR_DEVICE_CLASS)
+        unit_of_measurement = state.attributes.get(ATTR_UNIT_OF_MEASUREMENT)
+        temperature_mode = (
+            self._is_temperature_device_class(device_class)
             or domain in (WEATHER_DOMAIN, CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
-            or self._attr_native_unit_of_measurement in TEMPERATURE_UNITS
+            or unit_of_measurement in TEMPERATURE_UNITS
         )
-        if self._temperature_mode:
+
+        if self._temperature_mode is False and not temperature_mode:
+            return
+
+        self._temperature_mode = temperature_mode
+        if temperature_mode:
             _LOGGER.debug("%s is a temperature entity.", state.entity_id)
             self._attr_device_class = SensorDeviceClass.TEMPERATURE
             self._attr_native_unit_of_measurement = (
@@ -429,6 +442,8 @@ class AverageSensor(SensorEntity):
             )
         else:
             _LOGGER.debug("%s is NOT a temperature entity.", state.entity_id)
+            self._attr_device_class = device_class
+            self._attr_native_unit_of_measurement = unit_of_measurement
             self._attr_icon = state.attributes.get(ATTR_ICON)
 
     async def _async_update_state(self) -> None:  # noqa: PLR0912, PLR0915
@@ -512,8 +527,7 @@ class AverageSensor(SensorEntity):
             ):
                 value = self._get_state_value(state)
                 _LOGGER.warning(
-                    'Historical data not found for entity "%s". '
-                    "Current state used: %s",
+                    'Historical data not found for entity "%s". Current state used: %s',
                     entity_id,
                     value,
                 )

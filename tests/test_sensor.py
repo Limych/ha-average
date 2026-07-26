@@ -1,3 +1,7 @@
+#  Copyright (c) 2019-2024, Andrey "Limych" Khrolenok <andrey@khrolenok.ru>
+#  Creative Commons BY-NC-SA 4.0 International Public License
+#  (see LICENSE.md or https://creativecommons.org/licenses/by-nc-sa/4.0/)
+
 """The test for the average sensor platform."""
 
 # pylint: disable=redefined-outer-name
@@ -261,6 +265,14 @@ async def test__get_temperature(default_sensor):
     )
     assert default_sensor._get_temperature(state) is None
 
+    state = State(
+        "sensor.test",
+        "25",
+        {ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE},
+        dt_util.now(),
+    )
+    assert default_sensor._get_temperature(state) == 25
+
 
 # pylint: disable=protected-access
 async def test__get_state_value(default_sensor):
@@ -411,6 +423,71 @@ async def test__init_mode(hass: HomeAssistant, default_sensor, caplog):
     default_sensor._init_mode(state)
 
     assert len(caplog.records) == 0
+
+
+async def test__init_mode_detects_string_device_class(
+    hass: HomeAssistant, default_sensor, caplog
+):
+    """Test sensor mode initialization from string device class."""
+    caplog.set_level(logging.DEBUG)
+
+    state = State(
+        "sensor.test",
+        "None",
+        {
+            ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE.value,
+        },
+    )
+
+    default_sensor._init_mode(state)
+
+    assert default_sensor._temperature_mode is True
+    assert default_sensor._attr_device_class is SensorDeviceClass.TEMPERATURE
+    assert (
+        default_sensor._attr_native_unit_of_measurement
+        is hass.config.units.temperature_unit
+    )
+    assert len(caplog.records) == 1
+
+
+async def test__init_mode_upgrades_after_missing_metadata(
+    hass: HomeAssistant, default_sensor, caplog
+):
+    """Test temperature mode upgrade after an earlier incomplete source."""
+    caplog.set_level(logging.DEBUG)
+
+    state = State(
+        "sensor.test",
+        "None",
+        {
+            ATTR_ICON: "some_icon",
+        },
+    )
+
+    default_sensor._init_mode(state)
+
+    assert default_sensor._temperature_mode is False
+    assert default_sensor._attr_icon == "some_icon"
+
+    state = State(
+        "sensor.temperature",
+        "25",
+        {
+            ATTR_DEVICE_CLASS: SensorDeviceClass.TEMPERATURE,
+            ATTR_UNIT_OF_MEASUREMENT: UnitOfTemperature.CELSIUS,
+        },
+    )
+
+    caplog.clear()
+    default_sensor._init_mode(state)
+
+    assert default_sensor._temperature_mode is True
+    assert default_sensor._attr_device_class is SensorDeviceClass.TEMPERATURE
+    assert (
+        default_sensor._attr_native_unit_of_measurement
+        is hass.config.units.temperature_unit
+    )
+    assert len(caplog.records) == 1
 
 
 async def test_update(default_sensor):
