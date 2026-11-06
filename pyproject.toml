@@ -154,6 +154,8 @@ max-line-length-suggestions = 72
 "/tests/"="hass-component-root-import,protected-access,redefined-outer-name"
 
 [tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-p no:respx"
 testpaths = [
     "tests",
 ]
