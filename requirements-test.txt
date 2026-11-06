@@ -5,7 +5,7 @@ colorlog~=6.9
 mypy~=1.14
 pytest>=7.2
 pytest-cov>=3.0
-pytest-homeassistant-custom-component>=0.13
+pytest-homeassistant==2026.11.0
 pytest-asyncio>=0.20
 tzdata
 ruff>=0.4

@@ -31,7 +31,7 @@ from homeassistant.core import HomeAssistant, State
 from homeassistant.helpers.template import Template
 from homeassistant.setup import async_setup_component
 from homeassistant.util.unit_system import TEMPERATURE_UNITS
-from pytest_homeassistant_custom_component.common import assert_setup_component
+from pytest_homeassistant.common import assert_setup_component
 from voluptuous import Invalid
 
 from custom_components.average.const import (
@@ -51,13 +51,13 @@ from .const import TEST_ENTITY_IDS, TEST_NAME, TEST_UNIQUE_ID
 
 
 @pytest.fixture
-def default_sensor_config():
+def default_sensor_config(hass: HomeAssistant):
     """Return default test config for AverageSensor."""
     return {
         CONF_UNIQUE_ID: TEST_UNIQUE_ID,
         CONF_NAME: TEST_NAME,
         # CONF_START: None,
-        CONF_END: Template("{{ now() }}"),
+        CONF_END: Template("{{ now() }}", hass),
         CONF_DURATION: timedelta(minutes=3),
         CONF_ENTITIES: TEST_ENTITY_IDS,
         CONF_PRECISION: 2,
@@ -130,7 +130,7 @@ async def test_setup_platform(hass: HomeAssistant):
         CONF_PLATFORM: DOMAIN,
         CONF_NAME: "test",
         CONF_ENTITIES: ["sensor.test_monitored"],
-        CONF_START: Template("{{ 0 }}"),
+        CONF_START: Template("{{ 0 }}", hass),
         CONF_DURATION: timedelta(seconds=10),
     }
 
@@ -176,31 +176,25 @@ async def test_entity_initialization(
 
 async def test_async_setup_platform(hass: HomeAssistant):
     """Test platform setup."""
-    mock_sensor = {
-        "platform": "template",
-        "sensors": {"test_monitored": {"value_template": "{{ 2 }}"}},
-    }
     config = {
-        CONF_PLATFORM: DOMAIN,
-        CONF_ENTITIES: ["sensor.test_monitored", "sensor.nonexistent"],
+        SENSOR: [
+            {
+                CONF_PLATFORM: DOMAIN,
+                CONF_ENTITIES: ["sensor.test_monitored", "sensor.nonexistent"],
+            }
+        ],
+        "template": [{"sensor": [{"name": "test_monitored", "state": "{{ 2 }}"}]}],
     }
 
-    with assert_setup_component(2, SENSOR):
-        assert await async_setup_component(
-            hass,
-            SENSOR,
-            {
-                SENSOR: [
-                    config,
-                    mock_sensor,
-                ]
-            },
-        )
+    with assert_setup_component(1, SENSOR):
+        assert await async_setup_component(hass, "template", config)
+        assert await async_setup_component(hass, SENSOR, config)
     await hass.async_block_till_done()
 
     await hass.async_start()
     await hass.async_block_till_done()
 
+    assert hass.states.get("sensor.test_monitored").state == "2"
     state = hass.states.get("sensor.average")
     assert state is not None
     assert state.state == "2.0"
